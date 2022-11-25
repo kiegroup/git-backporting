@@ -1,0 +1,12 @@
+name: "Git Backporting Github Action"
+author: "Andrea Lamparelli <alampare@redhat.com>, Enrique Mingorance Cano <emingora@redhat.com>"
+description: |
+  Github action for automated git backporting.
+
+runs:
+  using: "node16"
+  main: "dist/index.js"
+
+branding:
+  icon: "box"
+  color: "red"
