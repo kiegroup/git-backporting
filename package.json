@@ -44,7 +44,7 @@
   },
   "homepage": "https://github.com/lampajr/backporting#readme",
   "devDependencies": {
-    "@kie/mock-github": "^0.1.1",
+    "@kie/mock-github": "^0.1.2",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^28.1.8",
     "@types/node": "^18.11.17",
