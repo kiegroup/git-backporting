@@ -1,5 +1,5 @@
-import ConsoleLoggerService from "@gb/service/logger/console-logger-service";
-import LoggerService from "@gb/service/logger/logger-service";
+import ConsoleLoggerService from "@bp/service/logger/console-logger-service";
+import LoggerService from "@bp/service/logger/logger-service";
 
 /**
  * Singleton factory class

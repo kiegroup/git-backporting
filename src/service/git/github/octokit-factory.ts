@@ -1,5 +1,5 @@
-import LoggerService from "@gb/service/logger/logger-service";
-import LoggerServiceFactory from "@gb/service/logger/logger-service-factory";
+import LoggerService from "@bp/service/logger/logger-service";
+import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Octokit } from "@octokit/rest";
 
 /**
@@ -12,7 +12,7 @@ export default class OctokitFactory {
 
   public static getOctokit(token: string): Octokit {
     if (!OctokitFactory.octokit) {
-      OctokitFactory.logger.info("Creating octokit instance..");
+      OctokitFactory.logger.info("Creating octokit instance.");
       OctokitFactory.octokit = new Octokit({
         auth: token,
         userAgent: "lampajr/backporting"

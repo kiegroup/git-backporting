@@ -1,0 +1,27 @@
+# This manual workflow will bump the project to a new version and tag it, see https://docs.npmjs.com/cli/v8/commands/npm-version#description for more details
+
+name: Version Tag
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version to bump [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]'
+        required: false
+        default: 'minor'
+        type: string
+      message:
+        description: 'version commit message to be used'
+        required: false
+        default: 'Bumping to version %s'
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm version ${{ inputs.version }} -m "${{ inputs.message }}"

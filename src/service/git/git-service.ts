@@ -1,4 +1,4 @@
-import { GitPullRequest } from "@gb/service/git/git.types";
+import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
 
 /**
  * Git management service interface, which provides a common API for interacting 
@@ -17,17 +17,18 @@ import { GitPullRequest } from "@gb/service/git/git.types";
    */
   getPullRequest(owner: string, repo: string, prNumber: number): Promise<GitPullRequest>;
 
+  /**
+   * Get a pull request object from the underneath git service
+   * @param prUrl pull request html url
+   * @returns {Promise<PullRequest>}
+   */
+   getPullRequestFromUrl(prUrl: string): Promise<GitPullRequest>;
+
   // WRITE
 
   /**
    * Create a new pull request on the underneath git service
-   * @param owner repository's owner
-   * @param repo repository's name
-   * @param head name of the source branch
-   * @param base name of the target branch
-   * @param title pr title
-   * @param body  pr body
-   * @param reviewers pr list of reviewers
+   * @param backport backport pull request data
    */
-  createPullRequest(owner: string, repo: string, head: string, base: string, title: string, body: string, reviewers: string[]): Promise<void>;
+  createPullRequest(backport: BackportPullRequest): Promise<void>;
 }
