@@ -1,7 +1,7 @@
 ##
 # Publish new action tag(s) for downstream consumption
 ##
-name: Publish
+name: Publish GitHub Action
 
 # Manual or automatic release
 on:
