@@ -26,6 +26,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
+      - run: git config --global user.name "Github" && git config --global user.email "noreply@github.com"
       - run: npm version ${{ inputs.version }} -m "${{ inputs.message }}"
       - run: npm install && npm publish --access public
         env:
