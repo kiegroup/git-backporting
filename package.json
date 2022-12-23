@@ -45,7 +45,7 @@
   "devDependencies": {
     "@kie/mock-github": "^0.1.2",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^28.1.8",
+    "@types/jest": "^29.2.4",
     "@types/node": "^18.11.17",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
