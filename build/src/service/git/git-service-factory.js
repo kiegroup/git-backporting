@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const git_types_1 = require("../../service/git/git.types");
 const github_service_1 = __importDefault(require("../../service/git/github/github-service"));
+const logger_service_factory_1 = __importDefault(require("../../service/logger/logger-service-factory"));
 /**
  * Singleton git service factory class
  */
@@ -22,7 +23,8 @@ class GitServiceFactory {
      */
     static init(type, auth) {
         if (GitServiceFactory.instance) {
-            throw new Error("Git service already initialized!");
+            GitServiceFactory.logger.warn("Git service already initialized!");
+            return;
         }
         switch (type) {
             case git_types_1.GitServiceType.GITHUB:
@@ -34,3 +36,4 @@ class GitServiceFactory {
     }
 }
 exports.default = GitServiceFactory;
+GitServiceFactory.logger = logger_service_factory_1.default.getLogger();

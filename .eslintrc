@@ -43,5 +43,9 @@
       "error",
       "as-needed"
     ]
+  },
+  "env": {
+    "node": true,
+    "es2020": true
   }
 }

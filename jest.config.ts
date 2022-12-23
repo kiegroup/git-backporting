@@ -6,11 +6,11 @@ const jestConfig: Config.InitialOptions = {
     "^.+\\.tsx?$": "ts-jest",
   },
   moduleNameMapper: {
-    "^@gb/(.*)$": "<rootDir>/src/$1",
+    "^@bp/(.*)$": "<rootDir>/src/$1",
   },
   clearMocks: true,
   resetMocks: true,
-  modulePathIgnorePatterns: ["<rootDir>/dist/"],
+  modulePathIgnorePatterns: ["<rootDir>/build/", "<rootDir>/dist/"],
   coveragePathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/test/", "<rootDir>/build/", "<rootDir>/dist/"]
 };
 export default jestConfig;

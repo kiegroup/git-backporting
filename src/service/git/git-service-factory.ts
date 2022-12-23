@@ -1,12 +1,15 @@
-import GitService from "@gb/service/git/git-service";
-import { GitServiceType } from "@gb/service/git/git.types";
-import GitHubService from "@gb/service/git/github/github-service";
+import GitService from "@bp/service/git/git-service";
+import { GitServiceType } from "@bp/service/git/git.types";
+import GitHubService from "@bp/service/git/github/github-service";
+import LoggerService from "@bp/service/logger/logger-service";
+import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 
 /**
  * Singleton git service factory class
  */
 export default class GitServiceFactory {
   
+  private static logger: LoggerService = LoggerServiceFactory.getLogger();
   private static instance?: GitService;
 
   public static getService(): GitService {
@@ -25,7 +28,8 @@ export default class GitServiceFactory {
   public static init(type: GitServiceType, auth: string): void {
 
     if (GitServiceFactory.instance) {
-      throw new Error("Git service already initialized!");
+      GitServiceFactory.logger.warn("Git service already initialized!");
+      return;
     }
 
     switch(type) {

@@ -1,11 +1,11 @@
-import LoggerServiceFactory from "@gb/service/logger/logger-service-factory";
+import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
-import { targetOwner, repo, pullRequestNumber, validPR, invalidPullRequestNumber } from "./moctokit-data";
+import { targetOwner, repo, mergedPullRequestFixture, notMergedPullRequestFixture, notFoundPullRequestNumber } from "./moctokit-data";
 
 const logger = LoggerServiceFactory.getLogger();
 
 export const setupMoctokit = (): Moctokit => {
-  logger.debug("Setting up moctokit..");
+  logger.debug("Setting up moctokit.");
   
   const mock = new Moctokit();
 
@@ -16,18 +16,36 @@ export const setupMoctokit = (): Moctokit => {
     .get({
       owner: targetOwner,
       repo: repo,
-      pull_number: pullRequestNumber
+      pull_number: mergedPullRequestFixture.number
     })
     .reply({
       status: 200,
-      data: validPR
+      data: mergedPullRequestFixture
+    });
+  
+  mock.rest.pulls
+    .get({
+      owner: targetOwner,
+      repo: repo,
+      pull_number: notMergedPullRequestFixture.number
+    })
+    .reply({
+      status: 200,
+      data: notMergedPullRequestFixture
     });
   
   mock.rest.pulls
     .create()
     .reply({
       status: 201,
-      data: validPR
+      data: mergedPullRequestFixture
+    });
+
+  mock.rest.pulls
+    .requestReviewers()
+    .reply({
+      status: 201,
+      data: mergedPullRequestFixture
     });
 
 
@@ -36,7 +54,7 @@ export const setupMoctokit = (): Moctokit => {
     .get({
       owner: targetOwner,
       repo: repo,
-      pull_number: invalidPullRequestNumber
+      pull_number: notFoundPullRequestNumber
     })
     .reply({
       status: 404,

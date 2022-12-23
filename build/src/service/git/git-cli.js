@@ -10,8 +10,10 @@ const fs_1 = __importDefault(require("fs"));
  * Command line git commands executor service
  */
 class GitCLIService {
-    constructor() {
+    constructor(auth, author) {
         this.logger = logger_service_factory_1.default.getLogger();
+        this.auth = auth;
+        this.author = author;
     }
     /**
      * Return a pre-configured SimpleGit instance able to execute commands from current
@@ -21,7 +23,18 @@ class GitCLIService {
      */
     git(cwd) {
         const gitConfig = { ...(cwd ? { baseDir: cwd } : {}) };
-        return (0, simple_git_1.default)(gitConfig).addConfig("user.name", "Github").addConfig("user.email", "noreply@github.com");
+        return (0, simple_git_1.default)(gitConfig).addConfig("user.name", this.author).addConfig("user.email", "noreply@github.com");
+    }
+    /**
+     * Update the provided remote URL by adding the auth token if not empty
+     * @param remoteURL remote link, e.g., https://github.com/lampajr/backporting-example.git
+     */
+    remoteWithAuth(remoteURL) {
+        if (this.auth && this.author) {
+            return remoteURL.replace("://", `://${this.author}:${this.auth}@`);
+        }
+        // return remote as it is
+        return remoteURL;
     }
     /**
      * Return the git version
@@ -39,9 +52,9 @@ class GitCLIService {
      * @param branch branch which should be cloned
      */
     async clone(from, to, branch) {
-        this.logger.info(`Cloning repository ${from}..`);
+        this.logger.info(`Cloning repository ${from} to ${to}.`);
         if (!fs_1.default.existsSync(to)) {
-            await this.git().clone(from, to, ["--quiet", "--shallow-submodules", "--no-tags", "--branch", branch]);
+            await (0, simple_git_1.default)().clone(this.remoteWithAuth(from), to, ["--quiet", "--shallow-submodules", "--no-tags", "--branch", branch]);
         }
         else {
             this.logger.warn(`Folder ${to} already exist. Won't clone`);
@@ -53,7 +66,7 @@ class GitCLIService {
      * @param newBranch new branch name
      */
     async createLocalBranch(cwd, newBranch) {
-        this.logger.info(`Creating branch ${newBranch}..`);
+        this.logger.info(`Creating branch ${newBranch}.`);
         await this.git(cwd).checkoutLocalBranch(newBranch);
     }
     /**
@@ -63,8 +76,8 @@ class GitCLIService {
      * @param remoteName [optional] name of the remote, by default 'fork' is used
      */
     async addRemote(cwd, remote, remoteName = "fork") {
-        this.logger.info(`Adding new remote ${remote}..`);
-        await this.git(cwd).addRemote(remoteName, remote);
+        this.logger.info(`Adding new remote ${remote}.`);
+        await this.git(cwd).addRemote(remoteName, this.remoteWithAuth(remote));
     }
     /**
      * Git fetch from a particular branch
@@ -81,8 +94,8 @@ class GitCLIService {
      * @param sha commit sha
      */
     async cherryPick(cwd, sha) {
-        this.logger.info(`Cherry picking ${sha}..`);
-        await this.git(cwd).raw(["cherry-pick", "--strategy=recursive", "-X", "theirs", sha]);
+        this.logger.info(`Cherry picking ${sha}.`);
+        await this.git(cwd).raw(["cherry-pick", "-m", "1", "--strategy=recursive", "--strategy-option=theirs", sha]);
     }
     /**
      * Push a branch to a remote
@@ -91,7 +104,7 @@ class GitCLIService {
      * @param remote [optional] remote to which the branch should be pushed to, by default 'origin'
      */
     async push(cwd, branch, remote = "origin", force = false) {
-        this.logger.info(`Pushing ${branch} to ${remote}..`);
+        this.logger.info(`Pushing ${branch} to ${remote}.`);
         const options = ["--quiet"];
         if (force) {
             options.push("--force-with-lease");

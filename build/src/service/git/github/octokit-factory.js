@@ -11,7 +11,7 @@ const rest_1 = require("@octokit/rest");
 class OctokitFactory {
     static getOctokit(token) {
         if (!OctokitFactory.octokit) {
-            OctokitFactory.logger.info("Creating octokit instance..");
+            OctokitFactory.logger.info("Creating octokit instance.");
             OctokitFactory.octokit = new rest_1.Octokit({
                 auth: token,
                 userAgent: "lampajr/backporting"
