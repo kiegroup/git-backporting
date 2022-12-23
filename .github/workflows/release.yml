@@ -1,6 +1,6 @@
-# This workflow create a new tag, a release and then publish it to NPM.
+# This workflow create a new tag and then publish it to NPM.
 
-name: "Create Release"
+name: "Release Package"
 
 on: 
   workflow_dispatch:
@@ -32,16 +32,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-  create-release:
-    name: "Create Release"
-    needs: tag-and-publish
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: actions/checkout@v3
-      - id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
-      - uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "v${{ steps.package-version.outputs.current-version}}"
-          prerelease: false
+  # create-release:
+  #   name: "Create Release"
+  #   needs: tag-and-publish
+  #   runs-on: "ubuntu-latest"
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - id: package-version
+  #       uses: martinbeentjes/npm-get-version-action@main
+  #     - uses: marvinpinto/action-automatic-releases@latest
+  #       with:
+  #         repo_token: "${{ secrets.GITHUB_TOKEN }}"
+  #         automatic_release_tag: "v${{ steps.package-version.outputs.current-version}}"
+  #         prerelease: false
