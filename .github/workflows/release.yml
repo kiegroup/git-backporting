@@ -11,9 +11,9 @@ on:
         default: patch
         type: string
       message:
-        description: 'version commit message to be used'
+        description: 'bump version commit message'
         required: false
-        default: 'Bumping version %s'
+        default: 'Bump release version %s'
         type: string
 
 jobs:
@@ -26,9 +26,8 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm version $(semver $npm_package_version -i ${{ inputs.version }}) -m "${{ inputs.message }}"
-      - run: npm install
-      - run: npm publish --access public
+      - run: npm version ${{ inputs.version }} -m "${{ inputs.message }}"
+      - run: npm install && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 

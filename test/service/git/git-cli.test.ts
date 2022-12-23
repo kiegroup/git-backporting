@@ -74,7 +74,7 @@ beforeEach(() => {
 
 describe("git cli service", () => {
   test("version", async () => {
-    const result = await git.version();
+    const result = await git.version(cwd);
     const actualVersion = spawnSync("git", ["version"]).stdout.toString();
     const match = actualVersion.match(/(\d+\.\d+(\.\d+)?)/);
     if (match) {

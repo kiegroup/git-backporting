@@ -198,8 +198,8 @@ class GitCLIService {
      * Return the git version
      * @returns {Promise<string | undefined>}
      */
-    async version() {
-        const rawOutput = await this.git().raw("version");
+    async version(cwd) {
+        const rawOutput = await this.git(cwd).raw("version");
         const match = rawOutput.match(/(\d+\.\d+(\.\d+)?)/);
         return match ? match[1] : undefined;
     }
