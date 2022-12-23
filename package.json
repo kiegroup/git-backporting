@@ -65,7 +65,7 @@
     "@actions/core": "^1.10.0",
     "@octokit/rest": "^19.0.5",
     "@octokit/types": "^8.0.0",
-    "@octokit/webhooks-types": "^6.7.0",
+    "@octokit/webhooks-types": "^6.8.0",
     "commander": "^9.3.0",
     "fs-extra": "^11.1.0",
     "simple-git": "^3.15.1"
