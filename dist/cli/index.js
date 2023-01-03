@@ -29,19 +29,12 @@ runner.run();
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const commander_1 = __nccwpck_require__(4379);
-const process_1 = __nccwpck_require__(7282);
+const package_json_1 = __nccwpck_require__(6625);
 class CLIArgsParser {
-    constructor() {
-        this.pkg = {
-            name: process_1.env.npm_package_name ?? "backporting",
-            version: process_1.env.npm_package_version ?? "0.0.0",
-            description: process_1.env.npm_package_description ?? ""
-        };
-    }
     getCommand() {
-        return new commander_1.Command(this.pkg.name)
-            .version(this.pkg.version)
-            .description(this.pkg.description)
+        return new commander_1.Command(package_json_1.name)
+            .version(package_json_1.version)
+            .description(package_json_1.description)
             .requiredOption("-tb, --target-branch <branch>", "branch where changes must be backported to.")
             .requiredOption("-pr, --pull-request <pr url>", "pull request url, e.g., https://github.com/lampajr/backporting/pull/1.")
             .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely", false)
@@ -16052,6 +16045,14 @@ function suggestSimilar(word, candidates) {
 
 exports.suggestSimilar = suggestSimilar;
 
+
+/***/ }),
+
+/***/ 6625:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"@lampajr/bper","version":"1.0.4","description":"BPer is a tool to execute automatic git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"bper":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","preversion":"npm install && npm test","postversion":"git push && git push --tags"},"repository":{"type":"git","url":"git+https://github.com/lampajr/backporting.git"},"keywords":["backporting","pull-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/lampajr/backporting/issues"},"homepage":"https://github.com/lampajr/backporting#readme","devDependencies":{"@kie/mock-github":"^0.1.2","@types/fs-extra":"^9.0.13","@types/jest":"^29.2.4","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^5.47.0","@typescript-eslint/parser":"^5.47.0","@vercel/ncc":"^0.36.0","eslint":"^8.30.0","husky":"^8.0.2","jest":"^29.3.1","jest-sonar-reporter":"^2.0.0","semver":"^7.3.8","ts-jest":"^29.0.3","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"^19.0.5","@octokit/types":"^8.0.0","@octokit/webhooks-types":"^6.8.0","commander":"^9.3.0","fs-extra":"^11.1.0","simple-git":"^3.15.1"}}');
 
 /***/ }),
 
