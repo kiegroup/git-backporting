@@ -1,30 +1,15 @@
 import ArgsParser from "@bp/service/args/args-parser";
 import { Args } from "@bp/service/args/args.types";
 import { Command } from "commander";
-import { env } from "process";
+import { name, version, description } from "@bp/../package.json";
 
-interface PkgInfo {
-  name: string;
-  version: string;
-  description: string;
-}
 
 export default class CLIArgsParser implements ArgsParser {
 
-  private pkg: PkgInfo;
-
-  constructor() {
-    this.pkg = {
-      name: env.npm_package_name ?? "backporting",
-      version: env.npm_package_version ?? "0.0.0",
-      description: env.npm_package_description ?? ""
-    };
-  }
-
   private getCommand(): Command {
-    return new Command(this.pkg.name)
-      .version(this.pkg.version)
-      .description(this.pkg.description)
+    return new Command(name)
+      .version(version)
+      .description(description)
       .requiredOption("-tb, --target-branch <branch>", "branch where changes must be backported to.")
       .requiredOption("-pr, --pull-request <pr url>", "pull request url, e.g., https://github.com/lampajr/backporting/pull/1.")
       .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely", false)
