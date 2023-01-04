@@ -116,6 +116,8 @@ This is an open source project, and you are more than welcome to contribute :hea
 
 Every change must be submitted through a GitHub pull request (PR). Backporting uses continuous integration (CI). The CI runs checks against your branch after you submit the PR to ensure that your PR doesn’t introduce errors. If the CI identifies a potential problem, our friendly PR maintainers will help you resolve it.
 
+> **Note**: this project follows [git-conventional-commits](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13) standards, thanks to the [commit-msg hook](./.husky/commit-msg) you are not allowed to use commits that do not follow those standards.
+
 1. Fork it (https://github.com/lampajr/backporting).
 
 2. Create your feature branch: (git checkout -b feature).
@@ -126,7 +128,7 @@ Every change must be submitted through a GitHub pull request (PR). Backporting u
 
 5. Create a new pull request against `master` branch.
 
-> **Note**, you don't need to take care about typescript compilation and minifycation, there are automated [git hooks](./.husky) taking care of that!
+> **Note**: you don't need to take care about typescript compilation and minifycation, there are automated [git hooks](./.husky) taking care of that!
 
 ## License
 
