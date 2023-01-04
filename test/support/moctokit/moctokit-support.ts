@@ -1,6 +1,6 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
-import { targetOwner, repo, mergedPullRequestFixture, notMergedPullRequestFixture, notFoundPullRequestNumber } from "./moctokit-data";
+import { targetOwner, repo, mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, notFoundPullRequestNumber, sameOwnerPullRequestFixture } from "./moctokit-data";
 
 const logger = LoggerServiceFactory.getLogger();
 
@@ -22,17 +22,39 @@ export const setupMoctokit = (): Moctokit => {
       status: 200,
       data: mergedPullRequestFixture
     });
+
+  mock.rest.pulls
+  .get({
+    owner: targetOwner,
+    repo: repo,
+    pull_number: sameOwnerPullRequestFixture.number
+  })
+  .reply({
+    status: 200,
+    data: sameOwnerPullRequestFixture
+  });
   
   mock.rest.pulls
     .get({
       owner: targetOwner,
       repo: repo,
-      pull_number: notMergedPullRequestFixture.number
+      pull_number: openPullRequestFixture.number
     })
     .reply({
       status: 200,
-      data: notMergedPullRequestFixture
+      data: openPullRequestFixture
     });
+  
+  mock.rest.pulls
+  .get({
+    owner: targetOwner,
+    repo: repo,
+    pull_number: notMergedPullRequestFixture.number
+  })
+  .reply({
+    status: 200,
+    data: notMergedPullRequestFixture
+  });
   
   mock.rest.pulls
     .create()

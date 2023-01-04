@@ -54,6 +54,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       reviewers: [...new Set(reviewers)],
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
+      nCommits: 0, // TODO: needed?
       commits: [] // TODO needed?
     };
   }

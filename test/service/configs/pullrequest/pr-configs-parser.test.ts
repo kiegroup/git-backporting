@@ -4,11 +4,12 @@ import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs
 import GitServiceFactory from "@bp/service/git/git-service-factory";
 import { GitServiceType } from "@bp/service/git/git.types";
 import { setupMoctokit } from "../../../support/moctokit/moctokit-support";
-import { mergedPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner } from "../../../support/moctokit/moctokit-data";
+import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner } from "../../../support/moctokit/moctokit-data";
 
 describe("pull request config parser", () => {
 
   const mergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`;
+  const openPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${openPullRequestFixture.number}`;
   const notMergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${notMergedPullRequestFixture.number}`;
   
   let parser: PullRequestConfigsParser;
@@ -27,7 +28,7 @@ describe("pull request config parser", () => {
     jest.clearAllMocks();
   });
 
-  test("parse configs from pull request [default]", async () => {
+  test("parse configs from pull request", async () => {
     const args: Args = {
       dryRun: false,
       auth: "",
@@ -43,6 +44,7 @@ describe("pull request config parser", () => {
     expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
+      number: 2368,
       author: "gh-user",
       url: "https://api.github.com/repos/owner/reponame/pulls/2368",
       htmlUrl: "https://github.com/owner/reponame/pull/2368",
@@ -62,6 +64,7 @@ describe("pull request config parser", () => {
         project: "reponame",
         cloneUrl: "https://github.com/fork/reponame.git"
       },
+      nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
     });
     expect(configs.backportPullRequest).toEqual({
@@ -81,6 +84,7 @@ describe("pull request config parser", () => {
         project: "reponame",
         cloneUrl: "https://github.com/owner/reponame.git"
       },
+      nCommits: 0,
       commits: []
     });
   });
@@ -119,7 +123,48 @@ describe("pull request config parser", () => {
     expect(configs.author).toEqual("another-user");
   });
 
-  test("not merged pull request", async () => {
+  test("still open pull request", async () => {
+    const args: Args = {
+      dryRun: true,
+      auth: "whatever",
+      pullRequest: openPRUrl,
+      targetBranch: "prod"
+    };
+
+    const configs: Configs = await parser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(true);
+    expect(configs.auth).toEqual("whatever");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.author).toEqual("gh-user");
+    expect(configs.originalPullRequest).toEqual({
+      number: 4444,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/4444",
+      htmlUrl: "https://github.com/owner/reponame/pull/4444",
+      state: "open",
+      merged: false,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["gh-user"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "fork",
+        project: "reponame",
+        cloneUrl: "https://github.com/fork/reponame.git"
+      },
+      nCommits: 2,
+      // taken from head.sha
+      commits: ["91748965051fae1330ad58d15cf694e103267c87"]
+    });
+  });
+
+  test("closed pull request", async () => {
     const args: Args = {
       dryRun: true,
       auth: "whatever",
@@ -127,6 +172,6 @@ describe("pull request config parser", () => {
       targetBranch: "prod"
     };
 
-    expect(async () => await parser.parseAndValidate(args)).rejects.toThrow("Provided pull request is not merged!");
+    expect(async () => await parser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 });

@@ -60,21 +60,33 @@ exports["default"] = CLIArgsParser;
 /***/ }),
 
 /***/ 5799:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 /**
  * Abstract configuration parser class in charge to parse
  * Args and produces a common Configs object
  */
 class ConfigsParser {
+    constructor() {
+        this.logger = logger_service_factory_1.default.getLogger();
+    }
     async parseAndValidate(args) {
         const configs = await this.parse(args);
         // apply validation, throw errors if something is wrong
-        if (configs.originalPullRequest.state == "open" || !configs.originalPullRequest.merged) {
-            throw new Error("Provided pull request is not merged!");
+        // if pr is opened check if the there exists one single commit
+        if (configs.originalPullRequest.state == "open") {
+            this.logger.warn("Trying to backport an open pull request!");
+        }
+        // if PR is closed and not merged log a warning
+        if (configs.originalPullRequest.state == "closed" && !configs.originalPullRequest.merged) {
+            throw new Error("Provided pull request is closed and not merged!");
         }
         return Promise.resolve(configs);
     }
@@ -136,6 +148,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             reviewers: [...new Set(reviewers)],
             targetRepo: originalPullRequest.targetRepo,
             sourceRepo: originalPullRequest.targetRepo,
+            nCommits: 0,
             commits: [] // TODO needed?
         };
     }
@@ -237,6 +250,7 @@ class GitCLIService {
      * @param remote [optional] the remote to fetch, by default origin
      */
     async fetch(cwd, branch, remote = "origin") {
+        this.logger.info(`Fetching ${remote} ${branch}.`);
         await this.git(cwd).fetch(remote, branch, ["--quiet"]);
     }
     /**
@@ -339,6 +353,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 class GitHubMapper {
     mapPullRequest(pr) {
         return {
+            number: pr.number,
             author: pr.user.login,
             url: pr.url,
             htmlUrl: pr.html_url,
@@ -358,7 +373,9 @@ class GitHubMapper {
                 project: pr.base.repo.full_name.split("/")[1],
                 cloneUrl: pr.base.repo.clone_url
             },
-            commits: [pr.merge_commit_sha]
+            nCommits: pr.commits,
+            // if pr is open use latest commit sha otherwise use merge_commit_sha
+            commits: pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha]
         };
     }
 }
@@ -634,8 +651,11 @@ class Runner {
         // 5. create new branch from target one and checkout
         const backportBranch = `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
         await git.createLocalBranch(configs.folder, backportBranch);
-        // 6. add new remote if source != target and fetch source repo
-        // Skip this, we assume the PR has been already merged
+        // 6. fetch pull request remote if source owner != target owner or pull request still open
+        if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
+            configs.originalPullRequest.state === "open") {
+            await git.fetch(configs.folder, `pull/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+        }
         // 7. apply all changes to the new branch
         for (const sha of originalPR.commits) {
             await git.cherryPick(configs.folder, sha);

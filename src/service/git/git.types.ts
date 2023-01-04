@@ -1,4 +1,5 @@
 export interface GitPullRequest {
+  number?: number,
   author: string,
   url?: string,
   htmlUrl?: string,
@@ -10,7 +11,8 @@ export interface GitPullRequest {
   reviewers: string[],
   targetRepo: GitRepository,
   sourceRepo: GitRepository,
-  commits: string[]
+  nCommits: number, // number of commits in the pr
+  commits: string[] // merge commit or last one
 }
 
 export interface GitRepository {
