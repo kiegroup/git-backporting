@@ -89,8 +89,11 @@ export default class Runner {
     const backportBranch = `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
     await git.createLocalBranch(configs.folder, backportBranch);
 
-    // 6. add new remote if source != target and fetch source repo
-    // Skip this, we assume the PR has been already merged
+    // 6. fetch pull request remote if source owner != target owner or pull request still open
+    if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner || 
+        configs.originalPullRequest.state === "open") {
+      await git.fetch(configs.folder, `pull/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+    }
 
     // 7. apply all changes to the new branch
     for (const sha of originalPR.commits) {

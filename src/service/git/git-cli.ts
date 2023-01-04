@@ -95,6 +95,7 @@ export default class GitCLIService {
    * @param remote [optional] the remote to fetch, by default origin
    */
   async fetch(cwd: string, branch: string, remote = "origin"): Promise<void> {
+    this.logger.info(`Fetching ${remote} ${branch}.`);
     await this.git(cwd).fetch(remote, branch, ["--quiet"]);
   }
 

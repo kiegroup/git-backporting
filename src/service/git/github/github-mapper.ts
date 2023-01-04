@@ -5,6 +5,7 @@ export default class GitHubMapper {
 
   mapPullRequest(pr: PullRequest): GitPullRequest {
     return {
+      number: pr.number,
       author: pr.user.login,
       url: pr.url,
       htmlUrl: pr.html_url,
@@ -24,7 +25,9 @@ export default class GitHubMapper {
         project: pr.base.repo.full_name.split("/")[1],
         cloneUrl: pr.base.repo.clone_url
       },
-      commits: [pr.merge_commit_sha as string]
+      nCommits: pr.commits,
+      // if pr is open use latest commit sha otherwise use merge_commit_sha
+      commits: pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha as string]
     };
   }
 }
