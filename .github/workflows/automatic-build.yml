@@ -1,0 +1,24 @@
+name: "Pull Request Checks"
+
+on: 
+  pull_request:
+    types:
+      - opened
+      - edited
+      - closed
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: |
+          git config --global user.name "Github" && git config --global user.email "noreply@github.com"
+          npm run build
+          git add dist && rm -rf build
+          git diff --staged --quiet || git commit -m "build: dist folder generated"
