@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/lampajr/backporting/compare/v2.0.0...v2.0.1) (2023-01-05)
+
+
+### Continuous Integration
+
+* automatic dist folder generation ([6ed41b2](https://github.com/lampajr/backporting/commit/6ed41b245d6fe1e70cf2a2a04fad11e6677a282b))
+
 ## [2.0.0](https://github.com/lampajr/backporting/compare/v1.0.0...v2.0.0) (2023-01-05)
 
 
