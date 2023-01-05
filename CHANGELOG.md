@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0](https://github.com/lampajr/backporting/compare/v1.0.0...v2.0.0) (2023-01-05)
+
+
+### Miscellaneous Chores
+
+* release 2.0.0 ([b810e71](https://github.com/lampajr/backporting/commit/b810e71465a4ef4be35694abca9c131bbb6f02dc))
+
 ## 1.0.0 (2023-01-05)
 
 
