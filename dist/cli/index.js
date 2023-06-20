@@ -6215,9 +6215,9 @@ var __reExport = (target, module2, copyDefault, desc) => {
 var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
-var __toCommonJS = /* @__PURE__ */ ((cache) => {
+var __toCommonJS = /* @__PURE__ */ ((cache2) => {
   return (module2, temp) => {
-    return cache && cache.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache && cache.set(module2, temp), temp);
+    return cache2 && cache2.get(module2) || (temp = __reExport(__markAsModule({}), module2, 1), cache2 && cache2.set(module2, temp), temp);
   };
 })(typeof WeakMap !== "undefined" ? /* @__PURE__ */ new WeakMap() : 0);
 var __async = (__this, __arguments, generator) => {
@@ -6266,6 +6266,25 @@ var init_git_response_error = __esm({
         this.git = git;
       }
     };
+  }
+});
+
+// src/lib/args/pathspec.ts
+function pathspec(...paths) {
+  const key = new String(paths);
+  cache.set(key, paths);
+  return key;
+}
+function isPathSpec(path) {
+  return path instanceof String && cache.has(path);
+}
+function toPaths(pathSpec) {
+  return cache.get(pathSpec) || [];
+}
+var cache;
+var init_pathspec = __esm({
+  "src/lib/args/pathspec.ts"() {
+    cache = /* @__PURE__ */ new WeakMap();
   }
 });
 
@@ -6427,7 +6446,8 @@ function filterType(input, filter, def) {
   return arguments.length > 2 ? def : void 0;
 }
 function filterPrimitives(input, omit) {
-  return /number|string|boolean/.test(typeof input) && (!omit || !omit.includes(typeof input));
+  const type = isPathSpec(input) ? "string" : typeof input;
+  return /number|string|boolean/.test(type) && (!omit || !omit.includes(type));
 }
 function filterPlainObject(input) {
   return !!input && objectToString(input) === "[object Object]";
@@ -6439,6 +6459,7 @@ var filterArray, filterString, filterStringArray, filterStringOrStringArray, fil
 var init_argument_filters = __esm({
   "src/lib/utils/argument-filters.ts"() {
     init_util();
+    init_pathspec();
     filterArray = (input) => {
       return Array.isArray(input);
     };
@@ -6569,7 +6590,9 @@ function appendTaskOptions(options, commands = []) {
   }
   return Object.keys(options).reduce((commands2, key) => {
     const value = options[key];
-    if (filterPrimitives(value, ["boolean"])) {
+    if (isPathSpec(value)) {
+      commands2.push(value);
+    } else if (filterPrimitives(value, ["boolean"])) {
       commands2.push(key + "=" + value);
     } else {
       commands2.push(key);
@@ -6606,6 +6629,7 @@ var init_task_options = __esm({
   "src/lib/utils/task-options.ts"() {
     init_argument_filters();
     init_util();
+    init_pathspec();
   }
 });
 
@@ -7233,10 +7257,12 @@ __export(api_exports, {
   GitResponseError: () => GitResponseError,
   ResetMode: () => ResetMode,
   TaskConfigurationError: () => TaskConfigurationError,
-  grepQueryBuilder: () => grepQueryBuilder
+  grepQueryBuilder: () => grepQueryBuilder,
+  pathspec: () => pathspec
 });
 var init_api = __esm({
   "src/lib/api.ts"() {
+    init_pathspec();
     init_git_construct_error();
     init_git_error();
     init_git_plugin_error();
@@ -7294,15 +7320,28 @@ function preventProtocolOverride(arg, next) {
   }
   throw new GitPluginError(void 0, "unsafe", "Configuring protocol.allow is not permitted without enabling allowUnsafeExtProtocol");
 }
+function preventUploadPack(arg, method) {
+  if (/^\s*--(upload|receive)-pack/.test(arg)) {
+    throw new GitPluginError(void 0, "unsafe", `Use of --upload-pack or --receive-pack is not permitted without enabling allowUnsafePack`);
+  }
+  if (method === "clone" && /^\s*-u\b/.test(arg)) {
+    throw new GitPluginError(void 0, "unsafe", `Use of clone with option -u is not permitted without enabling allowUnsafePack`);
+  }
+  if (method === "push" && /^\s*--exec\b/.test(arg)) {
+    throw new GitPluginError(void 0, "unsafe", `Use of push with option --exec is not permitted without enabling allowUnsafePack`);
+  }
+}
 function blockUnsafeOperationsPlugin({
-  allowUnsafeProtocolOverride = false
+  allowUnsafeProtocolOverride = false,
+  allowUnsafePack = false
 } = {}) {
   return {
     type: "spawn.args",
-    action(args, _context) {
+    action(args, context) {
       args.forEach((current, index) => {
         const next = index < args.length ? args[index + 1] : "";
         allowUnsafeProtocolOverride || preventProtocolOverride(current, next);
+        allowUnsafePack || preventUploadPack(current, context.method);
       });
       return args;
     }
@@ -7544,7 +7583,9 @@ var init_spawn_options_plugin = __esm({
 
 // src/lib/plugins/timout-plugin.ts
 function timeoutPlugin({
-  block
+  block,
+  stdErr = true,
+  stdOut = true
 }) {
   if (block > 0) {
     return {
@@ -7568,8 +7609,8 @@ function timeoutPlugin({
           stop();
           context.kill(new GitPluginError(void 0, "timeout", `block timeout reached`));
         }
-        (_a2 = context.spawned.stdout) == null ? void 0 : _a2.on("data", wait);
-        (_b = context.spawned.stderr) == null ? void 0 : _b.on("data", wait);
+        stdOut && ((_a2 = context.spawned.stdout) == null ? void 0 : _a2.on("data", wait));
+        stdErr && ((_b = context.spawned.stderr) == null ? void 0 : _b.on("data", wait));
         context.spawned.on("exit", stop);
         context.spawned.on("close", stop);
         wait();
@@ -7596,6 +7637,35 @@ var init_plugins = __esm({
     init_simple_git_plugin();
     init_spawn_options_plugin();
     init_timout_plugin();
+  }
+});
+
+// src/lib/plugins/suffix-paths.plugin.ts
+function suffixPathsPlugin() {
+  return {
+    type: "spawn.args",
+    action(data) {
+      const prefix = [];
+      const suffix = [];
+      for (let i = 0; i < data.length; i++) {
+        const param = data[i];
+        if (isPathSpec(param)) {
+          suffix.push(...toPaths(param));
+          continue;
+        }
+        if (param === "--") {
+          suffix.push(...data.slice(i + 1).flatMap((item) => isPathSpec(item) && toPaths(item) || item));
+          break;
+        }
+        prefix.push(param);
+      }
+      return !suffix.length ? prefix : [...prefix, "--", ...suffix.map(String)];
+    }
+  };
+}
+var init_suffix_paths_plugin = __esm({
+  "src/lib/plugins/suffix-paths.plugin.ts"() {
+    init_pathspec();
   }
 });
 
@@ -7999,6 +8069,34 @@ var init_change_working_directory = __esm({
   }
 });
 
+// src/lib/tasks/checkout.ts
+function checkoutTask(args) {
+  const commands = ["checkout", ...args];
+  if (commands[1] === "-b" && commands.includes("-B")) {
+    commands[1] = remove(commands, "-B");
+  }
+  return straightThroughStringTask(commands);
+}
+function checkout_default() {
+  return {
+    checkout() {
+      return this._runTask(checkoutTask(getTrailingOptions(arguments, 1)), trailingFunctionArgument(arguments));
+    },
+    checkoutBranch(branchName, startPoint) {
+      return this._runTask(checkoutTask(["-b", branchName, startPoint, ...getTrailingOptions(arguments)]), trailingFunctionArgument(arguments));
+    },
+    checkoutLocalBranch(branchName) {
+      return this._runTask(checkoutTask(["-b", branchName, ...getTrailingOptions(arguments)]), trailingFunctionArgument(arguments));
+    }
+  };
+}
+var init_checkout = __esm({
+  "src/lib/tasks/checkout.ts"() {
+    init_utils();
+    init_task();
+  }
+});
+
 // src/lib/parsers/parse-commit.ts
 function parseCommitResult(stdOut) {
   const result = {
@@ -8054,11 +8152,6 @@ var init_parse_commit = __esm({
 });
 
 // src/lib/tasks/commit.ts
-var commit_exports = {};
-__export(commit_exports, {
-  commitTask: () => commitTask,
-  default: () => commit_default
-});
 function commitTask(message, files, customArgs) {
   const commands = [
     "-c",
@@ -8779,7 +8872,7 @@ var init_parse_push = __esm({
           local
         });
       }),
-      new LineParser(/^[*-=]\s+([^:]+):(\S+)\s+\[(.+)]$/, (result, [local, remote, type]) => {
+      new LineParser(/^[=*-]\s+([^:]+):(\S+)\s+\[(.+)]$/, (result, [local, remote, type]) => {
         result.pushed.push(pushResultPushedItem(local, remote, type));
       }),
       new LineParser(/^Branch '([^']+)' set up to track remote branch '([^']+)' from '([^']+)'/, (result, [local, remote, remoteName]) => {
@@ -8844,6 +8937,29 @@ var init_push = __esm({
   "src/lib/tasks/push.ts"() {
     init_parse_push();
     init_utils();
+  }
+});
+
+// src/lib/tasks/show.ts
+function show_default() {
+  return {
+    showBuffer() {
+      const commands = ["show", ...getTrailingOptions(arguments, 1)];
+      if (!commands.includes("--binary")) {
+        commands.splice(1, 0, "--binary");
+      }
+      return this._runTask(straightThroughBufferTask(commands), trailingFunctionArgument(arguments));
+    },
+    show() {
+      const commands = ["show", ...getTrailingOptions(arguments, 1)];
+      return this._runTask(straightThroughStringTask(commands), trailingFunctionArgument(arguments));
+    }
+  };
+}
+var init_show = __esm({
+  "src/lib/tasks/show.ts"() {
+    init_utils();
+    init_task();
   }
 });
 
@@ -9087,6 +9203,7 @@ var init_simple_git_api = __esm({
   "src/lib/simple-git-api.ts"() {
     init_task_callback();
     init_change_working_directory();
+    init_checkout();
     init_commit();
     init_config();
     init_grep();
@@ -9095,6 +9212,7 @@ var init_simple_git_api = __esm({
     init_log();
     init_merge();
     init_push();
+    init_show();
     init_status();
     init_task();
     init_version();
@@ -9161,7 +9279,7 @@ var init_simple_git_api = __esm({
         return this._runTask(statusTask(getTrailingOptions(arguments)), trailingFunctionArgument(arguments));
       }
     };
-    Object.assign(SimpleGitApi.prototype, commit_default(), config_default(), grep_default(), log_default(), version_default());
+    Object.assign(SimpleGitApi.prototype, checkout_default(), commit_default(), config_default(), grep_default(), log_default(), show_default(), version_default());
   }
 });
 
@@ -9887,7 +10005,6 @@ var require_git = __commonJS({
     var { checkIsRepoTask: checkIsRepoTask2 } = (init_check_is_repo(), __toCommonJS(check_is_repo_exports));
     var { cloneTask: cloneTask2, cloneMirrorTask: cloneMirrorTask2 } = (init_clone(), __toCommonJS(clone_exports));
     var { cleanWithOptionsTask: cleanWithOptionsTask2, isCleanOptionsArray: isCleanOptionsArray2 } = (init_clean(), __toCommonJS(clean_exports));
-    var { commitTask: commitTask2 } = (init_commit(), __toCommonJS(commit_exports));
     var { diffSummaryTask: diffSummaryTask2 } = (init_diff(), __toCommonJS(diff_exports));
     var { fetchTask: fetchTask2 } = (init_fetch(), __toCommonJS(fetch_exports));
     var { moveTask: moveTask2 } = (init_move(), __toCommonJS(move_exports));
@@ -9985,16 +10102,6 @@ var require_git = __commonJS({
     };
     Git2.prototype.addAnnotatedTag = function(tagName, tagMessage) {
       return this._runTask(addAnnotatedTagTask2(tagName, tagMessage), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.checkout = function() {
-      const commands = ["checkout", ...getTrailingOptions2(arguments, true)];
-      return this._runTask(straightThroughStringTask2(commands), trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.checkoutBranch = function(branchName, startPoint, then) {
-      return this.checkout(["-b", branchName, startPoint], trailingFunctionArgument2(arguments));
-    };
-    Git2.prototype.checkoutLocalBranch = function(branchName, then) {
-      return this.checkout(["-b", branchName], trailingFunctionArgument2(arguments));
     };
     Git2.prototype.deleteLocalBranch = function(branchName, forceDelete, then) {
       return this._runTask(deleteBranchTask2(branchName, typeof forceDelete === "boolean" ? forceDelete : false), trailingFunctionArgument2(arguments));
@@ -10105,9 +10212,6 @@ var require_git = __commonJS({
       const commands = ["rev-parse", ...getTrailingOptions2(arguments, true)];
       return this._runTask(straightThroughStringTask2(commands, true), trailingFunctionArgument2(arguments));
     };
-    Git2.prototype.show = function(options, then) {
-      return this._runTask(straightThroughStringTask2(["show", ...getTrailingOptions2(arguments, 1)]), trailingFunctionArgument2(arguments));
-    };
     Git2.prototype.clean = function(mode, options, then) {
       const usingCleanOptionsArray = isCleanOptionsArray2(mode);
       const cleanMode = usingCleanOptionsArray && mode.join("") || filterType2(mode, filterString2) || "";
@@ -10165,6 +10269,7 @@ function gitInstanceFactory(baseDir, options) {
     plugins.add(commandConfigPrefixingPlugin(config.config));
   }
   plugins.add(blockUnsafeOperationsPlugin(config.unsafe));
+  plugins.add(suffixPathsPlugin());
   plugins.add(completionDetectionPlugin(config.completion));
   config.abort && plugins.add(abortPlugin(config.abort));
   config.progress && plugins.add(progressMonitorPlugin(config.progress));
@@ -10179,6 +10284,7 @@ var init_git_factory = __esm({
   "src/lib/git-factory.ts"() {
     init_api();
     init_plugins();
+    init_suffix_paths_plugin();
     init_utils();
     Git = require_git();
   }
@@ -16084,7 +16190,7 @@ exports.suggestSimilar = suggestSimilar;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@lampajr/bper","version":"2.1.0","description":"BPer is a tool to execute automatic git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"bper":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","postversion":"npm run build && git add dist && rm -rf build","release":"release-it"},"repository":{"type":"git","url":"git+https://github.com/lampajr/backporting.git"},"keywords":["backporting","pull-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/lampajr/backporting/issues"},"homepage":"https://github.com/lampajr/backporting#readme","devDependencies":{"@commitlint/cli":"^17.4.0","@commitlint/config-conventional":"^17.4.0","@kie/mock-github":"^0.1.2","@release-it/conventional-changelog":"^5.1.1","@types/fs-extra":"^9.0.13","@types/jest":"^29.2.4","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^5.47.0","@typescript-eslint/parser":"^5.47.0","@vercel/ncc":"^0.36.0","eslint":"^8.30.0","husky":"^8.0.2","jest":"^29.3.1","jest-sonar-reporter":"^2.0.0","release-it":"^15.6.0","semver":"^7.3.8","ts-jest":"^29.0.3","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"^19.0.5","@octokit/types":"^8.0.0","@octokit/webhooks-types":"^6.8.0","commander":"^9.3.0","fs-extra":"^11.1.0","simple-git":"^3.15.1"}}');
+module.exports = JSON.parse('{"name":"@lampajr/bper","version":"2.1.0","description":"BPer is a tool to execute automatic git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"bper":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","postversion":"npm run build && git add dist && rm -rf build","release":"release-it"},"repository":{"type":"git","url":"git+https://github.com/lampajr/backporting.git"},"keywords":["backporting","pull-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/lampajr/backporting/issues"},"homepage":"https://github.com/lampajr/backporting#readme","devDependencies":{"@commitlint/cli":"^17.4.0","@commitlint/config-conventional":"^17.4.0","@kie/mock-github":"^1.1.0","@release-it/conventional-changelog":"^5.1.1","@types/fs-extra":"^9.0.13","@types/jest":"^29.2.4","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^5.47.0","@typescript-eslint/parser":"^5.47.0","@vercel/ncc":"^0.36.0","eslint":"^8.30.0","husky":"^8.0.2","jest":"^29.3.1","jest-sonar-reporter":"^2.0.0","release-it":"^15.6.0","semver":"^7.3.8","ts-jest":"^29.0.3","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"^19.0.5","@octokit/types":"^8.0.0","@octokit/webhooks-types":"^6.8.0","commander":"^9.3.0","fs-extra":"^11.1.0","simple-git":"^3.15.1"}}');
 
 /***/ }),
 
