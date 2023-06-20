@@ -25,7 +25,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
       targetBranch: args.targetBranch,
       originalPullRequest: pr,
-      backportPullRequest: this.getDefaultBackportPullRequest(pr, args.targetBranch)
+      backportPullRequest: this.getDefaultBackportPullRequest(pr, args)
     };
   }
   
@@ -34,26 +34,30 @@ export default class PullRequestConfigsParser extends ConfigsParser {
   }
 
   /**
-   * Create a default backport pull request starting from the target branch and 
+   * Create a backport pull request starting from the target branch and 
    * the original pr to be backported
    * @param originalPullRequest original pull request
    * @param targetBranch target branch where the backport should be applied
    * @returns {GitPullRequest}
    */
-  private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, targetBranch: string): GitPullRequest {
+  private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, args: Args): GitPullRequest {
     const reviewers = [];
     reviewers.push(originalPullRequest.author);
     if (originalPullRequest.mergedBy) {
       reviewers.push(originalPullRequest.mergedBy);  
     }
 
+    const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
+    const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
+    
     return {
       author: originalPullRequest.author,
-      title: `[${targetBranch}] ${originalPullRequest.title}`, 
-      body: `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`,
+      title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
+      body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
+      branchName: args.bpBranchName,
       nCommits: 0, // TODO: needed?
       commits: [] // TODO needed?
     };

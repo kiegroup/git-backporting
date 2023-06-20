@@ -36,7 +36,11 @@ class GHAArgsParser {
             auth: (0, core_1.getInput)("auth") ? (0, core_1.getInput)("auth") : "",
             pullRequest: (0, core_1.getInput)("pull-request"),
             targetBranch: (0, core_1.getInput)("target-branch"),
-            folder: (0, core_1.getInput)("folder") !== "" ? (0, core_1.getInput)("folder") : undefined
+            folder: (0, core_1.getInput)("folder") !== "" ? (0, core_1.getInput)("folder") : undefined,
+            title: (0, core_1.getInput)("title"),
+            body: (0, core_1.getInput)("body"),
+            bodyPrefix: (0, core_1.getInput)("body-prefix"),
+            bpBranchName: (0, core_1.getInput)("bp-branch-name"),
         };
     }
 }
@@ -108,32 +112,35 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             targetBranch: args.targetBranch,
             originalPullRequest: pr,
-            backportPullRequest: this.getDefaultBackportPullRequest(pr, args.targetBranch)
+            backportPullRequest: this.getDefaultBackportPullRequest(pr, args)
         };
     }
     getDefaultFolder() {
         return "bp";
     }
     /**
-     * Create a default backport pull request starting from the target branch and
+     * Create a backport pull request starting from the target branch and
      * the original pr to be backported
      * @param originalPullRequest original pull request
      * @param targetBranch target branch where the backport should be applied
      * @returns {GitPullRequest}
      */
-    getDefaultBackportPullRequest(originalPullRequest, targetBranch) {
+    getDefaultBackportPullRequest(originalPullRequest, args) {
         const reviewers = [];
         reviewers.push(originalPullRequest.author);
         if (originalPullRequest.mergedBy) {
             reviewers.push(originalPullRequest.mergedBy);
         }
+        const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
+        const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
         return {
             author: originalPullRequest.author,
-            title: `[${targetBranch}] ${originalPullRequest.title}`,
-            body: `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`,
+            title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
+            body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
             targetRepo: originalPullRequest.targetRepo,
             sourceRepo: originalPullRequest.targetRepo,
+            branchName: args.bpBranchName,
             nCommits: 0,
             commits: [] // TODO needed?
         };
@@ -635,7 +642,7 @@ class Runner {
         // 4. clone the repository
         await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
         // 5. create new branch from target one and checkout
-        const backportBranch = `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
+        const backportBranch = backportPR.branchName ?? `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
         await git.createLocalBranch(configs.folder, backportBranch);
         // 6. fetch pull request remote if source owner != target owner or pull request still open
         if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||

@@ -86,7 +86,7 @@ export default class Runner {
     await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
 
     // 5. create new branch from target one and checkout
-    const backportBranch = `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
+    const backportBranch = backportPR.branchName ?? `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
     await git.createLocalBranch(configs.folder, backportBranch);
 
     // 6. fetch pull request remote if source owner != target owner or pull request still open

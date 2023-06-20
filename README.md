@@ -51,7 +51,12 @@ This toold comes with some inputs that allow users to override the default behav
 | Pull Request  | -pr, --pull-request  | Y            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
 | Auth          | -a, --auth           | N            | `GITHUB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
 | Folder        | -f, --folder         | N            | Local folder where the repo will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
+| Title       | --title        | N            | Backporting pull request title                                                       | "{original-pr-title}"       |
+| Body       | --body        | N            | Backporting pull request body                                                           | "{original-pr-body}"       |
+| Body Prefix       | --body-prefix        | N            | Prefix to the backporting pull request body                                                          | "Backport: {original-pr-link}"       |
+| Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
+
 
 ## GitHub Action
 
@@ -135,13 +140,11 @@ For a complete description of all inputs see [Inputs section](#inputs).
 
 **BPer** is in development mode, this means that it has many limitations right now. I'll try to summarize the most importan ones:
 
-- No way to override backporting pull request fields like body, reviewers and so on.
 - You can backport pull requests only.
 - It only works for [GitHub](https://github.com/).
 - Integrated in GitHub Actions CI/CD only.
 
 Based on these limitations, the next **Future Works** could be the following:
-- Give users the possibility to override/customize the backporting pull request.
 - Provide a way to backport single commit too (or a set of them), even if no original pull request is present.
 - Integrate this tool with other git management services (like GitLab and Bitbucket) to make it as generic as possible.
 - Provide some reusable GitHub workflows.

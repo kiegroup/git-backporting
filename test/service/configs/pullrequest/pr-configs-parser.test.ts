@@ -84,6 +84,7 @@ describe("pull request config parser", () => {
         project: "reponame",
         cloneUrl: "https://github.com/owner/reponame.git"
       },
+      bpBranchName: undefined,
       nCommits: 0,
       commits: []
     });
@@ -158,6 +159,7 @@ describe("pull request config parser", () => {
         project: "reponame",
         cloneUrl: "https://github.com/fork/reponame.git"
       },
+      bpBranchName: undefined,
       nCommits: 2,
       // taken from head.sha
       commits: ["91748965051fae1330ad58d15cf694e103267c87"]
@@ -173,5 +175,71 @@ describe("pull request config parser", () => {
     };
 
     expect(async () => await parser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
+  });
+
+  test("override backport pr data", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      title: "New Title",
+      body: "New Body",
+      bodyPrefix: "New Body Prefix -",
+    };
+
+    const configs: Configs = await parser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.author).toEqual("gh-user");
+    expect(configs.auth).toEqual("");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 2368,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/2368",
+      htmlUrl: "https://github.com/owner/reponame/pull/2368",
+      state: "closed",
+      merged: true,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["requested-gh-user", "gh-user"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "fork",
+        project: "reponame",
+        cloneUrl: "https://github.com/fork/reponame.git"
+      },
+      bpBranchName: undefined,
+      nCommits: 2,
+      commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
+    });
+    expect(configs.backportPullRequest).toEqual({
+      author: "gh-user",
+      url: undefined,
+      htmlUrl: undefined,
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: ["gh-user", "that-s-a-user"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      bpBranchName: undefined,
+      nCommits: 0,
+      commits: []
+    });
   });
 });

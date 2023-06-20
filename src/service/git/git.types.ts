@@ -12,7 +12,8 @@ export interface GitPullRequest {
   targetRepo: GitRepository,
   sourceRepo: GitRepository,
   nCommits: number, // number of commits in the pr
-  commits: string[] // merge commit or last one
+  commits: string[], // merge commit or last one
+  branchName?: string,
 }
 
 export interface GitRepository {
@@ -28,7 +29,8 @@ export interface BackportPullRequest {
   base: string, // name of the target branch
   title: string, // pr title
   body: string, // pr body
-  reviewers: string[] // pr list of reviewers
+  reviewers: string[], // pr list of reviewers
+  branchName?: string,
 }
 
 export enum GitServiceType {
