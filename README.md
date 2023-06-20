@@ -93,6 +93,42 @@ jobs:
 
 You can also use this action with other events - you'll just need to specify `target-branch` and `pull-request` params.
 
+For example, this configuration creates a pull request against branch `v1` once the current one is merged, provided that the label `backport-v1` is applied:
+
+```yaml
+name: Pull Request Backporting using BPer
+
+on:
+  pull_request_target:
+    types:
+      - closed
+      - labeled
+
+jobs:
+  backporting:
+    name: "Backporting"
+    # Only react to merged PRs for security reasons.
+    # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target.
+    if: >
+      github.event.pull_request.merged
+      && (
+        github.event.action == 'closed'
+          && contains(github.event.pull_request.labels.*.name, 'backport-v1')
+        || (
+          github.event.action == 'labeled'
+          && contains(github.event.label.name, 'backport-v1')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backporting
+        uses: lampajr/backporting@main
+        with:
+          target-branch: v1
+          pull-request: ${{ github.event.pull_request.url }}
+          auth: ${{ secrets.GITHUB_TOKEN }}
+```
+
 For a complete description of all inputs see [Inputs section](#inputs).
 
 ## Limitations
