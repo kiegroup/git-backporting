@@ -25,6 +25,7 @@ export default class GitServiceFactory {
    * @param type git management service type
    * @param auth authentication, like github token
    */
+  // TODO rename to getOrCreate
   public static init(type: GitServiceType, auth: string): void {
 
     if (GitServiceFactory.instance) {

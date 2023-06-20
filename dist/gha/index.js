@@ -311,6 +311,7 @@ class GitServiceFactory {
      * @param type git management service type
      * @param auth authentication, like github token
      */
+    // TODO rename to getOrCreate
     static init(type, auth) {
         if (GitServiceFactory.instance) {
             GitServiceFactory.logger.warn("Git service already initialized!");
