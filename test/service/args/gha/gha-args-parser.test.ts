@@ -28,6 +28,10 @@ describe("gha args parser", () => {
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
+    expect(args.title).toEqual(undefined);
+    expect(args.body).toEqual(undefined);
+    expect(args.bodyPrefix).toEqual(undefined);
+    expect(args.bpBranchName).toEqual(undefined);
   });
 
   test("valid execution [override]", () => {
@@ -35,7 +39,11 @@ describe("gha args parser", () => {
       "dry-run": "true",
       "auth": "bearer-token",
       "target-branch": "target",
-      "pull-request": "https://localhost/whatever/pulls/1"
+      "pull-request": "https://localhost/whatever/pulls/1",
+      "title": "New Title",
+      "body": "New Body",
+      "body-prefix": "New Body Prefix",
+      "bp-branch-name": "bp_branch_name",
     });
 
     const args: Args = parser.parse();
@@ -45,6 +53,10 @@ describe("gha args parser", () => {
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
+    expect(args.title).toEqual("New Title");
+    expect(args.body).toEqual("New Body");
+    expect(args.bodyPrefix).toEqual("New Body Prefix");
+    expect(args.bpBranchName).toEqual("bp_branch_name");
   });
 
 });

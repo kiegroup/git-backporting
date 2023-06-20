@@ -10,7 +10,11 @@ export default class GHAArgsParser implements ArgsParser {
       auth: getInput("auth") ? getInput("auth") : "",
       pullRequest: getInput("pull-request"),
       targetBranch: getInput("target-branch"),
-      folder: getInput("folder") !== "" ? getInput("folder") : undefined
+      folder: getInput("folder") !== "" ? getInput("folder") : undefined,
+      title: getInput("title"),
+      body: getInput("body"),
+      bodyPrefix: getInput("body-prefix"),
+      bpBranchName: getInput("bp-branch-name"),
     };
   }
 

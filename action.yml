@@ -15,6 +15,18 @@ inputs:
   target-branch:
     description: "Branch where the pull request must be backported to."
     required: true
+  title:
+    description: "Backporting PR title. Default is the original PR title prefixed by the target branch."
+    required: false
+  body:
+    description: "Backporting PR body. Default is the original PR body prefixed by `backport: <original-pr-link>`."
+    required: false
+  body-prefix:
+    description: "Backporting PR body prefix. Default is `backport: <original-pr-link>`"
+    required: false
+  bp-branch-name:
+    description: "Backporting PR branch name. Default is auto-generated from commit."
+    required: false
 
 runs:
   using: node16
