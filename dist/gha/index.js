@@ -30,17 +30,26 @@ runner.run();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 class GHAArgsParser {
+    /**
+     * Return the input only if it is not a blank or null string, otherwise returns undefined
+     * @param key input key
+     * @returns the value or undefined
+     */
+    _getOrUndefined(key) {
+        const value = (0, core_1.getInput)(key);
+        return value !== "" ? value : undefined;
+    }
     parse() {
         return {
             dryRun: (0, core_1.getInput)("dry-run") === "true",
             auth: (0, core_1.getInput)("auth") ? (0, core_1.getInput)("auth") : "",
             pullRequest: (0, core_1.getInput)("pull-request"),
             targetBranch: (0, core_1.getInput)("target-branch"),
-            folder: (0, core_1.getInput)("folder") !== "" ? (0, core_1.getInput)("folder") : undefined,
-            title: (0, core_1.getInput)("title"),
-            body: (0, core_1.getInput)("body"),
-            bodyPrefix: (0, core_1.getInput)("body-prefix"),
-            bpBranchName: (0, core_1.getInput)("bp-branch-name"),
+            folder: this._getOrUndefined("folder"),
+            title: this._getOrUndefined("title"),
+            body: this._getOrUndefined("body"),
+            bodyPrefix: this._getOrUndefined("body-prefix"),
+            bpBranchName: this._getOrUndefined("bp-branch-name"),
         };
     }
 }
