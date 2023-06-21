@@ -10,9 +10,10 @@ on:
 
 jobs:
   build-and-test:
+    name: ${{ matrix.os }} - node ${{ matrix.node-version }}
     strategy:
       matrix:
-        node-version: [16]
+        node-version: [16, 18]
         os: [ubuntu-latest]
       fail-fast: true
     runs-on: ${{ matrix.os }}
