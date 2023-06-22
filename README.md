@@ -57,9 +57,14 @@ This toold comes with some inputs that allow users to override the default behav
 | Pull Request  | -pr, --pull-request  | Y            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
 | Auth          | -a, --auth           | N            | `GITHUB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
 | Folder        | -f, --folder         | N            | Local folder where the repo will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
+| Git User       | -gu, --git-user        | N            | Local git user name                                                       | "GitHub"       |
+| Git Email       | -ge, --git-email        | N            | Local git user email                                                       | "noreply@github.com"       |
 | Title       | --title        | N            | Backporting pull request title                                                       | "{original-pr-title}"       |
 | Body       | --body        | N            | Backporting pull request body                                                           | "{original-pr-body}"       |
 | Body Prefix       | --body-prefix        | N            | Prefix to the backporting pull request body                                                          | "Backport: {original-pr-link}"       |
+| Reviewers       | --reviewers        | N            | Backporting pull request comma-separated reviewers list                                                           | []       |
+| Assignees       | --assignes        | N            | Backporting pull request comma-separated assignees list                                                           | []       |
+| No Reviewers Inheritance       | --no-inherit-reviewers        | N            | Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request                                                           | false       |
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 

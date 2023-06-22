@@ -188,7 +188,8 @@ describe("cli runner", () => {
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
-        reviewers: ["gh-user", "that-s-a-user"]
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
       }
     );
   });
@@ -227,7 +228,8 @@ describe("cli runner", () => {
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/8632"),
-        reviewers: ["gh-user", "that-s-a-user"]
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
       }
     );
   });
@@ -278,7 +280,8 @@ describe("cli runner", () => {
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/4444"),
-        reviewers: ["gh-user", "that-s-a-user"]
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
       }
     );
   });
@@ -297,6 +300,10 @@ describe("cli runner", () => {
       "New Body Prefix - ",
       "--bp-branch-name",
       "bp_branch_name",
+      "--reviewers",
+      "user1,user2",
+      "--assignees",
+      "user3,user4"
     ]);
     
     await runner.execute();
@@ -326,7 +333,60 @@ describe("cli runner", () => {
         base: "target", 
         title: "New Title", 
         body: "New Body Prefix - New Body",
-        reviewers: ["gh-user", "that-s-a-user"]
+        reviewers: ["user1", "user2"],
+        assignees: ["user3", "user4"],
+      }
+    );
+  });
+
+  test("set empty reviewers", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "--title",
+      "New Title",
+      "--body",
+      "New Body",
+      "--body-prefix",
+      "New Body Prefix - ",
+      "--bp-branch-name",
+      "bp_branch_name",
+      "--no-inherit-reviewers",
+      "--assignees",
+      "user3,user4",
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
+
+    expect(GitHubService.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubService.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp_branch_name", 
+        base: "target", 
+        title: "New Title", 
+        body: "New Body Prefix - New Body",
+        reviewers: [],
+        assignees: ["user3", "user4"],
       }
     );
   });

@@ -9,6 +9,14 @@ inputs:
     description: "GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)."
     default: ${{ github.token }}
     required: false
+  git-user:
+    description: "Local git user name."
+    default: "GitHub"
+    required: false
+  git-email:
+    description: "Local git user email."
+    default: "noreply@github.com"
+    required: false
   pull-request:
     description: "URL of the pull request to backport, e.g., https://github.com/lampajr/backporting/pull/1."
     required: true
@@ -27,6 +35,16 @@ inputs:
   bp-branch-name:
     description: "Backporting PR branch name. Default is auto-generated from commit."
     required: false
+  reviewers:
+    description: "Comma separated list of reviewers for the backporting pull request."
+    required: false
+  assignees:
+    description: "Comma separated list of reviewers for the backporting pull request."
+    required: false
+  inherith-reviewers:
+    description: "If enabled and reviewers option is empty then inherit them from original pull request."
+    required: false
+    default: "true"
 
 runs:
   using: node16

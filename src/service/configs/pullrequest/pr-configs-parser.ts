@@ -21,11 +21,14 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     return {
       dryRun: args.dryRun,
       auth: args.auth,
-      author: args.author ?? pr.author,
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
       targetBranch: args.targetBranch,
       originalPullRequest: pr,
-      backportPullRequest: this.getDefaultBackportPullRequest(pr, args)
+      backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
+      git: {
+        user: args.gitUser,
+        email: args.gitEmail,
+      }
     };
   }
   
@@ -41,20 +44,24 @@ export default class PullRequestConfigsParser extends ConfigsParser {
    * @returns {GitPullRequest}
    */
   private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, args: Args): GitPullRequest {
-    const reviewers = [];
-    reviewers.push(originalPullRequest.author);
-    if (originalPullRequest.mergedBy) {
-      reviewers.push(originalPullRequest.mergedBy);  
+    const reviewers = args.reviewers ?? [];
+    if (reviewers.length == 0 && args.inheritReviewers) {
+      // inherit only if args.reviewers is empty and args.inheritReviewers set to true
+      reviewers.push(originalPullRequest.author);
+      if (originalPullRequest.mergedBy) {
+        reviewers.push(originalPullRequest.mergedBy);  
+      }
     }
 
     const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
     const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
     
     return {
-      author: originalPullRequest.author,
+      author: args.gitUser,
       title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
       body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],
+      assignees: [...new Set(args.assignees)],
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
       branchName: args.bpBranchName,

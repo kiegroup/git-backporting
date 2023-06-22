@@ -12,6 +12,16 @@ export const resetProcessArgs = () => {
 export const spyGetInput = (obj: any) => {
   const mock = jest.spyOn(core, "getInput");
   mock.mockImplementation((name: string) : string => {
-    return obj[name];
+    return obj[name] ?? "";
   });
+};
+
+/**
+ * Check array equality performing sort on both sides.
+ * DO NOT USE this if ordering matters
+ * @param actual 
+ * @param expected 
+ */
+export const expectArrayEqual = (actual: unknown[], expected: unknown[]) => {
+  expect(actual.sort()).toEqual(expected.sort());
 };

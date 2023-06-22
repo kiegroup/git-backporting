@@ -80,7 +80,7 @@ export default class Runner {
     const backportPR: GitPullRequest = configs.backportPullRequest;
 
     // start local git operations
-    const git: GitCLIService = new GitCLIService(configs.auth, configs.author);
+    const git: GitCLIService = new GitCLIService(configs.auth, configs.git);
     
     // 4. clone the repository
     await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
@@ -107,7 +107,8 @@ export default class Runner {
       base: configs.targetBranch,
       title: backportPR.title,
       body: backportPR.body,
-      reviewers: backportPR.reviewers
+      reviewers: backportPR.reviewers,
+      assignees: backportPR.assignees,
     };
 
     if (!configs.dryRun) {

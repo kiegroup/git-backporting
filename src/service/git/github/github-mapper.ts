@@ -15,6 +15,7 @@ export default class GitHubMapper {
       merged: pr.merged ?? false,
       mergedBy: pr.merged_by?.login,
       reviewers: pr.requested_reviewers.filter(r => "login" in r).map((r => (r as User)?.login)),
+      assignees: pr.assignees.filter(r => "login" in r).map(r => r.login),
       sourceRepo: {
         owner: pr.head.repo.full_name.split("/")[0],
         project: pr.head.repo.full_name.split("/")[1],

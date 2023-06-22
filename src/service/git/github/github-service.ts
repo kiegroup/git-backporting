@@ -58,10 +58,23 @@ export default class GitHubService implements GitService {
           owner: backport.owner,
           repo: backport.repo,
           pull_number: (data as PullRequest).number,
-          reviewers: backport.reviewers
+          reviewers: backport.reviewers,
         });
       } catch (error) {
         this.logger.error(`Error requesting reviewers: ${error}`);
+      }
+    }
+
+    if (backport.assignees.length > 0) {
+      try {
+        await this.octokit.issues.addAssignees({
+          owner: backport.owner,
+          repo: backport.repo,
+          issue_number: (data as PullRequest).number,
+          assignees: backport.assignees,
+        });
+      } catch (error) {
+        this.logger.error(`Error setting assignees: ${error}`);
       }
     }
   }
