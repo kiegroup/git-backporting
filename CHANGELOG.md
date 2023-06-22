@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/lampajr/backporting/compare/v2.1.0...v2.2.0) (2023-06-22)
+
+
+### Features
+
+* override backporting pr fields ([#38](https://github.com/lampajr/backporting/issues/38)) ([a32e8cd](https://github.com/lampajr/backporting/commit/a32e8cd34c757358668fe8f88f6d1733d3fa8391))
+
 ## [2.1.0](https://github.com/lampajr/backporting/compare/v2.0.1...v2.1.0) (2023-06-20)
 
 
