@@ -13,4 +13,7 @@ export interface Args {
   body?: string, // backport pr title, default original pr body prefixed by bodyPrefix
   bodyPrefix?: string, // backport pr body prefix, default `backport <original-pr-link>`
   bpBranchName?: string, // backport pr branch name, default computed from commit
+  reviewers?: string[], // backport pr reviewers
+  assignees?: string[], // backport pr assignees
+  inheritReviewers: boolean, // if true and reviewers == [] then inherit reviewers from original pr
 }

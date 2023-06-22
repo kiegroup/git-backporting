@@ -16,13 +16,24 @@ export default class GHAArgsParser implements ArgsParser {
 
   public getOrDefault(key: string, defaultValue: string): string {
     const value = getInput(key);
-    return (value !== undefined && value !== "") ? value : defaultValue;
+    return value !== "" ? value : defaultValue;
+  }
+
+  public getAsCommaSeparatedList(key: string): string[] {
+    // trim the value
+    const value: string = (getInput(key) ?? "").trim();
+    return value !== "" ? value.replace(/\s/g, "").split(",") : []; 
+  }
+
+  public getAsBooleanOrDefault(key: string, defaultValue: boolean): boolean {
+    const value = getInput(key).trim();
+    return value !== "" ? value.toLowerCase() === "true" : defaultValue;
   }
 
   parse(): Args {
     return {
-      dryRun: getInput("dry-run") === "true",
-      auth: getInput("auth") ? getInput("auth") : "",
+      dryRun: this.getAsBooleanOrDefault("dry-run", false),
+      auth: getInput("auth"),
       pullRequest: getInput("pull-request"),
       targetBranch: getInput("target-branch"),
       folder: this.getOrUndefined("folder"),
@@ -32,6 +43,9 @@ export default class GHAArgsParser implements ArgsParser {
       body: this.getOrUndefined("body"),
       bodyPrefix: this.getOrUndefined("body-prefix"),
       bpBranchName: this.getOrUndefined("bp-branch-name"),
+      reviewers: this.getAsCommaSeparatedList("reviewers"),
+      assignees: this.getAsCommaSeparatedList("assignees"),
+      inheritReviewers: !this.getAsBooleanOrDefault("no-inherit-reviewers", false),
     };
   }
 

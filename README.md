@@ -62,6 +62,9 @@ This toold comes with some inputs that allow users to override the default behav
 | Title       | --title        | N            | Backporting pull request title                                                       | "{original-pr-title}"       |
 | Body       | --body        | N            | Backporting pull request body                                                           | "{original-pr-body}"       |
 | Body Prefix       | --body-prefix        | N            | Prefix to the backporting pull request body                                                          | "Backport: {original-pr-link}"       |
+| Reviewers       | --reviewers        | N            | Backporting pull request comma-separated reviewers list                                                           | []       |
+| Assignees       | --assignes        | N            | Backporting pull request comma-separated assignees list                                                           | []       |
+| No Reviewers Inheritance       | --no-inherit-reviewers        | N            | Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request                                                           | false       |
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 

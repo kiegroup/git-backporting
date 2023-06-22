@@ -1,6 +1,6 @@
 import { Args } from "@bp/service/args/args.types";
 import GHAArgsParser from "@bp/service/args/gha/gha-args-parser";
-import { spyGetInput } from "../../../support/utils";
+import { spyGetInput, expectArrayEqual } from "../../../support/utils";
 
 describe("gha args parser", () => {
   let parser: GHAArgsParser;
@@ -25,10 +25,21 @@ describe("gha args parser", () => {
   test("getOrUndefined", () => {
     spyGetInput({
       "present": "value",
-      "empty": ""
+      "empty": "",
     });
     expect(parser.getOrUndefined("empty")).toStrictEqual(undefined);
     expect(parser.getOrUndefined("present")).toStrictEqual("value");
+  });
+
+  test("getAsCommaSeparatedList", () => {
+    spyGetInput({
+      "present": "value1, value2 ,   value3",
+      "empty": "",
+      "blank": "   ",
+    });
+    expectArrayEqual(parser.getAsCommaSeparatedList("present")!, ["value1", "value2", "value3"]);
+    expect(parser.getAsCommaSeparatedList("empty")).toStrictEqual([]);
+    expect(parser.getAsCommaSeparatedList("blank")).toStrictEqual([]);
   });
 
   test("valid execution [default]", () => {
@@ -47,8 +58,9 @@ describe("gha args parser", () => {
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
     expect(args.title).toEqual(undefined);
     expect(args.body).toEqual(undefined);
-    expect(args.bodyPrefix).toEqual(undefined);
-    expect(args.bpBranchName).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
   });
 
   test("valid execution [override]", () => {
@@ -63,6 +75,9 @@ describe("gha args parser", () => {
       "body": "New Body",
       "body-prefix": "New Body Prefix",
       "bp-branch-name": "bp_branch_name",
+      "reviewers": "al , john,  jack",
+      "assignees": " pippo,pluto, paperino",
+      "no-inherit-reviewers": "true",
     });
 
     const args: Args = parser.parse();
@@ -77,6 +92,9 @@ describe("gha args parser", () => {
     expect(args.body).toEqual("New Body");
     expect(args.bodyPrefix).toEqual("New Body Prefix");
     expect(args.bpBranchName).toEqual("bp_branch_name");
+    expectArrayEqual(["al", "john", "jack"], args.reviewers!);
+    expectArrayEqual(["pippo", "pluto", "paperino"], args.assignees!);
+    expect(args.inheritReviewers).toEqual(false);
   });
 
 });

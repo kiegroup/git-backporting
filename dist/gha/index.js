@@ -41,12 +41,21 @@ class GHAArgsParser {
     }
     getOrDefault(key, defaultValue) {
         const value = (0, core_1.getInput)(key);
-        return (value !== undefined && value !== "") ? value : defaultValue;
+        return value !== "" ? value : defaultValue;
+    }
+    getAsCommaSeparatedList(key) {
+        // trim the value
+        const value = ((0, core_1.getInput)(key) ?? "").trim();
+        return value !== "" ? value.replace(/\s/g, "").split(",") : [];
+    }
+    getAsBooleanOrDefault(key, defaultValue) {
+        const value = (0, core_1.getInput)(key).trim();
+        return value !== "" ? value.toLowerCase() === "true" : defaultValue;
     }
     parse() {
         return {
-            dryRun: (0, core_1.getInput)("dry-run") === "true",
-            auth: (0, core_1.getInput)("auth") ? (0, core_1.getInput)("auth") : "",
+            dryRun: this.getAsBooleanOrDefault("dry-run", false),
+            auth: (0, core_1.getInput)("auth"),
             pullRequest: (0, core_1.getInput)("pull-request"),
             targetBranch: (0, core_1.getInput)("target-branch"),
             folder: this.getOrUndefined("folder"),
@@ -56,6 +65,9 @@ class GHAArgsParser {
             body: this.getOrUndefined("body"),
             bodyPrefix: this.getOrUndefined("body-prefix"),
             bpBranchName: this.getOrUndefined("bp-branch-name"),
+            reviewers: this.getAsCommaSeparatedList("reviewers"),
+            assignees: this.getAsCommaSeparatedList("assignees"),
+            inheritReviewers: !this.getAsBooleanOrDefault("no-inherit-reviewers", false),
         };
     }
 }
@@ -144,10 +156,13 @@ class PullRequestConfigsParser extends configs_parser_1.default {
      * @returns {GitPullRequest}
      */
     getDefaultBackportPullRequest(originalPullRequest, args) {
-        const reviewers = [];
-        reviewers.push(originalPullRequest.author);
-        if (originalPullRequest.mergedBy) {
-            reviewers.push(originalPullRequest.mergedBy);
+        const reviewers = args.reviewers ?? [];
+        if (reviewers.length == 0 && args.inheritReviewers) {
+            // inherit only if args.reviewers is empty and args.inheritReviewers set to true
+            reviewers.push(originalPullRequest.author);
+            if (originalPullRequest.mergedBy) {
+                reviewers.push(originalPullRequest.mergedBy);
+            }
         }
         const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
         const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
@@ -156,6 +171,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
             body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
+            assignees: [...new Set(args.assignees)],
             targetRepo: originalPullRequest.targetRepo,
             sourceRepo: originalPullRequest.targetRepo,
             branchName: args.bpBranchName,
@@ -375,6 +391,7 @@ class GitHubMapper {
             merged: pr.merged ?? false,
             mergedBy: pr.merged_by?.login,
             reviewers: pr.requested_reviewers.filter(r => "login" in r).map((r => r?.login)),
+            assignees: pr.assignees.filter(r => "login" in r).map(r => r.login),
             sourceRepo: {
                 owner: pr.head.repo.full_name.split("/")[0],
                 project: pr.head.repo.full_name.split("/")[1],
@@ -446,11 +463,24 @@ class GitHubService {
                     owner: backport.owner,
                     repo: backport.repo,
                     pull_number: data.number,
-                    reviewers: backport.reviewers
+                    reviewers: backport.reviewers,
                 });
             }
             catch (error) {
                 this.logger.error(`Error requesting reviewers: ${error}`);
+            }
+        }
+        if (backport.assignees.length > 0) {
+            try {
+                await this.octokit.issues.addAssignees({
+                    owner: backport.owner,
+                    repo: backport.repo,
+                    issue_number: data.number,
+                    assignees: backport.assignees,
+                });
+            }
+            catch (error) {
+                this.logger.error(`Error setting assignees: ${error}`);
             }
         }
     }
@@ -679,7 +709,8 @@ class Runner {
             base: configs.targetBranch,
             title: backportPR.title,
             body: backportPR.body,
-            reviewers: backportPR.reviewers
+            reviewers: backportPR.reviewers,
+            assignees: backportPR.assignees,
         };
         if (!configs.dryRun) {
             // 8. push the new branch to origin

@@ -44,10 +44,13 @@ export default class PullRequestConfigsParser extends ConfigsParser {
    * @returns {GitPullRequest}
    */
   private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, args: Args): GitPullRequest {
-    const reviewers = [];
-    reviewers.push(originalPullRequest.author);
-    if (originalPullRequest.mergedBy) {
-      reviewers.push(originalPullRequest.mergedBy);  
+    const reviewers = args.reviewers ?? [];
+    if (reviewers.length == 0 && args.inheritReviewers) {
+      // inherit only if args.reviewers is empty and args.inheritReviewers set to true
+      reviewers.push(originalPullRequest.author);
+      if (originalPullRequest.mergedBy) {
+        reviewers.push(originalPullRequest.mergedBy);  
+      }
     }
 
     const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
@@ -58,6 +61,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
       body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],
+      assignees: [...new Set(args.assignees)],
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
       branchName: args.bpBranchName,

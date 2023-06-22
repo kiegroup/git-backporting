@@ -15,3 +15,13 @@ export const spyGetInput = (obj: any) => {
     return obj[name] ?? "";
   });
 };
+
+/**
+ * Check array equality performing sort on both sides.
+ * DO NOT USE this if ordering matters
+ * @param actual 
+ * @param expected 
+ */
+export const expectArrayEqual = (actual: unknown[], expected: unknown[]) => {
+  expect(actual.sort()).toEqual(expected.sort());
+};

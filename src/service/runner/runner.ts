@@ -107,7 +107,8 @@ export default class Runner {
       base: configs.targetBranch,
       title: backportPR.title,
       body: backportPR.body,
-      reviewers: backportPR.reviewers
+      reviewers: backportPR.reviewers,
+      assignees: backportPR.assignees,
     };
 
     if (!configs.dryRun) {

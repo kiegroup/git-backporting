@@ -35,6 +35,16 @@ inputs:
   bp-branch-name:
     description: "Backporting PR branch name. Default is auto-generated from commit."
     required: false
+  reviewers:
+    description: "Comma separated list of reviewers for the backporting pull request."
+    required: false
+  assignees:
+    description: "Comma separated list of reviewers for the backporting pull request."
+    required: false
+  inherith-reviewers:
+    description: "If enabled and reviewers option is empty then inherit them from original pull request."
+    required: false
+    default: "true"
 
 runs:
   using: node16

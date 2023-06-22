@@ -1,6 +1,6 @@
 import { Args } from "@bp/service/args/args.types";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
-import { addProcessArgs, resetProcessArgs } from "../../../support/utils";
+import { addProcessArgs, resetProcessArgs, expectArrayEqual } from "../../../support/utils";
 
 describe("cli args parser", () => {
   let parser: CLIArgsParser;
@@ -33,6 +33,9 @@ describe("cli args parser", () => {
     expect(args.body).toEqual(undefined);
     expect(args.bodyPrefix).toEqual(undefined);
     expect(args.bpBranchName).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
   });
 
   test("valid execution [default, long]", () => {
@@ -55,6 +58,9 @@ describe("cli args parser", () => {
     expect(args.body).toEqual(undefined);
     expect(args.bodyPrefix).toEqual(undefined);
     expect(args.bpBranchName).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
   });
 
   test("valid execution [override, short]", () => {
@@ -84,6 +90,9 @@ describe("cli args parser", () => {
     expect(args.body).toEqual(undefined);
     expect(args.bodyPrefix).toEqual(undefined);
     expect(args.bpBranchName).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
   });
 
   test("valid execution [override, long]", () => {
@@ -107,6 +116,11 @@ describe("cli args parser", () => {
       "New Body Prefix",
       "--bp-branch-name",
       "bp_branch_name",
+      "--reviewers",
+      "al , john,  jack",
+      "--assignees",
+      " pippo,pluto, paperino",
+      "--no-inherit-reviewers",
     ]);
 
     const args: Args = parser.parse();
@@ -121,6 +135,9 @@ describe("cli args parser", () => {
     expect(args.body).toEqual("New Body");
     expect(args.bodyPrefix).toEqual("New Body Prefix");
     expect(args.bpBranchName).toEqual("bp_branch_name");
+    expectArrayEqual(["al", "john", "jack"], args.reviewers!);
+    expectArrayEqual(["pippo", "pluto", "paperino"], args.assignees!);
+    expect(args.inheritReviewers).toEqual(false);
   });
 
 });
