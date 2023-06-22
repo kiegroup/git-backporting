@@ -21,11 +21,14 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     return {
       dryRun: args.dryRun,
       auth: args.auth,
-      author: args.author ?? pr.author,
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
       targetBranch: args.targetBranch,
       originalPullRequest: pr,
-      backportPullRequest: this.getDefaultBackportPullRequest(pr, args)
+      backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
+      git: {
+        user: args.gitUser,
+        email: args.gitEmail,
+      }
     };
   }
   
@@ -51,7 +54,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
     
     return {
-      author: originalPullRequest.author,
+      author: args.gitUser,
       title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
       body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],

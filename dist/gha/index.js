@@ -35,9 +35,13 @@ class GHAArgsParser {
      * @param key input key
      * @returns the value or undefined
      */
-    _getOrUndefined(key) {
+    getOrUndefined(key) {
         const value = (0, core_1.getInput)(key);
         return value !== "" ? value : undefined;
+    }
+    getOrDefault(key, defaultValue) {
+        const value = (0, core_1.getInput)(key);
+        return (value !== undefined && value !== "") ? value : defaultValue;
     }
     parse() {
         return {
@@ -45,11 +49,13 @@ class GHAArgsParser {
             auth: (0, core_1.getInput)("auth") ? (0, core_1.getInput)("auth") : "",
             pullRequest: (0, core_1.getInput)("pull-request"),
             targetBranch: (0, core_1.getInput)("target-branch"),
-            folder: this._getOrUndefined("folder"),
-            title: this._getOrUndefined("title"),
-            body: this._getOrUndefined("body"),
-            bodyPrefix: this._getOrUndefined("body-prefix"),
-            bpBranchName: this._getOrUndefined("bp-branch-name"),
+            folder: this.getOrUndefined("folder"),
+            gitUser: this.getOrDefault("git-user", "GitHub"),
+            gitEmail: this.getOrDefault("git-email", "noreply@github.com"),
+            title: this.getOrUndefined("title"),
+            body: this.getOrUndefined("body"),
+            bodyPrefix: this.getOrUndefined("body-prefix"),
+            bpBranchName: this.getOrUndefined("bp-branch-name"),
         };
     }
 }
@@ -117,11 +123,14 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         return {
             dryRun: args.dryRun,
             auth: args.auth,
-            author: args.author ?? pr.author,
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             targetBranch: args.targetBranch,
             originalPullRequest: pr,
-            backportPullRequest: this.getDefaultBackportPullRequest(pr, args)
+            backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
+            git: {
+                user: args.gitUser,
+                email: args.gitEmail,
+            }
         };
     }
     getDefaultFolder() {
@@ -143,7 +152,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
         const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
         return {
-            author: originalPullRequest.author,
+            author: args.gitUser,
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
             body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
@@ -176,10 +185,10 @@ const fs_1 = __importDefault(__nccwpck_require__(7147));
  * Command line git commands executor service
  */
 class GitCLIService {
-    constructor(auth, author) {
+    constructor(auth, gitData) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.auth = auth;
-        this.author = author;
+        this.gitData = gitData;
     }
     /**
      * Return a pre-configured SimpleGit instance able to execute commands from current
@@ -189,15 +198,15 @@ class GitCLIService {
      */
     git(cwd) {
         const gitConfig = { ...(cwd ? { baseDir: cwd } : {}) };
-        return (0, simple_git_1.default)(gitConfig).addConfig("user.name", this.author).addConfig("user.email", "noreply@github.com");
+        return (0, simple_git_1.default)(gitConfig).addConfig("user.name", this.gitData.user).addConfig("user.email", this.gitData.email);
     }
     /**
      * Update the provided remote URL by adding the auth token if not empty
      * @param remoteURL remote link, e.g., https://github.com/lampajr/backporting-example.git
      */
     remoteWithAuth(remoteURL) {
-        if (this.auth && this.author) {
-            return remoteURL.replace("://", `://${this.author}:${this.auth}@`);
+        if (this.auth && this.gitData.user) {
+            return remoteURL.replace("://", `://${this.gitData.user}:${this.auth}@`);
         }
         // return remote as it is
         return remoteURL;
@@ -648,7 +657,7 @@ class Runner {
         const originalPR = configs.originalPullRequest;
         const backportPR = configs.backportPullRequest;
         // start local git operations
-        const git = new git_cli_1.default(configs.auth, configs.author);
+        const git = new git_cli_1.default(configs.auth, configs.git);
         // 4. clone the repository
         await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
         // 5. create new branch from target one and checkout

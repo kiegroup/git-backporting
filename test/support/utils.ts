@@ -12,6 +12,6 @@ export const resetProcessArgs = () => {
 export const spyGetInput = (obj: any) => {
   const mock = jest.spyOn(core, "getInput");
   mock.mockImplementation((name: string) : string => {
-    return obj[name];
+    return obj[name] ?? "";
   });
 };

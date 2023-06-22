@@ -69,7 +69,10 @@ afterAll(async () => {
 
 beforeEach(() => {
   // create a fresh instance of git before each test
-  git = new GitCLIService("", "author");
+  git = new GitCLIService("", {
+    user: "user",
+    email: "user@email.com"
+  });
 });
 
 describe("git cli service", () => {

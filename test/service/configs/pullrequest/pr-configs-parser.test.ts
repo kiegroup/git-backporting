@@ -33,13 +33,18 @@ describe("pull request config parser", () => {
       dryRun: false,
       auth: "",
       pullRequest: mergedPRUrl,
-      targetBranch: "prod"
+      targetBranch: "prod",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com"
     };
 
     const configs: Configs = await parser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(false);
-    expect(configs.author).toEqual("gh-user");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
     expect(configs.auth).toEqual("");
     expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
@@ -68,7 +73,7 @@ describe("pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "gh-user",
+      author: "GitHub",
       url: undefined,
       htmlUrl: undefined,
       title: "[prod] PR Title",
@@ -96,7 +101,9 @@ describe("pull request config parser", () => {
       auth: "whatever",
       pullRequest: mergedPRUrl,
       targetBranch: "prod",
-      folder: "/tmp/test"
+      folder: "/tmp/test",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com"
     };
 
     const configs: Configs = await parser.parseAndValidate(args);
@@ -105,6 +112,10 @@ describe("pull request config parser", () => {
     expect(configs.auth).toEqual("whatever");
     expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual("/tmp/test");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
   });
 
   test("override author", async () => {
@@ -113,7 +124,8 @@ describe("pull request config parser", () => {
       auth: "whatever",
       pullRequest: mergedPRUrl,
       targetBranch: "prod",
-      author: "another-user"
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com"
     };
 
     const configs: Configs = await parser.parseAndValidate(args);
@@ -121,7 +133,10 @@ describe("pull request config parser", () => {
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
     expect(configs.targetBranch).toEqual("prod");
-    expect(configs.author).toEqual("another-user");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
   });
 
   test("still open pull request", async () => {
@@ -129,7 +144,9 @@ describe("pull request config parser", () => {
       dryRun: true,
       auth: "whatever",
       pullRequest: openPRUrl,
-      targetBranch: "prod"
+      targetBranch: "prod",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com"
     };
 
     const configs: Configs = await parser.parseAndValidate(args);
@@ -137,7 +154,10 @@ describe("pull request config parser", () => {
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
     expect(configs.targetBranch).toEqual("prod");
-    expect(configs.author).toEqual("gh-user");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
     expect(configs.originalPullRequest).toEqual({
       number: 4444,
       author: "gh-user",
@@ -171,7 +191,9 @@ describe("pull request config parser", () => {
       dryRun: true,
       auth: "whatever",
       pullRequest: notMergedPRUrl,
-      targetBranch: "prod"
+      targetBranch: "prod",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com"
     };
 
     expect(async () => await parser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
@@ -183,6 +205,8 @@ describe("pull request config parser", () => {
       auth: "",
       pullRequest: mergedPRUrl,
       targetBranch: "prod",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
       title: "New Title",
       body: "New Body",
       bodyPrefix: "New Body Prefix -",
@@ -191,7 +215,10 @@ describe("pull request config parser", () => {
     const configs: Configs = await parser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(false);
-    expect(configs.author).toEqual("gh-user");
+    expect(configs.git).toEqual({
+      user: "Me",
+      email: "me@email.com"
+    });
     expect(configs.auth).toEqual("");
     expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
@@ -221,7 +248,7 @@ describe("pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "gh-user",
+      author: "Me",
       url: undefined,
       htmlUrl: undefined,
       title: "New Title",

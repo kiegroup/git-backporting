@@ -24,7 +24,8 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual("");
-    expect(args.author).toEqual(undefined);
+    expect(args.gitUser).toEqual("GitHub");
+    expect(args.gitEmail).toEqual("noreply@github.com");
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
@@ -45,7 +46,8 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual("");
-    expect(args.author).toEqual(undefined);
+    expect(args.gitUser).toEqual("GitHub");
+    expect(args.gitEmail).toEqual("noreply@github.com");
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
@@ -63,13 +65,18 @@ describe("cli args parser", () => {
       "-tb",
       "target",
       "-pr",
-      "https://localhost/whatever/pulls/1"
+      "https://localhost/whatever/pulls/1",
+      "-gu",
+      "Me",
+      "-ge",
+      "me@email.com",
     ]);
 
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("bearer-token");
-    expect(args.author).toEqual(undefined);
+    expect(args.gitUser).toEqual("Me");
+    expect(args.gitEmail).toEqual("me@email.com");
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
@@ -88,6 +95,10 @@ describe("cli args parser", () => {
       "target",
       "--pull-request",
       "https://localhost/whatever/pulls/1",
+      "--git-user",
+      "Me",
+      "--git-email",
+      "me@email.com",
       "--title",
       "New Title",
       "--body",
@@ -101,7 +112,8 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("bearer-token");
-    expect(args.author).toEqual(undefined);
+    expect(args.gitUser).toEqual("Me");
+    expect(args.gitEmail).toEqual("me@email.com");
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");

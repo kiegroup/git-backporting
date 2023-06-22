@@ -14,6 +14,22 @@ describe("gha args parser", () => {
     jest.clearAllMocks();
   });
 
+  test("getOrDefault", () => {
+    spyGetInput({
+      "present": "value"
+    });
+    expect(parser.getOrDefault("not-present", "default")).toStrictEqual("default");
+    expect(parser.getOrDefault("present", "default")).toStrictEqual("value");
+  });
+
+  test("getOrUndefined", () => {
+    spyGetInput({
+      "present": "value",
+      "empty": ""
+    });
+    expect(parser.getOrUndefined("empty")).toStrictEqual(undefined);
+    expect(parser.getOrUndefined("present")).toStrictEqual("value");
+  });
 
   test("valid execution [default]", () => {
     spyGetInput({
@@ -24,7 +40,8 @@ describe("gha args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual("");
-    expect(args.author).toEqual(undefined);
+    expect(args.gitUser).toEqual("GitHub");
+    expect(args.gitEmail).toEqual("noreply@github.com");
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
@@ -40,6 +57,8 @@ describe("gha args parser", () => {
       "auth": "bearer-token",
       "target-branch": "target",
       "pull-request": "https://localhost/whatever/pulls/1",
+      "git-user": "Me",
+      "git-email": "me@email.com",
       "title": "New Title",
       "body": "New Body",
       "body-prefix": "New Body Prefix",
@@ -49,7 +68,8 @@ describe("gha args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("bearer-token");
-    expect(args.author).toEqual(undefined);
+    expect(args.gitUser).toEqual("Me");
+    expect(args.gitEmail).toEqual("me@email.com");
     expect(args.folder).toEqual(undefined);
     expect(args.targetBranch).toEqual("target");
     expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");

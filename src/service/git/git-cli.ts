@@ -2,6 +2,7 @@ import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import simpleGit, { SimpleGit } from "simple-git";
 import fs from "fs";
+import { LocalGit } from "@bp/service/configs/configs.types";
 
 /**
  * Command line git commands executor service
@@ -10,12 +11,12 @@ export default class GitCLIService {
 
   private readonly logger: LoggerService;
   private readonly auth: string;
-  private readonly author: string;
+  private readonly gitData: LocalGit;
 
-  constructor(auth: string, author: string) {
+  constructor(auth: string, gitData: LocalGit) {
     this.logger = LoggerServiceFactory.getLogger();
     this.auth  = auth;
-    this.author = author;
+    this.gitData = gitData;
   }
 
   /**
@@ -26,7 +27,7 @@ export default class GitCLIService {
    */
   private git(cwd?: string): SimpleGit {
     const gitConfig = { ...(cwd ? { baseDir: cwd } : {})};
-    return simpleGit(gitConfig).addConfig("user.name", this.author).addConfig("user.email", "noreply@github.com");
+    return simpleGit(gitConfig).addConfig("user.name", this.gitData.user).addConfig("user.email", this.gitData.email);
   }
 
   /**
@@ -34,8 +35,8 @@ export default class GitCLIService {
    * @param remoteURL remote link, e.g., https://github.com/lampajr/backporting-example.git
    */
   private remoteWithAuth(remoteURL: string): string {
-    if (this.auth && this.author) {
-      return remoteURL.replace("://", `://${this.author}:${this.auth}@`);
+    if (this.auth && this.gitData.user) {
+      return remoteURL.replace("://", `://${this.gitData.user}:${this.auth}@`);
     }
 
     // return remote as it is
