@@ -12,8 +12,8 @@ export interface GitPullRequest {
   assignees: string[],
   targetRepo: GitRepository,
   sourceRepo: GitRepository,
-  nCommits: number, // number of commits in the pr
-  commits: string[], // merge commit or last one
+  nCommits?: number, // number of commits in the pr
+  commits?: string[], // merge commit or last one
   branchName?: string,
 }
 

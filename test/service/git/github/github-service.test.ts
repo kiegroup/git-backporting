@@ -10,7 +10,7 @@ describe("github service", () => {
 
   beforeAll(() => {
     // init git service
-    GitServiceFactory.init(GitServiceType.GITHUB, "whatever");
+    GitServiceFactory.getOrCreate(GitServiceType.GITHUB, "whatever");
   });
 
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe("github service", () => {
       cloneUrl: "https://github.com/owner/reponame.git"
     });
     expect(res.title).toBe("PR Title");
-    expect(res.commits.length).toBe(1);
+    expect(res.commits!.length).toBe(1);
     expect(res.commits).toEqual(["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]);
   });
 

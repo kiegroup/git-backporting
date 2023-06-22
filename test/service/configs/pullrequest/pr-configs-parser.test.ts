@@ -15,7 +15,7 @@ describe("pull request config parser", () => {
   let parser: PullRequestConfigsParser;
 
   beforeAll(() => {
-    GitServiceFactory.init(GitServiceType.GITHUB, "whatever");
+    GitServiceFactory.getOrCreate(GitServiceType.GITHUB, "whatever");
   });
 
   beforeEach(() => {
@@ -95,8 +95,6 @@ describe("pull request config parser", () => {
         cloneUrl: "https://github.com/owner/reponame.git"
       },
       bpBranchName: undefined,
-      nCommits: 0,
-      commits: []
     });
   });
 
@@ -289,8 +287,6 @@ describe("pull request config parser", () => {
         cloneUrl: "https://github.com/owner/reponame.git"
       },
       bpBranchName: undefined,
-      nCommits: 0,
-      commits: []
     });
   });
 
@@ -365,8 +361,6 @@ describe("pull request config parser", () => {
         cloneUrl: "https://github.com/owner/reponame.git"
       },
       bpBranchName: undefined,
-      nCommits: 0,
-      commits: []
     });
   });
 
@@ -441,8 +435,6 @@ describe("pull request config parser", () => {
         cloneUrl: "https://github.com/owner/reponame.git"
       },
       bpBranchName: undefined,
-      nCommits: 0,
-      commits: []
     });
   });
 });

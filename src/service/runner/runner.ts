@@ -42,8 +42,6 @@ export default class Runner {
    * Entry point invoked by the command line or gha
    */
   async run(): Promise<void> {
-    this.logger.info("Starting process.");
-
     try {
       await this.execute();
 
@@ -71,7 +69,7 @@ export default class Runner {
     }
 
     // 2. init git service
-    GitServiceFactory.init(this.inferRemoteGitService(args.pullRequest), args.auth);
+    GitServiceFactory.getOrCreate(this.inferRemoteGitService(args.pullRequest), args.auth);
     const gitApi: GitService = GitServiceFactory.getService();
 
     // 3. parse configs
@@ -86,7 +84,7 @@ export default class Runner {
     await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
 
     // 5. create new branch from target one and checkout
-    const backportBranch = backportPR.branchName ?? `bp-${configs.targetBranch}-${originalPR.commits.join("-")}`;
+    const backportBranch = backportPR.branchName ?? `bp-${configs.targetBranch}-${originalPR.commits!.join("-")}`;
     await git.createLocalBranch(configs.folder, backportBranch);
 
     // 6. fetch pull request remote if source owner != target owner or pull request still open
@@ -96,7 +94,7 @@ export default class Runner {
     }
 
     // 7. apply all changes to the new branch
-    for (const sha of originalPR.commits) {
+    for (const sha of originalPR.commits!) {
       await git.cherryPick(configs.folder, sha);
     }
 

@@ -65,8 +65,8 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
       branchName: args.bpBranchName,
-      nCommits: 0, // TODO: needed?
-      commits: [] // TODO needed?
+      // nCommits: 0, // not needed, but required by the 
+      // commits: [] // not needed
     };
   }
 }

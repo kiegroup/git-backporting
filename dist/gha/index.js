@@ -175,8 +175,8 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             targetRepo: originalPullRequest.targetRepo,
             sourceRepo: originalPullRequest.targetRepo,
             branchName: args.bpBranchName,
-            nCommits: 0,
-            commits: [] // TODO needed?
+            // nCommits: 0, // not needed, but required by the 
+            // commits: [] // not needed
         };
     }
 }
@@ -336,8 +336,7 @@ class GitServiceFactory {
      * @param type git management service type
      * @param auth authentication, like github token
      */
-    // TODO rename to getOrCreate
-    static init(type, auth) {
+    static getOrCreate(type, auth) {
         if (GitServiceFactory.instance) {
             GitServiceFactory.logger.warn("Git service already initialized!");
             return;
@@ -658,7 +657,6 @@ class Runner {
      * Entry point invoked by the command line or gha
      */
     async run() {
-        this.logger.info("Starting process.");
         try {
             await this.execute();
             this.logger.info("Process succeeded!");
@@ -680,7 +678,7 @@ class Runner {
             this.logger.warn("Dry run enabled!");
         }
         // 2. init git service
-        git_service_factory_1.default.init(this.inferRemoteGitService(args.pullRequest), args.auth);
+        git_service_factory_1.default.getOrCreate(this.inferRemoteGitService(args.pullRequest), args.auth);
         const gitApi = git_service_factory_1.default.getService();
         // 3. parse configs
         const configs = await new pr_configs_parser_1.default().parseAndValidate(args);
