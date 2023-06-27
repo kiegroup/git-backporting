@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/lampajr/backporting/compare/v2.2.0...v2.2.1) (2023-06-27)
+
+
+### Bug Fixes
+
+* fix gha no-inherit-reviewers input ([8b586cc](https://github.com/lampajr/backporting/commit/8b586ccdfe0e6b90ed41ea8a5eecdbc24893fe25))
+
 ## [2.2.0](https://github.com/lampajr/backporting/compare/v2.1.0...v2.2.0) (2023-06-22)
 
 
