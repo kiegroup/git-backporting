@@ -1,12 +1,12 @@
 import { Args } from "@bp/service/args/args.types";
 import { Configs } from "@bp/service/configs/configs.types";
 import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs-parser";
-import GitServiceFactory from "@bp/service/git/git-service-factory";
-import { GitServiceType } from "@bp/service/git/git.types";
-import { setupMoctokit } from "../../../support/moctokit/moctokit-support";
-import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner } from "../../../support/moctokit/moctokit-data";
+import GitClientFactory from "@bp/service/git/git-client-factory";
+import { GitClientType } from "@bp/service/git/git.types";
+import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
+import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner } from "../../../support/mock/github-data";
 
-describe("pull request config parser", () => {
+describe("github pull request config parser", () => {
 
   const mergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`;
   const openPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${openPullRequestFixture.number}`;
@@ -15,11 +15,12 @@ describe("pull request config parser", () => {
   let parser: PullRequestConfigsParser;
 
   beforeAll(() => {
-    GitServiceFactory.getOrCreate(GitServiceType.GITHUB, "whatever");
+    GitClientFactory.reset();
+    GitClientFactory.getOrCreate(GitClientType.GITHUB, "whatever", "http://localhost/api/v3");
   });
 
   beforeEach(() => {
-    setupMoctokit();
+    mockGitHubClient("http://localhost/api/v3");
 
     parser = new PullRequestConfigsParser();
   });
@@ -124,30 +125,6 @@ describe("pull request config parser", () => {
     });
   });
 
-  test("override author", async () => {
-    const args: Args = {
-      dryRun: true,
-      auth: "whatever",
-      pullRequest: mergedPRUrl,
-      targetBranch: "prod",
-      gitUser: "GitHub",
-      gitEmail: "noreply@github.com",
-      reviewers: [],
-      assignees: [],
-      inheritReviewers: true,
-    };
-
-    const configs: Configs = await parser.parseAndValidate(args);
-
-    expect(configs.dryRun).toEqual(true);
-    expect(configs.auth).toEqual("whatever");
-    expect(configs.targetBranch).toEqual("prod");
-    expect(configs.git).toEqual({
-      user: "GitHub",
-      email: "noreply@github.com"
-    });
-  });
-
   test("still open pull request", async () => {
     const args: Args = {
       dryRun: true,
@@ -177,7 +154,7 @@ describe("pull request config parser", () => {
       htmlUrl: "https://github.com/owner/reponame/pull/4444",
       state: "open",
       merged: false,
-      mergedBy: "that-s-a-user",
+      mergedBy: undefined,
       title: "PR Title",
       body: "Please review and merge",
       reviewers: ["gh-user"],

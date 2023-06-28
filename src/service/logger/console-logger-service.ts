@@ -3,10 +3,12 @@ import LoggerService from "@bp/service/logger/logger-service";
 
 export default class ConsoleLoggerService implements LoggerService {
 
-  private readonly logger;
+  private readonly logger: Logger;
+  private readonly verbose: boolean;
 
-  constructor() {
+  constructor(verbose = true) {
     this.logger = new Logger();
+    this.verbose = verbose;
   }
   
   trace(message: string): void {
@@ -14,7 +16,9 @@ export default class ConsoleLoggerService implements LoggerService {
   }
   
   debug(message: string): void {
-    this.logger.log("[DEBUG]", message);
+    if (this.verbose) {
+      this.logger.log("[DEBUG]", message);
+    }
   }
   
   info(message: string): void {

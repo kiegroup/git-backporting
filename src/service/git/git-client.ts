@@ -4,7 +4,7 @@ import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
  * Git management service interface, which provides a common API for interacting 
  * with several git management services like GitHub, Gitlab or Bitbucket.
  */
- export default interface GitService {
+ export default interface GitClient {
 
   // READ
 
@@ -29,6 +29,7 @@ import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
   /**
    * Create a new pull request on the underneath git service
    * @param backport backport pull request data
+   * @returns {Promise<string>} the pull request url
    */
-  createPullRequest(backport: BackportPullRequest): Promise<void>;
+  createPullRequest(backport: BackportPullRequest): Promise<string>;
 }

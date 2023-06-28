@@ -1,19 +1,19 @@
 import ArgsParser from "@bp/service/args/args-parser";
 import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
-import GitHubService from "@bp/service/git/github/github-service";
+import GitHubClient from "@bp/service/git/github/github-client";
 import GHAArgsParser from "@bp/service/args/gha/gha-args-parser";
 import { spyGetInput } from "../../support/utils";
-import { setupMoctokit } from "../../support/moctokit/moctokit-support";
+import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
 
 jest.mock("@bp/service/git/git-cli");
-jest.spyOn(GitHubService.prototype, "createPullRequest");
+jest.spyOn(GitHubClient.prototype, "createPullRequest");
 
 let parser: ArgsParser;
 let runner: Runner;
 
 beforeEach(() => {
-  setupMoctokit();
+  mockGitHubClient();
 
   // create GHA arguments parser
   parser = new GHAArgsParser();
@@ -51,7 +51,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitHubService.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
   });
 
   test("without dry run", async () => {
@@ -79,8 +79,8 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
 
-    expect(GitHubService.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubService.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
@@ -127,15 +127,15 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-91748965051fae1330ad58d15cf694e103267c87");
 
-    expect(GitHubService.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubService.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-91748965051fae1330ad58d15cf694e103267c87", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/4444"),
-        reviewers: ["gh-user", "that-s-a-user"],
+        reviewers: ["gh-user"],
         assignees: [],
       }
     );
@@ -172,8 +172,8 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
 
-    expect(GitHubService.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubService.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp_branch_name", 
@@ -218,8 +218,8 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
 
-    expect(GitHubService.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubService.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp_branch_name", 

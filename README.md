@@ -15,7 +15,7 @@
 
 ---
 
-**BPer** is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* [1] pull requests in an automated way. This tool also comes with a predefined GitHub action in order to make CI/CD integration easier for all users.
+**Git Backporter**, also referenced as **bper**, is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* [1] pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way. This tool also comes with a predefined *GitHub* action in order to make CI/CD integration easier for all users.
 
 [1] *backporting* is an action aiming to move a change (usually a commit) from a branch (usually the main one) to another one, which is generally referring to a still maintained release branch. Keeping it simple: it is about to move a specific change or a set of them from one branch to another.
 
@@ -23,11 +23,11 @@ Table of content
 ----------------
 
 * **[Usage](#usage)**
+* **[Supported Git Services](#supported-git-services)**
 * **[GitHub Action](#github-action)**
 * **[Limitations](#limitations)**
 * **[Contributions](#contributing)**
 * **[License](#license)**
-
 
 ## Usage
 
@@ -40,7 +40,7 @@ $ npm install -g @lampajr/bper
 Then it can be used as any other command line tool:
 
 ```bash
-$ bper -tb <branch> -pr <pull-request-url> -a <github-token> [-f <your-folder>]
+$ bper -tb <branch> -pr <pull-request-url> -a <git-token> [-f <your-folder>]
 ```
 
 ### Inputs
@@ -66,10 +66,18 @@ This toold comes with some inputs that allow users to override the default behav
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
+## Supported Git Services
+
+Right now **bper** supports the following git management services:
+ * ***GITHUB***: Introduced since the first release of this tool (version `1.0.0`). The interaction with this system is performed using [*octokit*](https://octokit.github.io/rest.js) client library.
+
+ * ***GITLAB***: This has been introduced since version `3.0.0`, it works for both public and private *GitLab* servers. The interaction with this service is performed using plain [*axios*](https://axios-http.com) requests. The *gitlab* api version that is used to make requests is `v4`, at the moment there is no possibility to override it.
+
+> **NOTE**: by default, all gitlab requests are performed setting `rejectUnauthorized=false`, planning to make this configurable too.
 
 ## GitHub Action
 
-This action can be used in any GitHub workflow, below you can find a simple example of manually triggered workflow backporting a specific pull request (provided as input).
+This action can be used in any *GitHub* workflow, below you can find a simple example of manually triggered workflow backporting a specific pull request (provided as input).
 
 ```yml
 name: Pull Request Backporting using BPer
@@ -145,25 +153,20 @@ jobs:
 
 For a complete description of all inputs see [Inputs section](#inputs).
 
-## Limitations
+## Future Works
 
-**BPer** is in development mode, this means that it has many limitations right now. I'll try to summarize the most importan ones:
+**BPer** is still in development mode, this means that there are still many future works and extension. I'll try to summarize the most important ones:
 
-- You can backport pull requests only.
-- It only works for [GitHub](https://github.com/).
-- Integrated in GitHub Actions CI/CD only.
-
-Based on these limitations, the next **Future Works** could be the following:
 - Provide a way to backport single commit too (or a set of them), even if no original pull request is present.
-- Integrate this tool with other git management services (like GitLab and Bitbucket) to make it as generic as possible.
-- Integrate it into other CI/CD services like gitlab CI (once GitLab will be integrated as well).
-- Provide some reusable GitHub workflows.
+- Integrate this tool with other git management services (like Bitbucket) to make it as generic as possible.
+- Integrate it into other CI/CD services like gitlab CI.
+- Provide some reusable *GitHub* workflows.
 
 ## Contributing
 
 This is an open source project, and you are more than welcome to contribute :heart:!
 
-Every change must be submitted through a GitHub pull request (PR). Backporting uses continuous integration (CI). The CI runs checks against your branch after you submit the PR to ensure that your PR doesn’t introduce errors. If the CI identifies a potential problem, our friendly PR maintainers will help you resolve it.
+Every change must be submitted through a *GitHub* pull request (PR). Backporting uses continuous integration (CI). The CI runs checks against your branch after you submit the PR to ensure that your PR doesn’t introduce errors. If the CI identifies a potential problem, our friendly PR maintainers will help you resolve it.
 
 > **Note**: this project follows [git-conventional-commits](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13) standards, thanks to the [commit-msg hook](./.husky/commit-msg) you are not allowed to use commits that do not follow those standards.
 
