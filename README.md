@@ -1,5 +1,6 @@
 <h1 align="center">
-  BPER: Git Backporter </br>
+  BPER </br>
+  Git Backporter </br>
   :outbox_tray: :inbox_tray:
 </h1>
 
@@ -158,6 +159,7 @@ For a complete description of all inputs see [Inputs section](#inputs).
 Based on these limitations, the next **Future Works** could be the following:
 - Provide a way to backport single commit too (or a set of them), even if no original pull request is present.
 - Integrate this tool with other git management services (like GitLab and Bitbucket) to make it as generic as possible.
+- Integrate it into other CI/CD services like gitlab CI (once GitLab will be integrated as well).
 - Provide some reusable GitHub workflows.
 
 ## Contributing
