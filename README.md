@@ -11,9 +11,6 @@
   <a href="https://badge.fury.io/js/@lampajr%2Fbper">
     <img alt="npm version" src="https://badge.fury.io/js/@lampajr%2Fbper.svg">
   </a>
-  <a href="https://snyk.io/test/github/lampajr/backporting?targetFile=package.json">
-    <img alt="vulnerabilities" src="https://snyk.io/test/github/lampajr/backporting/badge.svg?targetFile=package.json">
-  </a>
 </p>
 
 ---
