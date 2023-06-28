@@ -54,7 +54,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     }
 
     const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
-    const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
+    const body = args.body ?? `${originalPullRequest.body}`;
     
     return {
       author: args.gitUser,
@@ -65,8 +65,6 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
       branchName: args.bpBranchName,
-      // nCommits: 0, // not needed, but required by the 
-      // commits: [] // not needed
     };
   }
 }

@@ -81,7 +81,7 @@ describe("pull request config parser", () => {
       url: undefined,
       htmlUrl: undefined,
       title: "[prod] PR Title",
-      body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).",
+      body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
       targetRepo: {

@@ -165,7 +165,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             }
         }
         const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
-        const body = args.body ?? `${originalPullRequest.body}\r\n\r\nPowered by [BPer](https://github.com/lampajr/backporting).`;
+        const body = args.body ?? `${originalPullRequest.body}`;
         return {
             author: args.gitUser,
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
@@ -175,8 +175,6 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             targetRepo: originalPullRequest.targetRepo,
             sourceRepo: originalPullRequest.targetRepo,
             branchName: args.bpBranchName,
-            // nCommits: 0, // not needed, but required by the 
-            // commits: [] // not needed
         };
     }
 }
