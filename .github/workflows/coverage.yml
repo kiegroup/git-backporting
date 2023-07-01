@@ -1,0 +1,15 @@
+name: 'test coverage on pull request'
+
+on:
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          test-script: npm test --
