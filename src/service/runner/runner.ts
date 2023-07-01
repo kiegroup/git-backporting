@@ -3,11 +3,12 @@ import { Args } from "@bp/service/args/args.types";
 import { Configs } from "@bp/service/configs/configs.types";
 import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs-parser";
 import GitCLIService from "@bp/service/git/git-cli";
-import GitService from "@bp/service/git/git-service";
-import GitServiceFactory from "@bp/service/git/git-service-factory";
-import { BackportPullRequest, GitPullRequest, GitServiceType } from "@bp/service/git/git.types";
+import GitClient from "@bp/service/git/git-client";
+import GitClientFactory from "@bp/service/git/git-client-factory";
+import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
+import { inferGitClient, inferGitApiUrl } from "@bp/service/git/git-util";
 
 /**
  * Main runner implementation, it implements the core logic flow
@@ -20,22 +21,6 @@ export default class Runner {
   constructor(parser: ArgsParser) {
     this.logger = LoggerServiceFactory.getLogger();
     this.argsParser = parser;
-  }
-
-  /**
-   * Infer the remote GIT service to interact with based on the provided 
-   * pull request URL
-   * @param prUrl provided pull request URL
-   * @returns {GitServiceType}
-   */
-  private inferRemoteGitService(prUrl: string): GitServiceType {
-    const stdPrUrl = prUrl.toLowerCase().trim();
-
-    if (stdPrUrl.includes(GitServiceType.GITHUB.toString())) {
-      return GitServiceType.GITHUB;
-    }
-
-    throw new Error(`Remote GIT service not recognixed from PR url: ${prUrl}`);
   }
 
   /**
@@ -69,10 +54,13 @@ export default class Runner {
     }
 
     // 2. init git service
-    GitServiceFactory.getOrCreate(this.inferRemoteGitService(args.pullRequest), args.auth);
-    const gitApi: GitService = GitServiceFactory.getService();
+    const gitClientType: GitClientType = inferGitClient(args.pullRequest);
+    // right now the apiVersion is set to v4
+    const apiUrl = inferGitApiUrl(args.pullRequest);
+    const gitApi: GitClient = GitClientFactory.getOrCreate(gitClientType, args.auth, apiUrl);
 
     // 3. parse configs
+    this.logger.debug("Parsing configs..");
     const configs: Configs = await new PullRequestConfigsParser().parseAndValidate(args);
     const originalPR: GitPullRequest = configs.originalPullRequest;
     const backportPR: GitPullRequest = configs.backportPullRequest;
@@ -81,19 +69,24 @@ export default class Runner {
     const git: GitCLIService = new GitCLIService(configs.auth, configs.git);
     
     // 4. clone the repository
+    this.logger.debug("Cloning repo..");
     await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
 
     // 5. create new branch from target one and checkout
+    this.logger.debug("Creating local branch..");
     const backportBranch = backportPR.branchName ?? `bp-${configs.targetBranch}-${originalPR.commits!.join("-")}`;
     await git.createLocalBranch(configs.folder, backportBranch);
 
     // 6. fetch pull request remote if source owner != target owner or pull request still open
     if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner || 
         configs.originalPullRequest.state === "open") {
-      await git.fetch(configs.folder, `pull/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+          this.logger.debug("Fetching pull request remote..");
+      const prefix = gitClientType === GitClientType.GITHUB ? "pull" : "merge-requests"; // default is for gitlab
+      await git.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
     }
 
     // 7. apply all changes to the new branch
+    this.logger.debug("Cherry picking commits..");
     for (const sha of originalPR.commits!) {
       await git.cherryPick(configs.folder, sha);
     }
@@ -114,7 +107,8 @@ export default class Runner {
       await git.push(configs.folder, backportBranch);
 
       // 9. create pull request new branch -> target branch (using octokit)
-      await gitApi.createPullRequest(backport);
+      const prUrl = await gitApi.createPullRequest(backport);
+      this.logger.info(`Pull request created: ${prUrl}`);
 
     } else {
       this.logger.warn("Pull request creation and remote push skipped!");

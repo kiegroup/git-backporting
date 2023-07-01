@@ -1,21 +1,28 @@
 import { Args } from "@bp/service/args/args.types";
 import ConfigsParser from "@bp/service/configs/configs-parser";
 import { Configs } from "@bp/service/configs/configs.types";
-import GitService from "@bp/service/git/git-service";
-import GitServiceFactory from "@bp/service/git/git-service-factory";
+import GitClient from "@bp/service/git/git-client";
+import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitPullRequest } from "@bp/service/git/git.types";
 
 export default class PullRequestConfigsParser extends ConfigsParser {
 
-  private gitService: GitService;
+  private gitService: GitClient;
 
   constructor() {
     super();
-    this.gitService = GitServiceFactory.getService();
+    this.gitService = GitClientFactory.getClient();
   }
   
   public async parse(args: Args): Promise<Configs> {
-    const pr: GitPullRequest = await this.gitService.getPullRequestFromUrl(args.pullRequest);
+    let pr: GitPullRequest; 
+    try {
+      pr = await this.gitService.getPullRequestFromUrl(args.pullRequest);
+    } catch(error) {
+      this.logger.error("Something went wrong retrieving pull request");
+      throw error;
+    }
+
     const folder: string = args.folder ?? this.getDefaultFolder();
 
     return {

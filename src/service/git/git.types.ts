@@ -3,7 +3,7 @@ export interface GitPullRequest {
   author: string,
   url?: string,
   htmlUrl?: string,
-  state?: "open" | "closed",
+  state?: GitRepoState,
   merged?: boolean,
   mergedBy?: string,
   title: string,
@@ -35,6 +35,14 @@ export interface BackportPullRequest {
   branchName?: string,
 }
 
-export enum GitServiceType {
-  GITHUB = "github"
+export enum GitClientType {
+  GITHUB = "github",
+  GITLAB = "gitlab",
+}
+
+export enum GitRepoState {
+  OPEN = "open",
+  CLOSED = "closed",
+  LOCKED = "locked", // just on gitlab
+  MERGED = "merged", // just on gitlab
 }

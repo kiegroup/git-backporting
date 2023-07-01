@@ -9,7 +9,7 @@ import LoggerServiceFactory from "../logger/logger-service-factory";
  */
  export default abstract class ConfigsParser {
   
-  private readonly logger: LoggerService;
+  protected readonly logger: LoggerService;
 
   constructor() {
     this.logger = LoggerServiceFactory.getLogger();

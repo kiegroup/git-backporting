@@ -1,4 +1,4 @@
-import GitService from "@bp/service/git/git-service";
+import GitClient from "@bp/service/git/git-client";
 import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
 import GitHubMapper from "@bp/service/git/github/github-mapper";
 import OctokitFactory from "@bp/service/git/github/octokit-factory";
@@ -7,15 +7,17 @@ import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Octokit } from "@octokit/rest";
 import { PullRequest } from "@octokit/webhooks-types";
 
-export default class GitHubService implements GitService {
+export default class GitHubClient implements GitClient {
   
   private logger: LoggerService;
+  private apiUrl: string;
   private octokit: Octokit;
   private mapper: GitHubMapper;
 
-  constructor(token: string) {
+  constructor(token: string, apiUrl: string) {
+    this.apiUrl = apiUrl;
     this.logger = LoggerServiceFactory.getLogger();
-    this.octokit = OctokitFactory.getOctokit(token);
+    this.octokit = OctokitFactory.getOctokit(token, this.apiUrl);
     this.mapper = new GitHubMapper();
   }
 
@@ -33,13 +35,13 @@ export default class GitHubService implements GitService {
   }
 
   async getPullRequestFromUrl(prUrl: string): Promise<GitPullRequest> {
-    const {owner, project} = this.getRepositoryFromPrUrl(prUrl);
-    return this.getPullRequest(owner, project, parseInt(prUrl.substring(prUrl.lastIndexOf("/") + 1, prUrl.length)));
+    const { owner, project, id } = this.extractPullRequestData(prUrl);
+    return this.getPullRequest(owner, project, id);
   }
 
   // WRITE
   
-  async createPullRequest(backport: BackportPullRequest): Promise<void> {
+  async createPullRequest(backport: BackportPullRequest): Promise<string> {
     this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}.`);
     this.logger.info(`${JSON.stringify(backport, null, 2)}`);
 
@@ -51,6 +53,10 @@ export default class GitHubService implements GitService {
       title: backport.title,
       body: backport.body
     });
+
+    if (!data) {
+      throw new Error("Pull request creation failed");
+    }
 
     if (backport.reviewers.length > 0) {
       try {
@@ -77,6 +83,8 @@ export default class GitHubService implements GitService {
         this.logger.error(`Error setting assignees: ${error}`);
       }
     }
+
+    return data.html_url;
   }
 
   // UTILS
@@ -86,11 +94,12 @@ export default class GitHubService implements GitService {
    * @param prUrl pull request url
    * @returns {{owner: string, project: string}}
    */
-  private getRepositoryFromPrUrl(prUrl: string): {owner: string, project: string} {
+  private extractPullRequestData(prUrl: string): {owner: string, project: string, id: number} {
     const elems: string[] = prUrl.split("/");
     return {
       owner: elems[elems.length - 4],
-      project: elems[elems.length - 3]
+      project: elems[elems.length - 3],
+      id: parseInt(prUrl.substring(prUrl.lastIndexOf("/") + 1, prUrl.length)),
     };
-  } 
+  }
 }

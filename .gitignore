@@ -6,6 +6,7 @@ test/**/_temp/**/*
 yarn.lock
 coverage/
 test-report.xml
+report.json
 .idea/
 .vscode/
 build/
