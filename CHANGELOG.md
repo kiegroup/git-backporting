@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.0](https://github.com/lampajr/backporting/compare/v2.2.1...v3.0.0) (2023-07-01)
+
+
+### Features
+
+* integrate tool with gitlab service ([#39](https://github.com/lampajr/backporting/issues/39)) ([107f5e5](https://github.com/lampajr/backporting/commit/107f5e52d663157145aa14f6cf7fa4d6704cb844))
+
+
+### Bug Fixes
+
+* removed 'powered by..' pr body suffix ([6869bec](https://github.com/lampajr/backporting/commit/6869becb3e5979b24f6fe29bf38141e15c1bdc66))
+
 ## [2.2.1](https://github.com/lampajr/backporting/compare/v2.2.0...v2.2.1) (2023-06-27)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@lampajr/bper",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "BPer is a tool to execute automatic git backporting.",
   "author": "",
   "license": "MIT",
