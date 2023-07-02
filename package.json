@@ -64,12 +64,12 @@
     "ts-node": "^10.8.1",
     "tsc-alias": "^1.8.2",
     "tsconfig-paths": "^4.1.0",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.3",
+    "@octokit/webhooks-types": "^6.8.0"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@octokit/rest": "^18.12.0",
-    "@octokit/webhooks-types": "^6.8.0",
     "axios": "^1.4.0",
     "commander": "^9.3.0",
     "fs-extra": "^11.1.0",
