@@ -15,21 +15,33 @@
 
 ---
 
-**Git Backporter**, also referenced as **bper**, is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* [1] pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way. This tool also comes with a predefined *GitHub* action in order to make CI/CD integration easier for all users.
+## :tada: BPER v3 is out!! You can backport Gitlab merge requests now :tada:
 
-[1] *backporting* is an action aiming to move a change (usually a commit) from a branch (usually the main one) to another one, which is generally referring to a still maintained release branch. Keeping it simple: it is about to move a specific change or a set of them from one branch to another.
+---
+
+**Git Backporter**, also referenced as **bper**, is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way. This tool also comes with a predefined *GitHub* action in order to make CI/CD integration easier for all users.
+
 
 Table of content
 ----------------
 
-* **[Usage](#usage)**
-* **[Supported Git Services](#supported-git-services)**
-* **[GitHub Action](#github-action)**
-* **[Limitations](#limitations)**
-* **[Contributions](#contributing)**
+* **[Who is this tool for](#who-is-this-tool-for)**
+* **[CLI tool](#cli-tool)**
+* **[Supported git services](#supported-git-services)**
+* **[GitHub action](#github-action)**
+* **[Future works](#future-works)**
+* **[Contributing](#contributing)**
 * **[License](#license)**
 
-## Usage
+## Who is this tool for?
+
+`bper` is a tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way.
+
+> *What is backporting?* - backporting is an action aiming to move a change (usually a commit) from a branch (usually the main one) to another one, which is generally referring to a still maintained release branch. Keeping it simple: it is about to move a specific change or a set of them from one branch to another.
+
+Therefore this tools is for anybody who is working on projects where they have to maintain multiple active branches/versions at the same time. If you are actively cherry-picking many changes from your main branch to other ones, and you mainly do changes through pull requests or merge requests, maybe this tool may be right for you.
+
+## CLI tool
 
 This tool is released on the [public npm registry](https://www.npmjs.com/), therefore it can be easily installed using `npm`:
 
@@ -37,15 +49,27 @@ This tool is released on the [public npm registry](https://www.npmjs.com/), ther
 $ npm install -g @lampajr/bper
 ```
 
-Then it can be used as any other command line tool:
+Then you just have to choose the pull request (or merge request on *Gitlab*) that you would like to backport and the target branch and the simply run the following command:
 
 ```bash
-$ bper -tb <branch> -pr <pull-request-url> -a <git-token> [-f <your-folder>]
+$ bper -tb <branch> -pr <pull-request-url> -a <git-token>
 ```
+
+A real example could be the following one:
+```bash
+$ bper -tb develop -pr https://github.com/lampajr/backporting-example/pull/47 -a *****
+```
+
+This is the easiest invocation where you let the tool set / compute most of the backported pull request data. Obviously most of that data can be overridden with appropriate tool options, more details can be found in the [inputs](#inputs) section.
+
+### Requirements
+
+* Node 16 or higher, more details on Node can be found [here](https://nodejs.org/en).
+* Git, see [how to install](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) if you need help.
 
 ### Inputs
 
-This toold comes with some inputs that allow users to override the default behavior, here the full list of available inputs:
+This tool comes with some inputs that allow users to override the default behavior, here the full list of available inputs:
 
 | **Name**      | **Command**          | **Required** | **Description**                                                                                                                                        | **Default** |
 |---------------|----------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
@@ -53,8 +77,8 @@ This toold comes with some inputs that allow users to override the default behav
 | Help          | -h, --help           | -            | Display the help message                                                                                                                               |             |
 | Target Branch | -tb, --target-branch | Y            | Branch where the changes must be backported to                                                                                                         |             |
 | Pull Request  | -pr, --pull-request  | Y            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
-| Auth          | -a, --auth           | N            | `GITHUB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
-| Folder        | -f, --folder         | N            | Local folder where the repo will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
+| Auth          | -a, --auth           | N            | `GITHUB_TOKEN`, `GITLAB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
+| Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
 | Git User       | -gu, --git-user        | N            | Local git user name                                                       | "GitHub"       |
 | Git Email       | -ge, --git-email        | N            | Local git user email                                                       | "noreply@github.com"       |
 | Title       | --title        | N            | Backporting pull request title                                                       | "{original-pr-title}"       |
@@ -66,7 +90,7 @@ This toold comes with some inputs that allow users to override the default behav
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
-## Supported Git Services
+## Supported git services
 
 Right now **bper** supports the following git management services:
  * ***GITHUB***: Introduced since the first release of this tool (version `1.0.0`). The interaction with this system is performed using [*octokit*](https://octokit.github.io/rest.js) client library.
@@ -75,7 +99,7 @@ Right now **bper** supports the following git management services:
 
 > **NOTE**: by default, all gitlab requests are performed setting `rejectUnauthorized=false`, planning to make this configurable too.
 
-## GitHub Action
+## GitHub action
 
 This action can be used in any *GitHub* workflow, below you can find a simple example of manually triggered workflow backporting a specific pull request (provided as input).
 
@@ -153,7 +177,7 @@ jobs:
 
 For a complete description of all inputs see [Inputs section](#inputs).
 
-## Future Works
+## Future works
 
 **BPer** is still in development mode, this means that there are still many future works and extension. I'll try to summarize the most important ones:
 
