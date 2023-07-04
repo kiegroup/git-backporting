@@ -22,59 +22,172 @@ runner.run();
 
 /***/ }),
 
-/***/ 7938:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ 3025:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Abstract arguments parser interface in charge to parse inputs and
+ * produce a common Args object
+ */
+class ArgsParser {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getOrDefault(parsedValue, defaultValue) {
+        return parsedValue === undefined ? defaultValue : parsedValue;
+    }
+    parse() {
+        const args = this.readArgs();
+        // validate and fill with defaults
+        if (!args.pullRequest || !args.targetBranch) {
+            throw new Error("Missing option: pull request and target branch must be provided");
+        }
+        return {
+            pullRequest: args.pullRequest,
+            targetBranch: args.targetBranch,
+            dryRun: this.getOrDefault(args.dryRun, false),
+            auth: this.getOrDefault(args.auth),
+            folder: this.getOrDefault(args.folder),
+            gitUser: this.getOrDefault(args.gitUser),
+            gitEmail: this.getOrDefault(args.gitEmail),
+            title: this.getOrDefault(args.title),
+            body: this.getOrDefault(args.body),
+            bodyPrefix: this.getOrDefault(args.bodyPrefix),
+            bpBranchName: this.getOrDefault(args.bpBranchName),
+            reviewers: this.getOrDefault(args.reviewers, []),
+            assignees: this.getOrDefault(args.assignees, []),
+            inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
+        };
+    }
+}
+exports["default"] = ArgsParser;
+
+
+/***/ }),
+
+/***/ 8048:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readConfigFile = exports.parseArgs = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+/**
+ * Parse the input configuation string as json object and
+ * return it as Args
+ * @param configFileContent
+ * @returns {Args}
+ */
+function parseArgs(configFileContent) {
+    return JSON.parse(configFileContent);
+}
+exports.parseArgs = parseArgs;
+/**
+ * Read a configuration file in json format anf parse it as {Args}
+ * @param pathToFile Full path name of the config file, e.g., /tmp/dir/config-file.json
+ * @returns {Args}
+ */
+function readConfigFile(pathToFile) {
+    const asString = fs.readFileSync(pathToFile, "utf-8");
+    return parseArgs(asString);
+}
+exports.readConfigFile = readConfigFile;
+
+
+/***/ }),
+
+/***/ 7938:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const args_parser_1 = __importDefault(__nccwpck_require__(3025));
 const commander_1 = __nccwpck_require__(4379);
 const package_json_1 = __nccwpck_require__(6625);
+const args_utils_1 = __nccwpck_require__(8048);
 function commaSeparatedList(value, _prev) {
     // remove all whitespaces
     const cleanedValue = value.trim();
     return cleanedValue !== "" ? cleanedValue.replace(/\s/g, "").split(",") : [];
 }
-class CLIArgsParser {
+class CLIArgsParser extends args_parser_1.default {
     getCommand() {
         return new commander_1.Command(package_json_1.name)
             .version(package_json_1.version)
             .description(package_json_1.description)
-            .requiredOption("-tb, --target-branch <branch>", "branch where changes must be backported to.")
-            .requiredOption("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/lampajr/backporting/pull/1.")
-            .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely", false)
-            .option("-a, --auth <auth>", "git service authentication string, e.g., github token.", "")
-            .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'.", "GitHub")
-            .option("-ge, --git-email <git-email>", "local git user email, default is 'noreply@github.com'.", "noreply@github.com")
-            .option("-f, --folder <folder>", "local folder where the repo will be checked out, e.g., /tmp/folder.", undefined)
-            .option("--title <bp-title>", "backport pr title, default original pr title prefixed by target branch.", undefined)
-            .option("--body <bp-body>", "backport pr title, default original pr body prefixed by bodyPrefix.", undefined)
-            .option("--body-prefix <bp-body-prefix>", "backport pr body prefix, default `backport <original-pr-link>`.", undefined)
-            .option("--bp-branch-name <bp-branch-name>", "backport pr branch name, default auto-generated by the commit.", undefined)
-            .option("--reviewers <reviewers>", "comma separated list of reviewers for the backporting pull request.", commaSeparatedList, [])
-            .option("--assignees <assignees>", "comma separated list of assignees for the backporting pull request.", commaSeparatedList, [])
-            .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request", true);
+            .option("-tb, --target-branch <branch>", "branch where changes must be backported to.")
+            .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/lampajr/backporting/pull/1.")
+            .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
+            .option("-a, --auth <auth>", "git service authentication string, e.g., github token.")
+            .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'.")
+            .option("-ge, --git-email <git-email>", "local git user email, default is 'noreply@github.com'.")
+            .option("-f, --folder <folder>", "local folder where the repo will be checked out, e.g., /tmp/folder.")
+            .option("--title <bp-title>", "backport pr title, default original pr title prefixed by target branch.")
+            .option("--body <bp-body>", "backport pr title, default original pr body prefixed by bodyPrefix.")
+            .option("--body-prefix <bp-body-prefix>", "backport pr body prefix, default `backport <original-pr-link>`.")
+            .option("--bp-branch-name <bp-branch-name>", "backport pr branch name, default auto-generated by the commit.")
+            .option("--reviewers <reviewers>", "comma separated list of reviewers for the backporting pull request.", commaSeparatedList)
+            .option("--assignees <assignees>", "comma separated list of assignees for the backporting pull request.", commaSeparatedList)
+            .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request")
+            .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface.");
     }
-    parse() {
+    readArgs() {
         const opts = this.getCommand()
             .parse()
             .opts();
-        return {
-            dryRun: opts.dryRun,
-            auth: opts.auth,
-            pullRequest: opts.pullRequest,
-            targetBranch: opts.targetBranch,
-            folder: opts.folder,
-            gitUser: opts.gitUser,
-            gitEmail: opts.gitEmail,
-            title: opts.title,
-            body: opts.body,
-            bodyPrefix: opts.bodyPrefix,
-            bpBranchName: opts.bpBranchName,
-            reviewers: opts.reviewers,
-            assignees: opts.assignees,
-            inheritReviewers: opts.inheritReviewers,
-        };
+        let args;
+        if (opts.configFile) {
+            // if config file is set ignore all other options
+            args = (0, args_utils_1.readConfigFile)(opts.configFile);
+        }
+        else {
+            args = {
+                dryRun: opts.dryRun,
+                auth: opts.auth,
+                pullRequest: opts.pullRequest,
+                targetBranch: opts.targetBranch,
+                folder: opts.folder,
+                gitUser: opts.gitUser,
+                gitEmail: opts.gitEmail,
+                title: opts.title,
+                body: opts.body,
+                bodyPrefix: opts.bodyPrefix,
+                bpBranchName: opts.bpBranchName,
+                reviewers: opts.reviewers,
+                assignees: opts.assignees,
+                inheritReviewers: opts.inheritReviewers,
+            };
+        }
+        return args;
     }
 }
 exports["default"] = CLIArgsParser;
@@ -133,12 +246,12 @@ const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
     constructor() {
         super();
-        this.gitService = git_client_factory_1.default.getClient();
+        this.gitClient = git_client_factory_1.default.getClient();
     }
     async parse(args) {
         let pr;
         try {
-            pr = await this.gitService.getPullRequestFromUrl(args.pullRequest);
+            pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest);
         }
         catch (error) {
             this.logger.error("Something went wrong retrieving pull request");
@@ -153,8 +266,8 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             originalPullRequest: pr,
             backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
             git: {
-                user: args.gitUser,
-                email: args.gitEmail,
+                user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
+                email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
             }
         };
     }
@@ -180,7 +293,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
         const body = args.body ?? `${originalPullRequest.body}`;
         return {
-            author: args.gitUser,
+            author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
             body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
@@ -466,6 +579,12 @@ class GitHubClient {
         this.mapper = new github_mapper_1.default();
     }
     // READ
+    getDefaultGitUser() {
+        return "GitHub";
+    }
+    getDefaultGitEmail() {
+        return "noreply@github.com";
+    }
     async getPullRequest(owner, repo, prNumber) {
         this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);
         const { data } = await this.octokit.rest.pulls.get({
@@ -651,7 +770,7 @@ class GitLabClient {
         this.client = axios_1.default.create({
             baseURL: this.apiUrl,
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: token ? `Bearer ${token}` : "",
                 "User-Agent": "lampajr/backporting",
             },
             httpsAgent: new https_1.default.Agent({
@@ -659,6 +778,12 @@ class GitLabClient {
             })
         });
         this.mapper = new gitlab_mapper_1.default(this.client);
+    }
+    getDefaultGitUser() {
+        return "Gitlab";
+    }
+    getDefaultGitEmail() {
+        return "noreply@gitlab.com";
     }
     // READ
     // example: <host>/api/v4/projects/alampare%2Fbackporting-example/merge_requests/1

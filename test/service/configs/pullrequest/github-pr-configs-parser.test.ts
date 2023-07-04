@@ -4,7 +4,31 @@ import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
 import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
+import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../../support/utils";
 import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner } from "../../../support/mock/github-data";
+import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
+
+const GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME = "./github-pr-configs-parser-simple-pr-merged.json";
+const GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT = {
+  "targetBranch": "prod",
+  "pullRequest": `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`,
+};
+
+const GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME = "./github-pr-configs-parser-complex-pr-merged.json";
+const GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
+  "dryRun": false,
+  "auth": "my-auth-token",
+  "pullRequest": `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`,
+  "targetBranch": "prod",
+  "gitUser": "Me",
+  "gitEmail": "me@email.com",
+  "title": "New Title",
+  "body": "New Body",
+  "bodyPrefix": "New Body Prefix -",
+  "reviewers": ["user1", "user2"],
+  "assignees": ["user3", "user4"],
+  "inheritReviewers": true, // not taken into account
+};
 
 describe("github pull request config parser", () => {
 
@@ -12,17 +36,33 @@ describe("github pull request config parser", () => {
   const openPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${openPullRequestFixture.number}`;
   const notMergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${notMergedPullRequestFixture.number}`;
   
-  let parser: PullRequestConfigsParser;
+  let argsParser: CLIArgsParser;
+  let configParser: PullRequestConfigsParser;
 
   beforeAll(() => {
+    // create a temporary file
+    createTestFile(GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME, JSON.stringify(GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT));
+    createTestFile(GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME, JSON.stringify(GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT));
+
     GitClientFactory.reset();
     GitClientFactory.getOrCreate(GitClientType.GITHUB, "whatever", "http://localhost/api/v3");
+  });
+
+  afterAll(() => {
+    // clean up all temporary files
+    removeTestFile(GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME);
+    removeTestFile(GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME);
   });
 
   beforeEach(() => {
     mockGitHubClient("http://localhost/api/v3");
 
-    parser = new PullRequestConfigsParser();
+    // reset process.env variables
+    resetProcessArgs();
+
+    // create a fresh new instance every time
+    argsParser = new CLIArgsParser();
+    configParser = new PullRequestConfigsParser();
   });
 
   afterEach(() => {
@@ -42,7 +82,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: true,
     };
 
-    const configs: Configs = await parser.parseAndValidate(args);
+    const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -113,7 +153,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: true,
     };
 
-    const configs: Configs = await parser.parseAndValidate(args);
+    const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
@@ -138,7 +178,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: true,
     };
 
-    const configs: Configs = await parser.parseAndValidate(args);
+    const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
@@ -189,7 +229,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: true,
     };
 
-    expect(async () => await parser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
+    expect(async () => await configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 
   
@@ -209,7 +249,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: true,
     };
 
-    const configs: Configs = await parser.parseAndValidate(args);
+    const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -283,7 +323,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: true, // not taken into account
     };
 
-    const configs: Configs = await parser.parseAndValidate(args);
+    const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -357,7 +397,7 @@ describe("github pull request config parser", () => {
       inheritReviewers: false,
     };
 
-    const configs: Configs = await parser.parseAndValidate(args);
+    const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -400,6 +440,135 @@ describe("github pull request config parser", () => {
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: [],
+      assignees: ["user3", "user4"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      bpBranchName: undefined,
+    });
+  });
+  
+  test("using simple config file", async () => {
+    addProcessArgs([
+      "-cf",
+      GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME,
+    ]);
+
+    const args: Args = argsParser.parse();
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
+    expect(configs.auth).toEqual(undefined);
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 2368,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/2368",
+      htmlUrl: "https://github.com/owner/reponame/pull/2368",
+      state: "closed",
+      merged: true,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["requested-gh-user", "gh-user"],
+      assignees: [],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "fork",
+        project: "reponame",
+        cloneUrl: "https://github.com/fork/reponame.git"
+      },
+      nCommits: 2,
+      commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
+    });
+    expect(configs.backportPullRequest).toEqual({
+      author: "GitHub",
+      url: undefined,
+      htmlUrl: undefined,
+      title: "[prod] PR Title",
+      body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+      reviewers: ["gh-user", "that-s-a-user"],
+      assignees: [],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      bpBranchName: undefined,
+    });
+  });
+
+  test("using complex config file", async () => {
+    addProcessArgs([
+      "-cf",
+      GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME,
+    ]);
+
+    const args: Args = argsParser.parse();
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "Me",
+      email: "me@email.com"
+    });
+    expect(configs.auth).toEqual("my-auth-token");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 2368,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/2368",
+      htmlUrl: "https://github.com/owner/reponame/pull/2368",
+      state: "closed",
+      merged: true,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["requested-gh-user", "gh-user"],
+      assignees: [],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "fork",
+        project: "reponame",
+        cloneUrl: "https://github.com/fork/reponame.git"
+      },
+      bpBranchName: undefined,
+      nCommits: 2,
+      commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
+    });
+    expect(configs.backportPullRequest).toEqual({
+      author: "Me",
+      url: undefined,
+      htmlUrl: undefined,
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
       targetRepo: {
         owner: "owner",

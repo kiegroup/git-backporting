@@ -10,7 +10,7 @@ export default class OctokitFactory {
   private static logger: LoggerService = LoggerServiceFactory.getLogger();
   private static octokit?: Octokit;
 
-  public static getOctokit(token: string, apiUrl: string): Octokit {
+  public static getOctokit(token: string | undefined, apiUrl: string): Octokit {
     if (!OctokitFactory.octokit) {
       OctokitFactory.logger.info("Creating octokit instance.");
       OctokitFactory.octokit = new Octokit({

@@ -12,7 +12,7 @@ export interface LocalGit {
  */
 export interface Configs {
   dryRun: boolean,
-  auth: string,
+  auth?: string,
   git: LocalGit,
   folder: string,
   targetBranch: string,

@@ -26,7 +26,7 @@ export default class GitClientFactory {
    * @param type git management service type
    * @param authToken authentication token, like github/gitlab token
    */
-  public static getOrCreate(type: GitClientType, authToken: string, apiUrl: string): GitClient {
+  public static getOrCreate(type: GitClientType, authToken: string | undefined, apiUrl: string): GitClient {
 
     if (GitClientFactory.instance) {
       GitClientFactory.logger.warn("Git service already initialized!");

@@ -14,7 +14,7 @@ export default class GitHubClient implements GitClient {
   private octokit: Octokit;
   private mapper: GitHubMapper;
 
-  constructor(token: string, apiUrl: string) {
+  constructor(token: string | undefined, apiUrl: string) {
     this.apiUrl = apiUrl;
     this.logger = LoggerServiceFactory.getLogger();
     this.octokit = OctokitFactory.getOctokit(token, this.apiUrl);
@@ -22,6 +22,14 @@ export default class GitHubClient implements GitClient {
   }
 
   // READ
+
+  getDefaultGitUser(): string {
+    return "GitHub";
+  }
+  
+  getDefaultGitEmail(): string {
+    return "noreply@github.com";
+  }
 
   async getPullRequest(owner: string, repo: string, prNumber: number): Promise<GitPullRequest> {
     this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);

@@ -3,8 +3,25 @@ import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
 import GitLabClient from "@bp/service/git/gitlab/gitlab-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
-import { addProcessArgs, resetProcessArgs } from "../../support/utils";
+import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../support/utils";
 import { getAxiosMocked } from "../../support/mock/git-client-mock-support";
+import { MERGED_SQUASHED_MR } from "../../support/mock/gitlab-data";
+
+const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME = "./cli-gitlab-runner-pr-merged-with-overrides.json";
+const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
+  "dryRun": false,
+  "auth": "my-token",
+  "pullRequest": `https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/${MERGED_SQUASHED_MR.iid}`,
+  "targetBranch": "prod",
+  "gitUser": "Me",
+  "gitEmail": "me@email.com",
+  "title": "New Title",
+  "body": "New Body",
+  "bodyPrefix": `**This is a backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/${MERGED_SQUASHED_MR.iid}`,
+  "reviewers": [],
+  "assignees": ["user3", "user4"],
+  "inheritReviewers": false,
+};
 
 jest.mock("axios", () => {
   return {
@@ -26,6 +43,16 @@ jest.spyOn(GitLabClient.prototype, "createPullRequest");
 
 let parser: ArgsParser;
 let runner: Runner;
+
+beforeAll(() => {
+  // create a temporary file
+  createTestFile(GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME, JSON.stringify(GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT));
+});
+
+afterAll(() => {
+  // clean up all temporary files
+  removeTestFile(GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME);
+});
 
 beforeEach(() => {
   // create CLI arguments parser
@@ -301,6 +328,46 @@ describe("cli runner", () => {
         base: "target", 
         title: "New Title", 
         body: "New Body Prefix - New Body",
+        reviewers: [],
+        assignees: ["user3", "user4"],
+      }
+    );
+  });
+
+  test("using config file with overrides", async () => {
+    addProcessArgs([
+      "--config-file",
+      GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME,
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "prod");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-prod-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    
+    // 0 occurrences as the mr is already merged and the owner is the same for
+    // both source and target repositories
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-prod-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "superuser", 
+        repo: "backporting-example", 
+        head: "bp-prod-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        base: "prod", 
+        title: "New Title", 
+        body: expect.stringContaining("**This is a backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
         reviewers: [],
         assignees: ["user3", "user4"],
       }

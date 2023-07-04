@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import * as fs from "fs";
 
 export const addProcessArgs = (args: string[]) => {
   process.argv = [...process.argv, ...args];
@@ -24,4 +25,21 @@ export const spyGetInput = (obj: any) => {
  */
 export const expectArrayEqual = (actual: unknown[], expected: unknown[]) => {
   expect(actual.sort()).toEqual(expected.sort());
+};
+
+/**
+ * Create a test file given the full pathname
+ * @param pathname full file pathname e.g, /tmp/dir/filename.json
+ * @param content what must be written in the file
+ */
+export const createTestFile = (pathname: string, content: string) => {
+  fs.writeFileSync(pathname, content);
+};
+
+/**
+ * Remove a file located at pathname
+ * @param pathname full file pathname e.g, /tmp/dir/filename.json
+ */
+export const removeTestFile = (pathname: string) => {
+  fs.rmSync(pathname);
 };

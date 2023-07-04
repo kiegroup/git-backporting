@@ -75,8 +75,9 @@ This tool comes with some inputs that allow users to override the default behavi
 |---------------|----------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | Version       | -V, --version        | -            | Current version of the tool                                                                                                                            |             |
 | Help          | -h, --help           | -            | Display the help message                                                                                                                               |             |
-| Target Branch | -tb, --target-branch | Y            | Branch where the changes must be backported to                                                                                                         |             |
-| Pull Request  | -pr, --pull-request  | Y            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
+| Target Branch | -tb, --target-branch | N            | Branch where the changes must be backported to                                                                                                         |             |
+| Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
+| Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
 | Auth          | -a, --auth           | N            | `GITHUB_TOKEN`, `GITLAB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
 | Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
 | Git User       | -gu, --git-user        | N            | Local git user name                                                       | "GitHub"       |
@@ -89,6 +90,22 @@ This tool comes with some inputs that allow users to override the default behavi
 | No Reviewers Inheritance       | --no-inherit-reviewers        | N            | Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request                                                           | false       |
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
+
+> **NOTE**: `pull request` and `target branch` are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
+
+#### Configuration file example
+
+This is an example of a configuration file that can be used.
+```json
+{
+  "pullRequest": "https://gitlab.com/<namespace>/<repo>/-/merge_requests/1",
+  "targetBranch": "old",
+  "folder": "/tmp/my-folder",
+  "title": "Override Title",
+  "auth": "*****"
+}
+```
+Keep in mind that its structue MUST match the [Args](src/service/args/args.types.ts) interface, which is actually a camel-case version of the CLI options.
 
 ## Supported git services
 

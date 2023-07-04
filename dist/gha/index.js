@@ -22,14 +22,118 @@ runner.run();
 
 /***/ }),
 
-/***/ 7283:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ 3025:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Abstract arguments parser interface in charge to parse inputs and
+ * produce a common Args object
+ */
+class ArgsParser {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getOrDefault(parsedValue, defaultValue) {
+        return parsedValue === undefined ? defaultValue : parsedValue;
+    }
+    parse() {
+        const args = this.readArgs();
+        // validate and fill with defaults
+        if (!args.pullRequest || !args.targetBranch) {
+            throw new Error("Missing option: pull request and target branch must be provided");
+        }
+        return {
+            pullRequest: args.pullRequest,
+            targetBranch: args.targetBranch,
+            dryRun: this.getOrDefault(args.dryRun, false),
+            auth: this.getOrDefault(args.auth),
+            folder: this.getOrDefault(args.folder),
+            gitUser: this.getOrDefault(args.gitUser),
+            gitEmail: this.getOrDefault(args.gitEmail),
+            title: this.getOrDefault(args.title),
+            body: this.getOrDefault(args.body),
+            bodyPrefix: this.getOrDefault(args.bodyPrefix),
+            bpBranchName: this.getOrDefault(args.bpBranchName),
+            reviewers: this.getOrDefault(args.reviewers, []),
+            assignees: this.getOrDefault(args.assignees, []),
+            inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
+        };
+    }
+}
+exports["default"] = ArgsParser;
+
+
+/***/ }),
+
+/***/ 8048:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readConfigFile = exports.parseArgs = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+/**
+ * Parse the input configuation string as json object and
+ * return it as Args
+ * @param configFileContent
+ * @returns {Args}
+ */
+function parseArgs(configFileContent) {
+    return JSON.parse(configFileContent);
+}
+exports.parseArgs = parseArgs;
+/**
+ * Read a configuration file in json format anf parse it as {Args}
+ * @param pathToFile Full path name of the config file, e.g., /tmp/dir/config-file.json
+ * @returns {Args}
+ */
+function readConfigFile(pathToFile) {
+    const asString = fs.readFileSync(pathToFile, "utf-8");
+    return parseArgs(asString);
+}
+exports.readConfigFile = readConfigFile;
+
+
+/***/ }),
+
+/***/ 7283:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const args_parser_1 = __importDefault(__nccwpck_require__(3025));
 const core_1 = __nccwpck_require__(2186);
-class GHAArgsParser {
+const args_utils_1 = __nccwpck_require__(8048);
+class GHAArgsParser extends args_parser_1.default {
     /**
      * Return the input only if it is not a blank or null string, otherwise returns undefined
      * @param key input key
@@ -39,36 +143,40 @@ class GHAArgsParser {
         const value = (0, core_1.getInput)(key);
         return value !== "" ? value : undefined;
     }
-    getOrDefault(key, defaultValue) {
-        const value = (0, core_1.getInput)(key);
-        return value !== "" ? value : defaultValue;
-    }
     getAsCommaSeparatedList(key) {
         // trim the value
         const value = ((0, core_1.getInput)(key) ?? "").trim();
-        return value !== "" ? value.replace(/\s/g, "").split(",") : [];
+        return value !== "" ? value.replace(/\s/g, "").split(",") : undefined;
     }
-    getAsBooleanOrDefault(key, defaultValue) {
+    getAsBooleanOrDefault(key) {
         const value = (0, core_1.getInput)(key).trim();
-        return value !== "" ? value.toLowerCase() === "true" : defaultValue;
+        return value !== "" ? value.toLowerCase() === "true" : undefined;
     }
-    parse() {
-        return {
-            dryRun: this.getAsBooleanOrDefault("dry-run", false),
-            auth: (0, core_1.getInput)("auth"),
-            pullRequest: (0, core_1.getInput)("pull-request"),
-            targetBranch: (0, core_1.getInput)("target-branch"),
-            folder: this.getOrUndefined("folder"),
-            gitUser: this.getOrDefault("git-user", "GitHub"),
-            gitEmail: this.getOrDefault("git-email", "noreply@github.com"),
-            title: this.getOrUndefined("title"),
-            body: this.getOrUndefined("body"),
-            bodyPrefix: this.getOrUndefined("body-prefix"),
-            bpBranchName: this.getOrUndefined("bp-branch-name"),
-            reviewers: this.getAsCommaSeparatedList("reviewers"),
-            assignees: this.getAsCommaSeparatedList("assignees"),
-            inheritReviewers: !this.getAsBooleanOrDefault("no-inherit-reviewers", false),
-        };
+    readArgs() {
+        const configFile = this.getOrUndefined("config-file");
+        let args;
+        if (configFile) {
+            args = (0, args_utils_1.readConfigFile)(configFile);
+        }
+        else {
+            args = {
+                dryRun: this.getAsBooleanOrDefault("dry-run"),
+                auth: this.getOrUndefined("auth"),
+                pullRequest: (0, core_1.getInput)("pull-request"),
+                targetBranch: (0, core_1.getInput)("target-branch"),
+                folder: this.getOrUndefined("folder"),
+                gitUser: this.getOrUndefined("git-user"),
+                gitEmail: this.getOrUndefined("git-email"),
+                title: this.getOrUndefined("title"),
+                body: this.getOrUndefined("body"),
+                bodyPrefix: this.getOrUndefined("body-prefix"),
+                bpBranchName: this.getOrUndefined("bp-branch-name"),
+                reviewers: this.getAsCommaSeparatedList("reviewers"),
+                assignees: this.getAsCommaSeparatedList("assignees"),
+                inheritReviewers: !this.getAsBooleanOrDefault("no-inherit-reviewers"),
+            };
+        }
+        return args;
     }
 }
 exports["default"] = GHAArgsParser;
@@ -127,12 +235,12 @@ const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
     constructor() {
         super();
-        this.gitService = git_client_factory_1.default.getClient();
+        this.gitClient = git_client_factory_1.default.getClient();
     }
     async parse(args) {
         let pr;
         try {
-            pr = await this.gitService.getPullRequestFromUrl(args.pullRequest);
+            pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest);
         }
         catch (error) {
             this.logger.error("Something went wrong retrieving pull request");
@@ -147,8 +255,8 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             originalPullRequest: pr,
             backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
             git: {
-                user: args.gitUser,
-                email: args.gitEmail,
+                user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
+                email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
             }
         };
     }
@@ -174,7 +282,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
         const body = args.body ?? `${originalPullRequest.body}`;
         return {
-            author: args.gitUser,
+            author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
             body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
@@ -460,6 +568,12 @@ class GitHubClient {
         this.mapper = new github_mapper_1.default();
     }
     // READ
+    getDefaultGitUser() {
+        return "GitHub";
+    }
+    getDefaultGitEmail() {
+        return "noreply@github.com";
+    }
     async getPullRequest(owner, repo, prNumber) {
         this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);
         const { data } = await this.octokit.rest.pulls.get({
@@ -645,7 +759,7 @@ class GitLabClient {
         this.client = axios_1.default.create({
             baseURL: this.apiUrl,
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: token ? `Bearer ${token}` : "",
                 "User-Agent": "lampajr/backporting",
             },
             httpsAgent: new https_1.default.Agent({
@@ -653,6 +767,12 @@ class GitLabClient {
             })
         });
         this.mapper = new gitlab_mapper_1.default(this.client);
+    }
+    getDefaultGitUser() {
+        return "Gitlab";
+    }
+    getDefaultGitEmail() {
+        return "noreply@gitlab.com";
     }
     // READ
     // example: <host>/api/v4/projects/alampare%2Fbackporting-example/merge_requests/1

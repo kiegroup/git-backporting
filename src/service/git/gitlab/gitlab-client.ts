@@ -14,13 +14,13 @@ export default class GitLabClient implements GitClient {
   private readonly mapper: GitLabMapper;
   private readonly client: Axios;
 
-  constructor(token: string, apiUrl: string, rejectUnauthorized = false) {
+  constructor(token: string | undefined, apiUrl: string, rejectUnauthorized = false) {
     this.logger = LoggerServiceFactory.getLogger();
     this.apiUrl = apiUrl;
     this.client = axios.create({
       baseURL: this.apiUrl,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token ? `Bearer ${token}` : "",
         "User-Agent": "lampajr/backporting",
       },
       httpsAgent: new https.Agent({  
@@ -28,6 +28,14 @@ export default class GitLabClient implements GitClient {
       })
     });
     this.mapper = new GitLabMapper(this.client);
+  }
+
+  getDefaultGitUser(): string {
+    return "Gitlab";
+  }
+  
+  getDefaultGitEmail(): string {
+    return "noreply@gitlab.com";
   }
 
   // READ
