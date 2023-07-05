@@ -10,4 +10,4 @@ report.json
 .idea/
 .vscode/
 build/
-# dist/
+.npmrc
