@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/lampajr/backporting/compare/v3.0.0...v3.1.0) (2023-07-05)
+
+
+### Features
+
+* config file as option ([#42](https://github.com/lampajr/backporting/issues/42)) ([5ead31f](https://github.com/lampajr/backporting/commit/5ead31f606b585ecdf7ed2e9de8ebd841b935898))
+
 ## [3.0.0](https://github.com/lampajr/backporting/compare/v2.2.1...v3.0.0) (2023-07-01)
 
 
