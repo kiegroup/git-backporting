@@ -6,7 +6,7 @@ on:
       options:
         description: 'Additional release-it options'     
         required: false
-        default: '--dry-run'
+        default: ''
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -32,4 +32,4 @@ jobs:
         run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
       - run: npm ci
       # the version/changelog must be already updated on main branch using "npm run release:prepare"
-      - run: npm run release --ci --no-increment --no-git.commit ${{ github.event.inputs.options }}
+      - run: npm run release -- --ci --no-increment --no-git.commit ${{ github.event.inputs.options }}
