@@ -10,10 +10,10 @@ import { LocalGit } from "@bp/service/configs/configs.types";
 export default class GitCLIService {
 
   private readonly logger: LoggerService;
-  private readonly auth: string;
+  private readonly auth: string | undefined;
   private readonly gitData: LocalGit;
 
-  constructor(auth: string, gitData: LocalGit) {
+  constructor(auth: string | undefined, gitData: LocalGit) {
     this.logger = LoggerServiceFactory.getLogger();
     this.auth  = auth;
     this.gitData = gitData;

@@ -7,17 +7,17 @@ import { GitPullRequest } from "@bp/service/git/git.types";
 
 export default class PullRequestConfigsParser extends ConfigsParser {
 
-  private gitService: GitClient;
+  private gitClient: GitClient;
 
   constructor() {
     super();
-    this.gitService = GitClientFactory.getClient();
+    this.gitClient = GitClientFactory.getClient();
   }
   
   public async parse(args: Args): Promise<Configs> {
     let pr: GitPullRequest; 
     try {
-      pr = await this.gitService.getPullRequestFromUrl(args.pullRequest);
+      pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest);
     } catch(error) {
       this.logger.error("Something went wrong retrieving pull request");
       throw error;
@@ -26,15 +26,15 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     const folder: string = args.folder ?? this.getDefaultFolder();
 
     return {
-      dryRun: args.dryRun,
+      dryRun: args.dryRun!,
       auth: args.auth,
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
       targetBranch: args.targetBranch,
       originalPullRequest: pr,
       backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
       git: {
-        user: args.gitUser,
-        email: args.gitEmail,
+        user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
+        email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
       }
     };
   }
@@ -64,7 +64,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     const body = args.body ?? `${originalPullRequest.body}`;
     
     return {
-      author: args.gitUser,
+      author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
       title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
       body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],

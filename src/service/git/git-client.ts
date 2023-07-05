@@ -7,6 +7,10 @@ import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
  export default interface GitClient {
 
   // READ
+  
+  getDefaultGitUser(): string;
+
+  getDefaultGitEmail(): string;
 
   /**
    * Get a pull request object from the underneath git service

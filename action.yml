@@ -1,6 +1,15 @@
 name: "Backporting GitHub Action"
 description: "GitHub action providing an automated way to backport pull requests from one branch to another"
 inputs:
+  pull-request:
+    description: "URL of the pull request to backport, e.g., https://github.com/lampajr/backporting/pull/1"
+    required: false
+  target-branch:
+    description: "Branch where the pull request must be backported to"
+    required: false
+  config-file:
+    description: "Path to a file containing the json configuration for this tool, the object must match the Args interface"
+    required: false
   dry-run:
     description: "If enabled the tool does not create any pull request nor push anything remotely"
     required: false
@@ -17,12 +26,6 @@ inputs:
     description: "Local git user email"
     default: "noreply@github.com"
     required: false
-  pull-request:
-    description: "URL of the pull request to backport, e.g., https://github.com/lampajr/backporting/pull/1"
-    required: true
-  target-branch:
-    description: "Branch where the pull request must be backported to"
-    required: true
   title:
     description: "Backporting PR title. Default is the original PR title prefixed by the target branch"
     required: false
