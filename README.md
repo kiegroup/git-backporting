@@ -30,6 +30,7 @@ Table of content
 * **[Supported git services](#supported-git-services)**
 * **[GitHub action](#github-action)**
 * **[Future works](#future-works)**
+* **[Release](#release)**
 * **[Contributing](#contributing)**
 * **[License](#license)**
 
@@ -202,6 +203,41 @@ For a complete description of all inputs see [Inputs section](#inputs).
 - Integrate this tool with other git management services (like Bitbucket) to make it as generic as possible.
 - Integrate it into other CI/CD services like gitlab CI.
 - Provide some reusable *GitHub* workflows.
+
+## Release
+
+The release of this package is entirely based on [release-it](https://github.com/release-it/release-it) tool. I created some useful scripts that can make the release itself quite easy.
+
+
+### Automated release
+
+The first step is to prepare the changes for the next release, this is done by running:
+
+```bash
+$ npm run release:prepare:all
+```
+
+> NOTE: running locally this requires `npm login`, please consider using `.github/workflows/prepare-release.yml` if you don't have permission on the npm package.
+
+This script performs the following steps:
+ 1. Automatically computes the next version based on the last commits
+ 2. Create a new branch `release/v${computed_version}`
+ 3. Apply all changes, like version and changelog upgrade
+ 4. Commit those changes: `chore: release v${compute_version}`
+
+After that you should just push the new branch and open the pull request.
+> NOTE: if you don't want to run this preparation from you local environment, there is already a workflow that does all these steps, including the pull request. See [Prepare release](.github/workflows/prepare-release.yml) workflow.
+
+Once the release preparion pull request got merged, you can run [Release package](.github/workflows/release.yml) workflow that automatically performs the release itself, including npm publishing, git tag and github release.
+
+### Manual release
+
+In case we would like to perform a manual release, it would be enough to open a pull request changing the following items:
+- Package version inside the `package.json`
+- Provide exhaustive changelog information inside `CHANGELOG.md`
+- Commit like `chore: release v<version>`
+
+Once the release preparion pull request got merged, run [Release package](.github/workflows/release.yml) workflow.
 
 ## Contributing
 
