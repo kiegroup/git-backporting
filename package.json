@@ -1,13 +1,13 @@
 {
-  "name": "@kie/bper",
+  "name": "@kie/git-backporting",
   "version": "4.0.0",
-  "description": "BPer is a tool to execute automatic git backporting.",
+  "description": "Git backporting is a tool to execute automatic pull request git backporting.",
   "author": "",
   "license": "MIT",
   "private": false,
   "main": "./dist/gha/index.js",
   "bin": {
-    "bper": "./dist/cli/index.js"
+    "git-backporting": "./dist/cli/index.js"
   },
   "files": [
     "dist/cli/index.js"
@@ -38,6 +38,7 @@
   "keywords": [
     "backporting",
     "pull-requests",
+    "merge-requests",
     "github-action",
     "cherry-pick"
   ],
