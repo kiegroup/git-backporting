@@ -12,6 +12,9 @@
   "files": [
     "dist/cli/index.js"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prepare": "husky install",
     "clean": "rm -rf ./build ./dist",
