@@ -15,7 +15,7 @@ export default class OctokitFactory {
       OctokitFactory.logger.info("Creating octokit instance.");
       OctokitFactory.octokit = new Octokit({
         auth: token,
-        userAgent: "lampajr/backporting",
+        userAgent: "kiegroup/git-backporting",
         baseUrl: apiUrl
       });
     }

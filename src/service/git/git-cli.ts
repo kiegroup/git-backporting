@@ -32,7 +32,7 @@ export default class GitCLIService {
 
   /**
    * Update the provided remote URL by adding the auth token if not empty
-   * @param remoteURL remote link, e.g., https://github.com/lampajr/backporting-example.git
+   * @param remoteURL remote link, e.g., https://github.com/kiegroup/git-backporting-example.git
    */
   private remoteWithAuth(remoteURL: string): string {
     if (this.auth && this.gitData.user) {

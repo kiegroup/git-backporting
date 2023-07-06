@@ -1,25 +1,24 @@
 <h1 align="center">
-  BPER </br>
-  Git Backporter </br>
+  Git Backporting </br>
   :outbox_tray: :inbox_tray:
 </h1>
 
 <p align="center">
-  <a href="https://github.com/lampajr/backporting">
-    <img alt="ci checks status" src="https://github.com/lampajr/backporting/actions/workflows/ci.yml/badge.svg">
+  <a href="https://github.com/kiegroup/git-backporting">
+    <img alt="ci checks status" src="https://github.com/kiegroup/git-backporting/actions/workflows/ci.yml/badge.svg">
   </a>
-  <a href="https://badge.fury.io/js/@lampajr%2Fbper">
-    <img alt="npm version" src="https://badge.fury.io/js/@lampajr%2Fbper.svg">
+  <a href="https://badge.fury.io/js/@kie%git-backporting">
+    <img alt="npm version" src="https://badge.fury.io/js/@kie%2Fgit-backporting.svg">
   </a>
 </p>
 
 ---
 
-## :tada: BPER v3 is out!! You can backport Gitlab merge requests now :tada:
+## :bangbang: Starting from v4 git-backporting has been moved under @kiegroup organization and renamed :bangbang:
 
 ---
 
-**Git Backporter**, also referenced as **bper**, is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way. This tool also comes with a predefined *GitHub* action in order to make CI/CD integration easier for all users.
+**Git Backporting** is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way. This tool also comes with a predefined *GitHub* action in order to make CI/CD integration easier for all users.
 
 
 Table of content
@@ -31,12 +30,13 @@ Table of content
 * **[GitHub action](#github-action)**
 * **[Future works](#future-works)**
 * **[Release](#release)**
+* **[Repository migration](#repository-migration)**
 * **[Contributing](#contributing)**
 * **[License](#license)**
 
 ## Who is this tool for?
 
-`bper` is a tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way.
+`git-backporting` is a tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way.
 
 > *What is backporting?* - backporting is an action aiming to move a change (usually a commit) from a branch (usually the main one) to another one, which is generally referring to a still maintained release branch. Keeping it simple: it is about to move a specific change or a set of them from one branch to another.
 
@@ -47,21 +47,25 @@ Therefore this tools is for anybody who is working on projects where they have t
 This tool is released on the [public npm registry](https://www.npmjs.com/), therefore it can be easily installed using `npm`:
 
 ```bash
-$ npm install -g @lampajr/bper
+$ npm install -g @kie/git-backporting
 ```
+
+> **NOTE**: if you want to download version 3 or older you must use the older package name `@lampajr/bper` instead of `@kie/git-backporting`.
 
 Then you just have to choose the pull request (or merge request on *Gitlab*) that you would like to backport and the target branch and the simply run the following command:
 
 ```bash
-$ bper -tb <branch> -pr <pull-request-url> -a <git-token>
+$ git-backporting -tb <branch> -pr <pull-request-url> -a <git-token>
 ```
 
 A real example could be the following one:
 ```bash
-$ bper -tb develop -pr https://github.com/lampajr/backporting-example/pull/47 -a *****
+$ git-backporting -tb develop -pr https://github.com/kiegroup/git-backporting-example/pull/47 -a *****
 ```
 
 This is the easiest invocation where you let the tool set / compute most of the backported pull request data. Obviously most of that data can be overridden with appropriate tool options, more details can be found in the [inputs](#inputs) section.
+
+> **NOTE**: if you are still using version 3 or older you must use the older CLI tool name `bper` instead of `git-backporting`.
 
 ### Requirements
 
@@ -77,7 +81,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Version       | -V, --version        | -            | Current version of the tool                                                                                                                            |             |
 | Help          | -h, --help           | -            | Display the help message                                                                                                                               |             |
 | Target Branch | -tb, --target-branch | N            | Branch where the changes must be backported to                                                                                                         |             |
-| Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
+| Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/kiegroup/git-backporting/pull/1                                        |             |
 | Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
 | Auth          | -a, --auth           | N            | `GITHUB_TOKEN`, `GITLAB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
 | Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
@@ -110,7 +114,7 @@ Keep in mind that its structue MUST match the [Args](src/service/args/args.types
 
 ## Supported git services
 
-Right now **bper** supports the following git management services:
+Right now **Git Backporting** supports the following git management services:
  * ***GITHUB***: Introduced since the first release of this tool (version `1.0.0`). The interaction with this system is performed using [*octokit*](https://octokit.github.io/rest.js) client library.
 
  * ***GITLAB***: This has been introduced since version `3.0.0`, it works for both public and private *GitLab* servers. The interaction with this service is performed using plain [*axios*](https://axios-http.com) requests. The *gitlab* api version that is used to make requests is `v4`, at the moment there is no possibility to override it.
@@ -147,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Backporting
-        uses: lampajr/backporting@main
+        uses: kiegroup/git-backporting@main
         with:
           target-branch: ${{ inputs.targetBranch }}
           pull-request: ${{ inputs.pullRequest }}
@@ -186,7 +190,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Backporting
-        uses: lampajr/backporting@main
+        uses: kiegroup/git-backporting@main
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
@@ -239,6 +243,23 @@ In case we would like to perform a manual release, it would be enough to open a 
 
 Once the release preparion pull request got merged, run [Release package](.github/workflows/release.yml) workflow.
 
+## Repository Migration
+
+From version `v4.0.0` the project has been moved under [@kiegroup](https://github.com/kiegroup) organization. During this migration we changed some things that you should be aware of. I'll try to summarize them in the following table:
+
+> **NOTE**: these changes did not affect the tool features.
+
+|             | **v4 (after migration)** | v3 or older (before migration) |
+|-------------|--------------------------|--------------------------------|
+| Owner       | kiegroup                 | lampajr                        |
+| Repository  | git-backporting          | backporting                    |
+| NPM package | @kie/git-backporting     | @lampajr/bper                  |
+| CLI tool    | git-backporting          | bper                           |
+
+So everytime you would use older version keep in mind of these changes.
+
+> **REMARK**: since from capabilities point of view `v3.1.1` and `v4.0.0` are equivalent we would recommend to directly start using `v4`.
+
 ## Contributing
 
 This is an open source project, and you are more than welcome to contribute :heart:!
@@ -247,7 +268,7 @@ Every change must be submitted through a *GitHub* pull request (PR). Backporting
 
 > **Note**: this project follows [git-conventional-commits](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13) standards, thanks to the [commit-msg hook](./.husky/commit-msg) you are not allowed to use commits that do not follow those standards.
 
-1. Fork it (https://github.com/lampajr/backporting).
+1. Fork it (https://github.com/kiegroup/git-backporting).
 
 2. Create your feature branch: (git checkout -b feature).
 

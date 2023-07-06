@@ -145,7 +145,7 @@ class CLIArgsParser extends args_parser_1.default {
             .version(package_json_1.version)
             .description(package_json_1.description)
             .option("-tb, --target-branch <branch>", "branch where changes must be backported to.")
-            .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/lampajr/backporting/pull/1.")
+            .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/kiegroup/git-backporting/pull/1.")
             .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
             .option("-a, --auth <auth>", "git service authentication string, e.g., github token.")
             .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'.")
@@ -342,7 +342,7 @@ class GitCLIService {
     }
     /**
      * Update the provided remote URL by adding the auth token if not empty
-     * @param remoteURL remote link, e.g., https://github.com/lampajr/backporting-example.git
+     * @param remoteURL remote link, e.g., https://github.com/kiegroup/git-backporting-example.git
      */
     remoteWithAuth(remoteURL) {
         if (this.auth && this.gitData.user) {
@@ -737,7 +737,7 @@ class OctokitFactory {
             OctokitFactory.logger.info("Creating octokit instance.");
             OctokitFactory.octokit = new rest_1.Octokit({
                 auth: token,
-                userAgent: "lampajr/backporting",
+                userAgent: "kiegroup/git-backporting",
                 baseUrl: apiUrl
             });
         }
@@ -771,7 +771,7 @@ class GitLabClient {
             baseURL: this.apiUrl,
             headers: {
                 Authorization: token ? `Bearer ${token}` : "",
-                "User-Agent": "lampajr/backporting",
+                "User-Agent": "kiegroup/git-backporting",
             },
             httpsAgent: new https_1.default.Agent({
                 rejectUnauthorized
@@ -786,7 +786,7 @@ class GitLabClient {
         return "noreply@gitlab.com";
     }
     // READ
-    // example: <host>/api/v4/projects/alampare%2Fbackporting-example/merge_requests/1
+    // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
     async getPullRequest(namespace, repo, mrNumber) {
         const projectId = this.getProjectId(namespace, repo);
         const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
@@ -876,7 +876,7 @@ class GitLabClient {
     }
     /**
      * Extract repository namespace, project and mr number from the merge request url
-     * example: <host>/alampare/backporting-example/-/merge_requests/1
+     * example: <host>/<namespace>/backporting-example/-/merge_requests/1
      * note: "-/" could be omitted
      * @param mrUrl merge request url
      * @returns {{owner: string, project: string}}
@@ -23331,7 +23331,7 @@ module.exports = axios;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@lampajr/bper","version":"3.1.1","description":"BPer is a tool to execute automatic git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"bper":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","postversion":"npm run build && git add dist && rm -rf build","release":"release-it","release:branch":"git checkout -b release/$(release-it --release-version) main","release:prepare":"release-it --no-npm.publish --no-github.release --no-git.push --no-git.tag --no-git.requireUpstream","release:prepare:all":"npm run release:branch && npm run release:prepare"},"repository":{"type":"git","url":"git+https://github.com/lampajr/backporting.git"},"keywords":["backporting","pull-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/lampajr/backporting/issues"},"homepage":"https://github.com/lampajr/backporting#readme","devDependencies":{"@commitlint/cli":"^17.4.0","@commitlint/config-conventional":"^17.4.0","@gitbeaker/rest":"^39.1.0","@kie/mock-github":"^1.1.0","@release-it/conventional-changelog":"^5.1.1","@types/fs-extra":"^9.0.13","@types/jest":"^29.2.4","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^5.47.0","@typescript-eslint/parser":"^5.47.0","@vercel/ncc":"^0.36.0","eslint":"^8.30.0","husky":"^8.0.2","jest":"^29.0.0","jest-sonar-reporter":"^2.0.0","release-it":"^15.6.0","semver":"^7.3.8","ts-jest":"^29.0.0","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3","@octokit/webhooks-types":"^6.8.0"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"^18.12.0","axios":"^1.4.0","commander":"^9.3.0","fs-extra":"^11.1.0","https":"^1.0.0","simple-git":"^3.15.1"}}');
+module.exports = JSON.parse('{"name":"@kie/git-backporting","version":"4.0.0","description":"Git backporting is a tool to execute automatic pull request git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"git-backporting":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","postversion":"npm run build && git add dist && rm -rf build","release":"release-it","release:branch":"git checkout -b release/$(release-it --release-version) main","release:prepare":"release-it --no-npm.publish --no-github.release --no-git.push --no-git.tag --no-git.requireUpstream","release:prepare:all":"npm run release:branch && npm run release:prepare"},"repository":{"type":"git","url":"git+https://github.com/kiegroup/git-backporting.git"},"keywords":["backporting","pull-requests","merge-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/kiegroup/git-backporting/issues"},"homepage":"https://github.com/kiegroup/git-backporting#readme","devDependencies":{"@commitlint/cli":"^17.4.0","@commitlint/config-conventional":"^17.4.0","@gitbeaker/rest":"^39.1.0","@kie/mock-github":"^1.1.0","@release-it/conventional-changelog":"^5.1.1","@types/fs-extra":"^9.0.13","@types/jest":"^29.2.4","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^5.47.0","@typescript-eslint/parser":"^5.47.0","@vercel/ncc":"^0.36.0","eslint":"^8.30.0","husky":"^8.0.2","jest":"^29.0.0","jest-sonar-reporter":"^2.0.0","release-it":"^15.6.0","semver":"^7.3.8","ts-jest":"^29.0.0","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3","@octokit/webhooks-types":"^6.8.0"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"^18.12.0","axios":"^1.4.0","commander":"^9.3.0","fs-extra":"^11.1.0","https":"^1.0.0","simple-git":"^3.15.1"}}');
 
 /***/ }),
 
