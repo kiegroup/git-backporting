@@ -28,7 +28,8 @@
     "postversion": "npm run build && git add dist && rm -rf build",
     "release": "release-it",
     "release:branch": "git checkout -b release/$(release-it --release-version) main",
-    "release:prepare": "npm run release:branch && release-it --ci --no-npm.publish --no-github.release --no-git.push --no-git.tag --no-git.requireUpstream"
+    "release:prepare": "release-it --no-npm.publish --no-github.release --no-git.push --no-git.tag --no-git.requireUpstream",
+    "release:prepare:all": "npm run release:branch && npm run release:prepare"
   },
   "repository": {
     "type": "git",

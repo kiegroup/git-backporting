@@ -24,12 +24,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: git config
+      - name: Git config
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-      - name: npm config
+      - name: Npm config
         run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
       - run: npm ci
       # the version/changelog must be already updated on main branch using "npm run release:prepare"
-      - run: npm run release -- --ci --no-increment --no-git.commit ${{ github.event.inputs.options }}
+      # or check prepare-release.yml workflow
+      - name: New version release
+        run: npm run release -- --ci --no-increment --no-git.commit ${{ github.event.inputs.options }}
