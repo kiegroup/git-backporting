@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.0](https://github.com/kiegroup/git-backporting/compare/v3.0.0...v4.0.0) (2023-07-06)
+
+Project moved under @kiegroup organization.
+
 ## [3.1.1](https://github.com/kiegroup/git-backporting/compare/v3.1.0...v3.1.1) (2023-07-06)
 
 ## [3.1.0](https://github.com/kiegroup/git-backporting/compare/v3.0.0...v3.1.0) (2023-07-05)
