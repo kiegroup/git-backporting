@@ -5,17 +5,17 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/lampajr/backporting">
-    <img alt="ci checks status" src="https://github.com/lampajr/backporting/actions/workflows/ci.yml/badge.svg">
+  <a href="https://github.com/kiegroup/git-backporting">
+    <img alt="ci checks status" src="https://github.com/kiegroup/git-backporting/actions/workflows/ci.yml/badge.svg">
   </a>
-  <a href="https://badge.fury.io/js/@lampajr%2Fbper">
-    <img alt="npm version" src="https://badge.fury.io/js/@lampajr%2Fbper.svg">
+  <a href="https://badge.fury.io/js/@kie%2Fbper">
+    <img alt="npm version" src="https://badge.fury.io/js/@kie%2Fbper.svg">
   </a>
 </p>
 
 ---
 
-## :tada: BPER v3 is out!! You can backport Gitlab merge requests now :tada:
+## :bangbang: Starting from v4 bper has been moved under @kiegroup organization :bangbang:
 
 ---
 
@@ -47,8 +47,10 @@ Therefore this tools is for anybody who is working on projects where they have t
 This tool is released on the [public npm registry](https://www.npmjs.com/), therefore it can be easily installed using `npm`:
 
 ```bash
-$ npm install -g @lampajr/bper
+$ npm install -g @kie/bper
 ```
+
+> **NOTE**: if you want to download version 3 or older you must use the older scope `@lampajr` instead of `@kie`.
 
 Then you just have to choose the pull request (or merge request on *Gitlab*) that you would like to backport and the target branch and the simply run the following command:
 
@@ -58,7 +60,7 @@ $ bper -tb <branch> -pr <pull-request-url> -a <git-token>
 
 A real example could be the following one:
 ```bash
-$ bper -tb develop -pr https://github.com/lampajr/backporting-example/pull/47 -a *****
+$ bper -tb develop -pr https://github.com/kiegroup/git-backporting-example/pull/47 -a *****
 ```
 
 This is the easiest invocation where you let the tool set / compute most of the backported pull request data. Obviously most of that data can be overridden with appropriate tool options, more details can be found in the [inputs](#inputs) section.
@@ -77,7 +79,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Version       | -V, --version        | -            | Current version of the tool                                                                                                                            |             |
 | Help          | -h, --help           | -            | Display the help message                                                                                                                               |             |
 | Target Branch | -tb, --target-branch | N            | Branch where the changes must be backported to                                                                                                         |             |
-| Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/lampajr/backporting/pull/1                                        |             |
+| Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/kiegroup/git-backporting/pull/1                                        |             |
 | Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
 | Auth          | -a, --auth           | N            | `GITHUB_TOKEN`, `GITLAB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
 | Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
@@ -147,7 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Backporting
-        uses: lampajr/backporting@main
+        uses: kiegroup/git-backporting@main
         with:
           target-branch: ${{ inputs.targetBranch }}
           pull-request: ${{ inputs.pullRequest }}
@@ -186,7 +188,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Backporting
-        uses: lampajr/backporting@main
+        uses: kiegroup/git-backporting@main
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
@@ -247,7 +249,7 @@ Every change must be submitted through a *GitHub* pull request (PR). Backporting
 
 > **Note**: this project follows [git-conventional-commits](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13) standards, thanks to the [commit-msg hook](./.husky/commit-msg) you are not allowed to use commits that do not follow those standards.
 
-1. Fork it (https://github.com/lampajr/backporting).
+1. Fork it (https://github.com/kiegroup/git-backporting).
 
 2. Create your feature branch: (git checkout -b feature).
 

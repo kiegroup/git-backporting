@@ -1,5 +1,5 @@
 {
-  "name": "@lampajr/bper",
+  "name": "@kie/bper",
   "version": "3.1.1",
   "description": "BPer is a tool to execute automatic git backporting.",
   "author": "",
@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lampajr/backporting.git"
+    "url": "git+https://github.com/kiegroup/git-backporting.git"
   },
   "keywords": [
     "backporting",
@@ -42,9 +42,9 @@
     "cherry-pick"
   ],
   "bugs": {
-    "url": "https://github.com/lampajr/backporting/issues"
+    "url": "https://github.com/kiegroup/git-backporting/issues"
   },
-  "homepage": "https://github.com/lampajr/backporting#readme",
+  "homepage": "https://github.com/kiegroup/git-backporting#readme",
   "devDependencies": {
     "@commitlint/cli": "^17.4.0",
     "@commitlint/config-conventional": "^17.4.0",

@@ -21,7 +21,7 @@ export default class GitLabClient implements GitClient {
       baseURL: this.apiUrl,
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
-        "User-Agent": "lampajr/backporting",
+        "User-Agent": "kiegroup/git-backporting",
       },
       httpsAgent: new https.Agent({  
         rejectUnauthorized
@@ -40,7 +40,7 @@ export default class GitLabClient implements GitClient {
 
   // READ
 
-  // example: <host>/api/v4/projects/alampare%2Fbackporting-example/merge_requests/1
+  // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
   async getPullRequest(namespace: string, repo: string, mrNumber: number): Promise<GitPullRequest> {
     const projectId = this.getProjectId(namespace, repo);
     const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
@@ -144,7 +144,7 @@ export default class GitLabClient implements GitClient {
 
   /**
    * Extract repository namespace, project and mr number from the merge request url
-   * example: <host>/alampare/backporting-example/-/merge_requests/1
+   * example: <host>/<namespace>/backporting-example/-/merge_requests/1
    * note: "-/" could be omitted
    * @param mrUrl merge request url
    * @returns {{owner: string, project: string}}

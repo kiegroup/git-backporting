@@ -17,7 +17,7 @@ export default class CLIArgsParser extends ArgsParser {
       .version(version)
       .description(description)
       .option("-tb, --target-branch <branch>", "branch where changes must be backported to.")
-      .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/lampajr/backporting/pull/1.")
+      .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/kiegroup/git-backporting/pull/1.")
       .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
       .option("-a, --auth <auth>", "git service authentication string, e.g., github token.")
       .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'.")

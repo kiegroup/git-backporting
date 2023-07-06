@@ -331,7 +331,7 @@ class GitCLIService {
     }
     /**
      * Update the provided remote URL by adding the auth token if not empty
-     * @param remoteURL remote link, e.g., https://github.com/lampajr/backporting-example.git
+     * @param remoteURL remote link, e.g., https://github.com/kiegroup/git-backporting-example.git
      */
     remoteWithAuth(remoteURL) {
         if (this.auth && this.gitData.user) {
@@ -726,7 +726,7 @@ class OctokitFactory {
             OctokitFactory.logger.info("Creating octokit instance.");
             OctokitFactory.octokit = new rest_1.Octokit({
                 auth: token,
-                userAgent: "lampajr/backporting",
+                userAgent: "kiegroup/git-backporting",
                 baseUrl: apiUrl
             });
         }
@@ -760,7 +760,7 @@ class GitLabClient {
             baseURL: this.apiUrl,
             headers: {
                 Authorization: token ? `Bearer ${token}` : "",
-                "User-Agent": "lampajr/backporting",
+                "User-Agent": "kiegroup/git-backporting",
             },
             httpsAgent: new https_1.default.Agent({
                 rejectUnauthorized
@@ -775,7 +775,7 @@ class GitLabClient {
         return "noreply@gitlab.com";
     }
     // READ
-    // example: <host>/api/v4/projects/alampare%2Fbackporting-example/merge_requests/1
+    // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
     async getPullRequest(namespace, repo, mrNumber) {
         const projectId = this.getProjectId(namespace, repo);
         const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
@@ -865,7 +865,7 @@ class GitLabClient {
     }
     /**
      * Extract repository namespace, project and mr number from the merge request url
-     * example: <host>/alampare/backporting-example/-/merge_requests/1
+     * example: <host>/<namespace>/backporting-example/-/merge_requests/1
      * note: "-/" could be omitted
      * @param mrUrl merge request url
      * @returns {{owner: string, project: string}}
