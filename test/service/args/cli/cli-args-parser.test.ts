@@ -24,6 +24,8 @@ const RANDOM_CONFIG_FILE_CONTENT = {
   "reviewers": ["reviewer1", "reviewer2"],
   "assignees": ["assignee1", "assignee2"],
   "inheritReviewers": true,
+  "labels": ["cherry-pick :cherries:"],
+  "inheritLabels": true,
 };
 
 describe("cli args parser", () => {
@@ -72,6 +74,8 @@ describe("cli args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("with config file [default, short]", () => {
@@ -95,6 +99,8 @@ describe("cli args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("valid execution [default, long]", () => {
@@ -120,6 +126,8 @@ describe("cli args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("with config file [default, long]", () => {
@@ -143,6 +151,8 @@ describe("cli args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("valid execution [override, short]", () => {
@@ -175,6 +185,8 @@ describe("cli args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("valid execution [override, long]", () => {
@@ -203,6 +215,9 @@ describe("cli args parser", () => {
       "--assignees",
       " pippo,pluto, paperino",
       "--no-inherit-reviewers",
+      "--labels",
+      "cherry-pick :cherries:, another spaced label",
+      "--inherit-labels",
     ]);
 
     const args: Args = parser.parse();
@@ -220,6 +235,8 @@ describe("cli args parser", () => {
     expectArrayEqual(args.reviewers!, ["al", "john", "jack"]);
     expectArrayEqual(args.assignees!, ["pippo", "pluto", "paperino"]);
     expect(args.inheritReviewers).toEqual(false);
+    expectArrayEqual(args.labels!, ["cherry-pick :cherries:", "another spaced label"]);
+    expect(args.inheritLabels).toEqual(true);
   });
 
   test("override using config file", () => {
@@ -243,6 +260,8 @@ describe("cli args parser", () => {
     expectArrayEqual(args.reviewers!, ["reviewer1", "reviewer2"]);
     expectArrayEqual(args.assignees!,["assignee1", "assignee2"]);
     expect(args.inheritReviewers).toEqual(true);
+    expectArrayEqual(args.labels!, ["cherry-pick :cherries:"]);
+    expect(args.inheritLabels).toEqual(true);
   });
 
   test("ignore custom option when config file is set", () => {
@@ -273,6 +292,9 @@ describe("cli args parser", () => {
       "--assignees",
       " pippo,pluto, paperino",
       "--no-inherit-reviewers",
+      "--labels",
+      "cherry-pick :cherries:, another spaced label",
+      "--inherit-labels",
     ]);
 
     const args: Args = parser.parse();
@@ -290,5 +312,7 @@ describe("cli args parser", () => {
     expectArrayEqual(args.reviewers!, ["reviewer1", "reviewer2"]);
     expectArrayEqual(args.assignees!,["assignee1", "assignee2"]);
     expect(args.inheritReviewers).toEqual(true);
+    expectArrayEqual(args.labels!, ["cherry-pick :cherries:"]);
+    expect(args.inheritLabels).toEqual(true);
   });
 });

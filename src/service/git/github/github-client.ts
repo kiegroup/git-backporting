@@ -59,11 +59,24 @@ export default class GitHubClient implements GitClient {
       head: backport.head,
       base: backport.base,
       title: backport.title,
-      body: backport.body
+      body: backport.body,
     });
 
     if (!data) {
       throw new Error("Pull request creation failed");
+    }
+
+    if (backport.labels.length > 0) {
+      try {
+        await this.octokit.issues.addLabels({
+          owner: backport.owner,
+          repo: backport.repo,
+          issue_number: (data as PullRequest).number,
+          labels: backport.labels,
+        });
+      } catch (error) {
+        this.logger.error(`Error setting labels: ${error}`);
+      }
     }
 
     if (backport.reviewers.length > 0) {

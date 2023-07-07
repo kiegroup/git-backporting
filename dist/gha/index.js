@@ -58,6 +58,8 @@ class ArgsParser {
             reviewers: this.getOrDefault(args.reviewers, []),
             assignees: this.getOrDefault(args.assignees, []),
             inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
+            labels: this.getOrDefault(args.labels, []),
+            inheritLabels: this.getOrDefault(args.inheritLabels, false),
         };
     }
 }
@@ -95,7 +97,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.readConfigFile = exports.parseArgs = void 0;
+exports.getAsBooleanOrDefault = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 /**
  * Parse the input configuation string as json object and
@@ -117,6 +119,34 @@ function readConfigFile(pathToFile) {
     return parseArgs(asString);
 }
 exports.readConfigFile = readConfigFile;
+/**
+ * Return the input only if it is not a blank or null string, otherwise returns undefined
+ * @param key input key
+ * @returns the value or undefined
+ */
+function getOrUndefined(value) {
+    return value !== "" ? value : undefined;
+}
+exports.getOrUndefined = getOrUndefined;
+// get rid of inner spaces too
+function getAsCleanedCommaSeparatedList(value) {
+    // trim the value
+    const trimmed = value.trim();
+    return trimmed !== "" ? trimmed.replace(/\s/g, "").split(",") : undefined;
+}
+exports.getAsCleanedCommaSeparatedList = getAsCleanedCommaSeparatedList;
+// preserve inner spaces
+function getAsCommaSeparatedList(value) {
+    // trim the value
+    const trimmed = value.trim();
+    return trimmed !== "" ? trimmed.split(",").map(v => v.trim()) : undefined;
+}
+exports.getAsCommaSeparatedList = getAsCommaSeparatedList;
+function getAsBooleanOrDefault(value) {
+    const trimmed = value.trim();
+    return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
+}
+exports.getAsBooleanOrDefault = getAsBooleanOrDefault;
 
 
 /***/ }),
@@ -134,46 +164,30 @@ const args_parser_1 = __importDefault(__nccwpck_require__(3025));
 const core_1 = __nccwpck_require__(2186);
 const args_utils_1 = __nccwpck_require__(8048);
 class GHAArgsParser extends args_parser_1.default {
-    /**
-     * Return the input only if it is not a blank or null string, otherwise returns undefined
-     * @param key input key
-     * @returns the value or undefined
-     */
-    getOrUndefined(key) {
-        const value = (0, core_1.getInput)(key);
-        return value !== "" ? value : undefined;
-    }
-    getAsCommaSeparatedList(key) {
-        // trim the value
-        const value = ((0, core_1.getInput)(key) ?? "").trim();
-        return value !== "" ? value.replace(/\s/g, "").split(",") : undefined;
-    }
-    getAsBooleanOrDefault(key) {
-        const value = (0, core_1.getInput)(key).trim();
-        return value !== "" ? value.toLowerCase() === "true" : undefined;
-    }
     readArgs() {
-        const configFile = this.getOrUndefined("config-file");
+        const configFile = (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("config-file"));
         let args;
         if (configFile) {
             args = (0, args_utils_1.readConfigFile)(configFile);
         }
         else {
             args = {
-                dryRun: this.getAsBooleanOrDefault("dry-run"),
-                auth: this.getOrUndefined("auth"),
+                dryRun: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("dry-run")),
+                auth: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("auth")),
                 pullRequest: (0, core_1.getInput)("pull-request"),
                 targetBranch: (0, core_1.getInput)("target-branch"),
-                folder: this.getOrUndefined("folder"),
-                gitUser: this.getOrUndefined("git-user"),
-                gitEmail: this.getOrUndefined("git-email"),
-                title: this.getOrUndefined("title"),
-                body: this.getOrUndefined("body"),
-                bodyPrefix: this.getOrUndefined("body-prefix"),
-                bpBranchName: this.getOrUndefined("bp-branch-name"),
-                reviewers: this.getAsCommaSeparatedList("reviewers"),
-                assignees: this.getAsCommaSeparatedList("assignees"),
-                inheritReviewers: !this.getAsBooleanOrDefault("no-inherit-reviewers"),
+                folder: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("folder")),
+                gitUser: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-user")),
+                gitEmail: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-email")),
+                title: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("title")),
+                body: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("body")),
+                bodyPrefix: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("body-prefix")),
+                bpBranchName: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("bp-branch-name")),
+                reviewers: (0, args_utils_1.getAsCleanedCommaSeparatedList)((0, core_1.getInput)("reviewers")),
+                assignees: (0, args_utils_1.getAsCleanedCommaSeparatedList)((0, core_1.getInput)("assignees")),
+                inheritReviewers: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-inherit-reviewers")),
+                labels: (0, args_utils_1.getAsCommaSeparatedList)((0, core_1.getInput)("labels")),
+                inheritLabels: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("inherit-labels")),
             };
         }
         return args;
@@ -281,12 +295,17 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         }
         const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
         const body = args.body ?? `${originalPullRequest.body}`;
+        const labels = args.labels ?? [];
+        if (args.inheritLabels) {
+            labels.push(...originalPullRequest.labels);
+        }
         return {
             author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
             body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
             assignees: [...new Set(args.assignees)],
+            labels: [...new Set(labels)],
             targetRepo: originalPullRequest.targetRepo,
             sourceRepo: originalPullRequest.targetRepo,
             branchName: args.bpBranchName,
@@ -597,10 +616,23 @@ class GitHubClient {
             head: backport.head,
             base: backport.base,
             title: backport.title,
-            body: backport.body
+            body: backport.body,
         });
         if (!data) {
             throw new Error("Pull request creation failed");
+        }
+        if (backport.labels.length > 0) {
+            try {
+                await this.octokit.issues.addLabels({
+                    owner: backport.owner,
+                    repo: backport.repo,
+                    issue_number: data.number,
+                    labels: backport.labels,
+                });
+            }
+            catch (error) {
+                this.logger.error(`Error setting labels: ${error}`);
+            }
         }
         if (backport.reviewers.length > 0) {
             try {
@@ -679,6 +711,7 @@ class GitHubMapper {
             mergedBy: pr.merged_by?.login,
             reviewers: pr.requested_reviewers.filter(r => "login" in r).map((r => r?.login)),
             assignees: pr.assignees.filter(r => "login" in r).map(r => r.login),
+            labels: pr.labels.map(l => l.name),
             sourceRepo: await this.mapSourceRepo(pr),
             targetRepo: await this.mapTargetRepo(pr),
             nCommits: pr.commits,
@@ -799,6 +832,18 @@ class GitLabClient {
             assignee_ids: [],
         });
         const mr = data;
+        // labels
+        if (backport.labels.length > 0) {
+            try {
+                this.logger.info("Setting labels: " + backport.labels);
+                await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+                    labels: backport.labels.join(","),
+                });
+            }
+            catch (error) {
+                this.logger.warn("Failure trying to update labels. " + error);
+            }
+        }
         // reviewers
         const reviewerIds = [];
         for (const r of backport.reviewers) {
@@ -913,7 +958,6 @@ class GitLabMapper {
         }
     }
     async mapPullRequest(mr) {
-        // throw new Error("Method not implemented.");
         return {
             number: mr.iid,
             author: mr.author.username,
@@ -926,6 +970,7 @@ class GitLabMapper {
             mergedBy: mr.merged_by?.username,
             reviewers: mr.reviewers?.map((r => r.username)) ?? [],
             assignees: mr.assignees?.map((r => r.username)) ?? [],
+            labels: mr.labels ?? [],
             sourceRepo: await this.mapSourceRepo(mr),
             targetRepo: await this.mapTargetRepo(mr),
             nCommits: 1,
@@ -1140,6 +1185,7 @@ class Runner {
             body: backportPR.body,
             reviewers: backportPR.reviewers,
             assignees: backportPR.assignees,
+            labels: backportPR.labels,
         };
         if (!configs.dryRun) {
             // 8. push the new branch to origin

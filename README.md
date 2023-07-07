@@ -7,7 +7,7 @@
   <a href="https://github.com/kiegroup/git-backporting">
     <img alt="ci checks status" src="https://github.com/kiegroup/git-backporting/actions/workflows/ci.yml/badge.svg">
   </a>
-  <a href="https://badge.fury.io/js/@kie%git-backporting">
+  <a href="https://badge.fury.io/js/@kie%2Fgit-backporting">
     <img alt="npm version" src="https://badge.fury.io/js/@kie%2Fgit-backporting.svg">
   </a>
 </p>
@@ -94,6 +94,8 @@ This tool comes with some inputs that allow users to override the default behavi
 | Assignees       | --assignes        | N            | Backporting pull request comma-separated assignees list                                                           | []       |
 | No Reviewers Inheritance       | --no-inherit-reviewers        | N            | Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request                                                           | false       |
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
+| Labels       | --labels        | N            | Provide custom labels to be added to the backporting pull request                                                           | []       |
+| Inherit labels       | --inherit-labels        | N            | If enabled inherit lables from the original pull request                                                           | false       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and `target branch` are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
@@ -279,6 +281,8 @@ Every change must be submitted through a *GitHub* pull request (PR). Backporting
 5. Create a new pull request against `main` branch.
 
 > **Note**: you don't need to take care about typescript compilation and minifycation, there are automated [git hooks](./.husky) taking care of that!
+
+**Hint**: if you are still in a `work in progress` branch and you want to push your changes remotely, consider adding `--no-verify` for both `commit` and `push`, e.g., `git push origin <feat-branch> --no-verify`
 
 ## License
 

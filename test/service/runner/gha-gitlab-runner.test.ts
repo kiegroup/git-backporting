@@ -21,6 +21,8 @@ const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
   "reviewers": [],
   "assignees": ["user3", "user4"],
   "inheritReviewers": false,
+  "labels": ["gha gitlab cherry pick :cherries:"],
+  "inheritLabels": true,
 };
 
 jest.mock("axios", () => {
@@ -128,6 +130,7 @@ describe("gha runner", () => {
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2"),
         reviewers: ["superuser"],
         assignees: [],
+        labels: [],
       }
     );
   });
@@ -175,6 +178,7 @@ describe("gha runner", () => {
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
         reviewers: ["superuser"],
         assignees: [],
+        labels: [],
       }
     );
   });
@@ -220,6 +224,7 @@ describe("gha runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
+        labels: [],
       }
     );
   });
@@ -266,6 +271,88 @@ describe("gha runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
+        labels: [],
+      }
+    );
+  });
+
+  test("set custom labels with inheritance", async () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1",
+      "labels": "cherry-pick :cherries:, another-label",
+      "inherit-labels": "true",
+    });
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "superuser", 
+        repo: "backporting-example", 
+        head: "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        base: "target", 
+        title: "[target] Update test.txt", 
+        body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
+        reviewers: ["superuser"],
+        assignees: [],
+        labels: ["cherry-pick :cherries:", "another-label", "gitlab-original-label"],
+      }
+    );
+  });
+
+  test("set custom labels without inheritance", async () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1",
+      "labels": "cherry-pick :cherries:, another-label",
+    });
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "superuser", 
+        repo: "backporting-example", 
+        head: "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        base: "target", 
+        title: "[target] Update test.txt", 
+        body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
+        reviewers: ["superuser"],
+        assignees: [],
+        labels: ["cherry-pick :cherries:", "another-label"],
       }
     );
   });
@@ -305,6 +392,7 @@ describe("gha runner", () => {
         body: expect.stringContaining("**This is a backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
         reviewers: [],
         assignees: ["user3", "user4"],
+        labels: ["gha gitlab cherry pick :cherries:", "gitlab-original-label"],
       }
     );
   });

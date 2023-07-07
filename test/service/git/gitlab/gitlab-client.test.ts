@@ -92,6 +92,7 @@ describe("github service", () => {
       head: "bp-branch",
       reviewers: [],
       assignees: [],
+      labels: [],
     };
     
     const url: string = await gitClient.createPullRequest(backport);
@@ -121,6 +122,7 @@ describe("github service", () => {
       head: "bp-branch",
       reviewers: ["superuser", "invalid"],
       assignees: [],
+      labels: [],
     };
     
     const url: string = await gitClient.createPullRequest(backport);
@@ -155,6 +157,7 @@ describe("github service", () => {
       head: "bp-branch",
       reviewers: [],
       assignees: ["superuser", "invalid"],
+      labels: [],
     };
     
     const url: string = await gitClient.createPullRequest(backport);
@@ -189,6 +192,7 @@ describe("github service", () => {
       head: "bp-branch-2",
       reviewers: ["superuser", "invalid"],
       assignees: [],
+      labels: [],
     };
     
     const url: string = await gitClient.createPullRequest(backport);
@@ -223,6 +227,7 @@ describe("github service", () => {
       head: "bp-branch-2",
       reviewers: [],
       assignees: ["superuser", "invalid"],
+      labels: [],
     };
     
     const url: string = await gitClient.createPullRequest(backport);
@@ -244,6 +249,39 @@ describe("github service", () => {
     expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just assignees
     expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
       assignee_ids: [14041],
+    });
+  });
+
+  test("create backport pull request with custom labels", async () => {
+    const backport: BackportPullRequest = {
+      title: "Backport Title",
+      body: "Backport Body",
+      owner: "superuser",
+      repo: "backporting-example",
+      base: "old/branch",
+      head: "bp-branch-2",
+      reviewers: [],
+      assignees: [],
+      labels: ["label1", "label2"],
+    };
+    
+    const url: string = await gitClient.createPullRequest(backport);
+    expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + SECOND_NEW_GITLAB_MR_ID);
+
+    // check axios invocation
+    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
+    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+      source_branch: "bp-branch-2",
+      target_branch: "old/branch",
+      title: "Backport Title",
+      description: "Backport Body",
+      reviewer_ids: [],
+      assignee_ids: [],
+    }));
+    expect(axiosInstanceSpy.get).toBeCalledTimes(0);
+    expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just labels
+    expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
+      labels: "label1,label2",
     });
   });
 });

@@ -24,6 +24,8 @@ const RANDOM_CONFIG_FILE_CONTENT = {
   "reviewers": ["reviewer1", "reviewer2"],
   "assignees": ["assignee1", "assignee2"],
   "inheritReviewers": true,
+  "labels": ["cherry-pick :cherries:"],
+  "inheritLabels": true,
 };
 
 describe("gha args parser", () => {
@@ -50,26 +52,6 @@ describe("gha args parser", () => {
     jest.clearAllMocks();
   });
 
-  test("getOrUndefined", () => {
-    spyGetInput({
-      "present": "value",
-      "empty": "",
-    });
-    expect(parser.getOrUndefined("empty")).toStrictEqual(undefined);
-    expect(parser.getOrUndefined("present")).toStrictEqual("value");
-  });
-
-  test("getAsCommaSeparatedList", () => {
-    spyGetInput({
-      "present": "value1, value2 ,   value3",
-      "empty": "",
-      "blank": "   ",
-    });
-    expectArrayEqual(parser.getAsCommaSeparatedList("present")!, ["value1", "value2", "value3"]);
-    expect(parser.getAsCommaSeparatedList("empty")).toStrictEqual(undefined);
-    expect(parser.getAsCommaSeparatedList("blank")).toStrictEqual(undefined);
-  });
-
   test("valid execution [default]", () => {
     spyGetInput({
       "target-branch": "target",
@@ -89,6 +71,8 @@ describe("gha args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("valid execution [override]", () => {
@@ -106,6 +90,8 @@ describe("gha args parser", () => {
       "reviewers": "al , john,  jack",
       "assignees": " pippo,pluto, paperino",
       "no-inherit-reviewers": "true",
+      "labels": "cherry-pick :cherries:, another spaced label",
+      "inherit-labels": "true"
     });
 
     const args: Args = parser.parse();
@@ -123,6 +109,8 @@ describe("gha args parser", () => {
     expectArrayEqual(args.reviewers!, ["al", "john", "jack"]);
     expectArrayEqual(args.assignees!, ["pippo", "pluto", "paperino"]);
     expect(args.inheritReviewers).toEqual(false);
+    expectArrayEqual(args.labels!, ["cherry-pick :cherries:", "another spaced label"]);
+    expect(args.inheritLabels).toEqual(true);
   });
 
   test("using config file", () => {
@@ -145,6 +133,8 @@ describe("gha args parser", () => {
     expect(args.reviewers).toEqual([]);
     expect(args.assignees).toEqual([]);
     expect(args.inheritReviewers).toEqual(true);
+    expectArrayEqual(args.labels!, []);
+    expect(args.inheritLabels).toEqual(false);
   });
 
   test("ignore custom options when using config file", () => {
@@ -163,6 +153,8 @@ describe("gha args parser", () => {
       "reviewers": "al , john,  jack",
       "assignees": " pippo,pluto, paperino",
       "no-inherit-reviewers": "true",
+      "labels": "cherry-pick :cherries:, another spaced label",
+      "inherit-labels": "false"
     });
 
     const args: Args = parser.parse();
@@ -180,5 +172,7 @@ describe("gha args parser", () => {
     expectArrayEqual(args.reviewers!, ["reviewer1", "reviewer2"]);
     expectArrayEqual(args.assignees!,["assignee1", "assignee2"]);
     expect(args.inheritReviewers).toEqual(true);
+    expectArrayEqual(args.labels!, ["cherry-pick :cherries:"]);
+    expect(args.inheritLabels).toEqual(true);
   });
 });

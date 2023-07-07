@@ -100,6 +100,7 @@ export default class Runner {
       body: backportPR.body,
       reviewers: backportPR.reviewers,
       assignees: backportPR.assignees,
+      labels: backportPR.labels,
     };
 
     if (!configs.dryRun) {

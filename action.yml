@@ -48,6 +48,13 @@ inputs:
     description: "Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request"
     required: false
     default: "false"
+  labels:
+    description: "Comma separated list of labels to be assigned to the backported pull request"
+    required: false
+  inherit-labels:
+    description: "If true the backported pull request will inherit labels from the original one"
+    required: false
+    default: "false"
 
 runs:
   using: node16

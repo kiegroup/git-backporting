@@ -21,6 +21,8 @@ const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
   "reviewers": [],
   "assignees": ["user3", "user4"],
   "inheritReviewers": false,
+  "labels": ["cli github cherry pick :cherries:"],
+  "inheritLabels": true,
 };
 
 jest.mock("@bp/service/git/git-cli");
@@ -218,6 +220,7 @@ describe("cli runner", () => {
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
+        labels: [],
       }
     );
   });
@@ -258,6 +261,7 @@ describe("cli runner", () => {
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/8632"),
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
+        labels: [],
       }
     );
   });
@@ -310,6 +314,7 @@ describe("cli runner", () => {
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/4444"),
         reviewers: ["gh-user"],
         assignees: [],
+        labels: [],
       }
     );
   });
@@ -331,7 +336,7 @@ describe("cli runner", () => {
       "--reviewers",
       "user1,user2",
       "--assignees",
-      "user3,user4"
+      "user3,user4",
     ]);
     
     await runner.execute();
@@ -363,6 +368,7 @@ describe("cli runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
+        labels: [],
       }
     );
   });
@@ -415,6 +421,96 @@ describe("cli runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
+        labels: [],
+      }
+    );
+  });
+
+  test("set custom labels with inheritance", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "--labels",
+      "cherry-pick :cherries:, original-label",
+      "--inherit-labels",
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        base: "target", 
+        title: "[target] PR Title", 
+        body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: ["cherry-pick :cherries:", "original-label"],
+      }
+    );
+  });
+
+  test("set custom lables without inheritance", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "--labels",
+      "first-label, second-label ",
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        base: "target", 
+        title: "[target] PR Title", 
+        body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: ["first-label", "second-label"],
       }
     );
   });
@@ -454,6 +550,7 @@ describe("cli runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
+        labels: ["cli github cherry pick :cherries:", "original-label"],
       }
     );
   });

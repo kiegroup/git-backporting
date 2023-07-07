@@ -10,6 +10,7 @@ export interface GitPullRequest {
   body: string,
   reviewers: string[],
   assignees: string[],
+  labels: string[],
   targetRepo: GitRepository,
   sourceRepo: GitRepository,
   nCommits?: number, // number of commits in the pr
@@ -32,6 +33,7 @@ export interface BackportPullRequest {
   body: string, // pr body
   reviewers: string[], // pr list of reviewers
   assignees: string[], // pr list of assignees
+  labels: string[], // pr list of assigned labels
   branchName?: string,
 }
 

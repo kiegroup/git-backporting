@@ -20,3 +20,31 @@ export function readConfigFile(pathToFile: string): Args {
   const asString: string = fs.readFileSync(pathToFile, "utf-8");
   return parseArgs(asString);
 }
+
+/**
+ * Return the input only if it is not a blank or null string, otherwise returns undefined
+ * @param key input key
+ * @returns the value or undefined
+ */
+export function getOrUndefined(value: string): string | undefined {
+  return value !== "" ? value : undefined;
+}
+
+// get rid of inner spaces too
+export function getAsCleanedCommaSeparatedList(value: string): string[] | undefined {
+  // trim the value
+  const trimmed: string = value.trim();
+  return trimmed !== "" ? trimmed.replace(/\s/g, "").split(",") : undefined; 
+}
+
+// preserve inner spaces
+export function getAsCommaSeparatedList(value: string): string[] | undefined {
+  // trim the value
+  const trimmed: string = value.trim();
+  return trimmed !== "" ? trimmed.split(",").map(v => v.trim()) : undefined; 
+}
+
+export function getAsBooleanOrDefault(value: string): boolean | undefined {
+  const trimmed = value.trim();
+  return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
+}

@@ -16,4 +16,6 @@ export interface Args {
   reviewers?: string[], // backport pr reviewers
   assignees?: string[], // backport pr assignees
   inheritReviewers?: boolean, // if true and reviewers == [] then inherit reviewers from original pr
+  labels?: string[], // backport pr labels
+  inheritLabels?: boolean, // if true inherit labels from original pr
 }
