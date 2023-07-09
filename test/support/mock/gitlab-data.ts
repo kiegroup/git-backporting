@@ -110,7 +110,7 @@ export const PROJECT_EXAMPLE = {
   "build_git_strategy":"fetch",
   "keep_latest_artifact":true,
   "restrict_user_defined_variables":false,
-  "runners_token":"GR13489419z7QQ54AUgJaNMFD5asU",
+  "runners_token":"TOKEN",
   "runner_token_expiration_interval":null,
   "group_runners_enabled":true,
   "auto_cancel_pending_pipelines":"enabled",
