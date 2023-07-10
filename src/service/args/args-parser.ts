@@ -36,6 +36,8 @@ export default abstract class ArgsParser {
       reviewers: this.getOrDefault(args.reviewers, []),
       assignees: this.getOrDefault(args.assignees, []),
       inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
+      labels: this.getOrDefault(args.labels, []),
+      inheritLabels: this.getOrDefault(args.inheritLabels, false),
     };
   }
 }

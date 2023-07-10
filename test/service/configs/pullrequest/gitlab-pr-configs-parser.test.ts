@@ -28,6 +28,8 @@ const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
   "reviewers": [],
   "assignees": ["user3", "user4"],
   "inheritReviewers": false,
+  "labels": ["cherry-pick :cherries:"],
+  "inheritLabels": true,
 };
 
 
@@ -107,6 +109,7 @@ describe("gitlab merge request config parser", () => {
       body: "This is the body",
       reviewers: ["superuser1", "superuser2"],
       assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -128,6 +131,7 @@ describe("gitlab merge request config parser", () => {
       body: "**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1\r\n\r\nThis is the body",
       reviewers: ["superuser"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -203,6 +207,7 @@ describe("gitlab merge request config parser", () => {
       body: "Still opened mr body",
       reviewers: ["superuser"],
       assignees: ["superuser"],
+      labels: [],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -236,7 +241,7 @@ describe("gitlab merge request config parser", () => {
     expect(async () => await configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 
-  test("override backport pr data inherting reviewers", async () => {
+  test("override backport pr data inheriting reviewers", async () => {
     const args: Args = {
       dryRun: false,
       auth: "",
@@ -274,6 +279,7 @@ describe("gitlab merge request config parser", () => {
       body: "This is the body",
       reviewers: ["superuser1", "superuser2"],
       assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -295,6 +301,7 @@ describe("gitlab merge request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: ["superuser"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -347,6 +354,7 @@ describe("gitlab merge request config parser", () => {
       body: "This is the body",
       reviewers: ["superuser1", "superuser2"],
       assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -368,6 +376,7 @@ describe("gitlab merge request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
+      labels: [],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -420,6 +429,7 @@ describe("gitlab merge request config parser", () => {
       body: "This is the body",
       reviewers: ["superuser1", "superuser2"],
       assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -441,6 +451,7 @@ describe("gitlab merge request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
+      labels: [],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -455,6 +466,82 @@ describe("gitlab merge request config parser", () => {
     });
   });
 
+  test("override backport pr custom labels with duplicates", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      title: "New Title",
+      body: "New Body",
+      bodyPrefix: "New Body Prefix -",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      inheritReviewers: false,
+      labels: ["custom-label", "gitlab-original-label"], // also include the one inherited
+      inheritLabels: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "Me",
+      email: "me@email.com"
+    });
+    expect(configs.auth).toEqual("");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 1,
+      author: "superuser",
+      url: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1",
+      htmlUrl: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1",
+      state: "merged",
+      merged: true,
+      mergedBy: "superuser",
+      title: "Update test.txt",
+      body: "This is the body",
+      reviewers: ["superuser1", "superuser2"],
+      assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
+      targetRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      sourceRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      nCommits: 1,
+      commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
+    });
+    expect(configs.backportPullRequest).toEqual({
+      author: "Me",
+      url: undefined,
+      htmlUrl: undefined,
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      labels: ["custom-label", "gitlab-original-label"],
+      targetRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      sourceRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      bpBranchName: undefined,
+    });
+  });
     
   test("using simple config file", async () => {
     spyGetInput({
@@ -484,6 +571,7 @@ describe("gitlab merge request config parser", () => {
       body: "This is the body",
       reviewers: ["superuser1", "superuser2"],
       assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -505,6 +593,7 @@ describe("gitlab merge request config parser", () => {
       body: "**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1\r\n\r\nThis is the body",
       reviewers: ["superuser"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -547,6 +636,7 @@ describe("gitlab merge request config parser", () => {
       body: "This is the body",
       reviewers: ["superuser1", "superuser2"],
       assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",
@@ -568,6 +658,7 @@ describe("gitlab merge request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
+      labels: ["cherry-pick :cherries:", "gitlab-original-label"],
       targetRepo: {
         owner: "superuser",
         project: "backporting-example",

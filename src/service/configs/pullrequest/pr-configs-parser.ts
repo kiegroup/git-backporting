@@ -63,12 +63,18 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
     const body = args.body ?? `${originalPullRequest.body}`;
     
+    const labels = args.labels ?? [];
+    if (args.inheritLabels) {
+      labels.push(...originalPullRequest.labels);
+    }
+
     return {
       author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
       title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
       body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],
       assignees: [...new Set(args.assignees)],
+      labels: [...new Set(labels)],
       targetRepo: originalPullRequest.targetRepo,
       sourceRepo: originalPullRequest.targetRepo,
       branchName: args.bpBranchName,

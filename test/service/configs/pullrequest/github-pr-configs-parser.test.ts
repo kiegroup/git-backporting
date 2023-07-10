@@ -28,6 +28,8 @@ const GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
   "reviewers": ["user1", "user2"],
   "assignees": ["user3", "user4"],
   "inheritReviewers": true, // not taken into account
+  "labels": ["cherry-pick :cherries:"],
+  "inheritLabels": true,
 };
 
 describe("github pull request config parser", () => {
@@ -104,6 +106,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["requested-gh-user", "gh-user"],
       assignees: [],
+      labels: ["original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -125,6 +128,7 @@ describe("github pull request config parser", () => {
       body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -199,6 +203,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["gh-user"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -233,7 +238,7 @@ describe("github pull request config parser", () => {
   });
 
   
-  test("override backport pr data inherting reviewers", async () => {
+  test("override backport pr data inheriting reviewers", async () => {
     const args: Args = {
       dryRun: false,
       auth: "",
@@ -271,6 +276,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["requested-gh-user", "gh-user"],
       assignees: [],
+      labels: ["original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -293,6 +299,7 @@ describe("github pull request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -345,6 +352,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["requested-gh-user", "gh-user"],
       assignees: [],
+      labels: ["original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -367,6 +375,7 @@ describe("github pull request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
+      labels: [],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -419,6 +428,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["requested-gh-user", "gh-user"],
       assignees: [],
+      labels: ["original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -441,6 +451,85 @@ describe("github pull request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
+      labels: [],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      bpBranchName: undefined,
+    });
+  });
+
+  test("override backport pr custom labels with duplicates", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      title: "New Title",
+      body: "New Body",
+      bodyPrefix: "New Body Prefix -",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      inheritReviewers: false,
+      labels: ["custom-label", "original-label"], // also include the one inherited
+      inheritLabels: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "Me",
+      email: "me@email.com"
+    });
+    expect(configs.auth).toEqual("");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 2368,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/2368",
+      htmlUrl: "https://github.com/owner/reponame/pull/2368",
+      state: "closed",
+      merged: true,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["requested-gh-user", "gh-user"],
+      assignees: [],
+      labels: ["original-label"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "fork",
+        project: "reponame",
+        cloneUrl: "https://github.com/fork/reponame.git"
+      },
+      bpBranchName: undefined,
+      nCommits: 2,
+      commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
+    });
+    expect(configs.backportPullRequest).toEqual({
+      author: "Me",
+      url: undefined,
+      htmlUrl: undefined,
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      labels: ["custom-label", "original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -484,6 +573,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["requested-gh-user", "gh-user"],
       assignees: [],
+      labels: ["original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -505,6 +595,7 @@ describe("github pull request config parser", () => {
       body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
+      labels: [],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -548,6 +639,7 @@ describe("github pull request config parser", () => {
       body: "Please review and merge",
       reviewers: ["requested-gh-user", "gh-user"],
       assignees: [],
+      labels: ["original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",
@@ -570,6 +662,7 @@ describe("github pull request config parser", () => {
       body: "New Body Prefix -New Body",
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
+      labels: ["cherry-pick :cherries:", "original-label"],
       targetRepo: {
         owner: "owner",
         project: "reponame",

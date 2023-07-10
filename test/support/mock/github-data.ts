@@ -91,7 +91,15 @@ export const mergedPullRequestFixture = {
 
   ],
   "labels": [
-
+    {
+      "id": 4901021057,
+      "node_id": "LA_kwDOImgs2354988AAAABJB-lgQ",
+      "url": "https://api.github.com/repos/owner/reponame/labels/original-label",
+      "name": "original-label",
+      "color": "AB975B",
+      "default": false,
+      "description": ""
+    }
   ],
   "milestone": null,
   "draft": false,

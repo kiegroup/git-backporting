@@ -72,6 +72,18 @@ export default class GitLabClient implements GitClient {
     
     const mr = data as MergeRequestSchema;
 
+    // labels
+    if (backport.labels.length > 0) {
+      try {
+        this.logger.info("Setting labels: " + backport.labels);
+        await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+          labels: backport.labels.join(","),
+        });
+      } catch(error) {
+        this.logger.warn("Failure trying to update labels. " + error);
+      }
+    }
+
     // reviewers
     const reviewerIds: number[] = [];
     for(const r of backport.reviewers) {

@@ -1,5 +1,6 @@
-import { parseArgs, readConfigFile } from "@bp/service/args/args-utils";
-import { createTestFile, removeTestFile } from "../../support/utils";
+import { getAsCleanedCommaSeparatedList, getAsCommaSeparatedList, getOrUndefined, parseArgs, readConfigFile } from "@bp/service/args/args-utils";
+import { createTestFile, expectArrayEqual, removeTestFile, spyGetInput } from "../../support/utils";
+import { getInput } from "@actions/core";
 
 const RANDOM_CONFIG_FILE_CONTENT_PATHNAME = "./args-utils-test-random-config-file.json";
 const RANDOM_CONFIG_FILE_CONTENT = {
@@ -38,5 +39,40 @@ describe("args utils test suite", () => {
 
   test("check readConfigFile function", () => {
     expect(readConfigFile(RANDOM_CONFIG_FILE_CONTENT_PATHNAME)).toStrictEqual(RANDOM_CONFIG_FILE_CONTENT);
+  });
+
+  test("gha getOrUndefined", () => {
+    spyGetInput({
+      "present": "value",
+      "empty": "",
+    });
+    expect(getOrUndefined(getInput("empty"))).toStrictEqual(undefined);
+    expect(getOrUndefined(getInput("present"))).toStrictEqual("value");
+  });
+
+  test("gha getAsCleanedCommaSeparatedList", () => {
+    spyGetInput({
+      "present": "value1, value2 ,   value3",
+      "empty": "",
+      "blank": "   ",
+      "inner": " inner spaces ",
+    });
+    expectArrayEqual(getAsCleanedCommaSeparatedList(getInput("present"))!, ["value1", "value2", "value3"]);
+    expect(getAsCleanedCommaSeparatedList(getInput("empty"))).toStrictEqual(undefined);
+    expect(getAsCleanedCommaSeparatedList(getInput("blank"))).toStrictEqual(undefined);
+    expect(getAsCleanedCommaSeparatedList(getInput("inner"))).toStrictEqual(["innerspaces"]);
+  });
+
+  test("gha getAsCommaSeparatedList", () => {
+    spyGetInput({
+      "present": "value1, value2 ,   value3",
+      "empty": "",
+      "blank": "   ",
+      "inner": " inner spaces ",
+    });
+    expectArrayEqual(getAsCommaSeparatedList(getInput("present"))!, ["value1", "value2", "value3"]);
+    expect(getAsCommaSeparatedList(getInput("empty"))).toStrictEqual(undefined);
+    expect(getAsCommaSeparatedList(getInput("blank"))).toStrictEqual(undefined);
+    expectArrayEqual(getAsCommaSeparatedList(getInput("inner"))!, ["inner spaces"]);
   });
 });

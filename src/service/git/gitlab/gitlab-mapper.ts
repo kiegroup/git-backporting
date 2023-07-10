@@ -25,7 +25,6 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
   }
   
   async mapPullRequest(mr: MergeRequestSchema): Promise<GitPullRequest> {
-    // throw new Error("Method not implemented.");
     return {
       number: mr.iid,
       author: mr.author.username,
@@ -38,6 +37,7 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
       mergedBy: mr.merged_by?.username,
       reviewers: mr.reviewers?.map((r => r.username)) ?? [],
       assignees: mr.assignees?.map((r => r.username)) ?? [],
+      labels: mr.labels ?? [],
       sourceRepo: await this.mapSourceRepo(mr),
       targetRepo: await this.mapTargetRepo(mr),
       nCommits: 1, // info not present on mr
