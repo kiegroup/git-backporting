@@ -534,7 +534,7 @@ exports.inferGitClient = inferGitClient;
 const inferGitApiUrl = (prUrl, apiVersion = "v4") => {
     const url = new URL(prUrl);
     const baseUrl = `${url.protocol}//${url.host}`;
-    if (baseUrl.includes(PUBLIC_GITHUB_URL)) {
+    if (baseUrl.includes(PUBLIC_GITHUB_URL) || baseUrl.includes(PUBLIC_GITHUB_API)) {
         return PUBLIC_GITHUB_API;
     }
     return `${baseUrl}/api/${apiVersion}`;

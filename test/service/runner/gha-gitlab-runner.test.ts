@@ -6,6 +6,8 @@ import GHAArgsParser from "@bp/service/args/gha/gha-args-parser";
 import { createTestFile, removeTestFile, spyGetInput } from "../../support/utils";
 import { getAxiosMocked } from "../../support/mock/git-client-mock-support";
 import { MERGED_SQUASHED_MR } from "../../support/mock/gitlab-data";
+import GitClientFactory from "@bp/service/git/git-client-factory";
+import { GitClientType } from "@bp/service/git/git.types";
 
 const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME = "./gha-gitlab-runner-pr-merged-with-overrides.json";
 const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
@@ -41,6 +43,7 @@ jest.mock("axios", () => {
 
 jest.mock("@bp/service/git/git-cli");
 jest.spyOn(GitLabClient.prototype, "createPullRequest");
+jest.spyOn(GitClientFactory, "getOrCreate");
 
 let parser: ArgsParser;
 let runner: Runner;
@@ -79,6 +82,9 @@ describe("gha runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
@@ -104,6 +110,9 @@ describe("gha runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
@@ -154,6 +163,9 @@ describe("gha runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
@@ -198,6 +210,9 @@ describe("gha runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
@@ -246,6 +261,9 @@ describe("gha runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
@@ -288,6 +306,9 @@ describe("gha runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
@@ -328,6 +349,9 @@ describe("gha runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
@@ -365,6 +389,9 @@ describe("gha runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, "my-token", "https://my.gitlab.host.com/api/v4");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "prod");
