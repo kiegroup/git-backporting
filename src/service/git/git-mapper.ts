@@ -10,6 +10,7 @@ export default interface GitResponseMapper<PR, S> {
 
   mapPullRequest(
     pr: PR,
+    commits?: string[],
   ): Promise<GitPullRequest>;
 
   mapGitState(state: S): GitRepoState;

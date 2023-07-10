@@ -11,3 +11,6 @@ report.json
 .vscode/
 build/
 .npmrc
+
+# temporary files created during tests
+*test*.json

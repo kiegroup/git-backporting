@@ -29,6 +29,7 @@ export default class GHAArgsParser extends ArgsParser {
         inheritReviewers: !getAsBooleanOrDefault(getInput("no-inherit-reviewers")),
         labels: getAsCommaSeparatedList(getInput("labels")),
         inheritLabels: getAsBooleanOrDefault(getInput("inherit-labels")),
+        squash: !getAsBooleanOrDefault(getInput("no-squash")),
       };
     }
 

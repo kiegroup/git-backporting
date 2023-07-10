@@ -1,7 +1,7 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
-import { targetOwner, repo, mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, notFoundPullRequestNumber, sameOwnerPullRequestFixture } from "./github-data";
-import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, OPEN_MR, PROJECT_EXAMPLE, SUPERUSER} from "./gitlab-data";
+import { targetOwner, repo, mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, notFoundPullRequestNumber, multipleCommitsPullRequestFixture, multipleCommitsPullRequestCommits } from "./github-data";
+import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, SUPERUSER} from "./gitlab-data";
 
 const logger = LoggerServiceFactory.getLogger();
 
@@ -22,6 +22,8 @@ export const getAxiosMocked = (url: string) => {
     data = PROJECT_EXAMPLE;
   } else if (url.endsWith("users?username=superuser")) {
     data = [SUPERUSER];
+  } else if (url.endsWith("merge_requests/2/commits")) {
+    data = OPEN_PR_COMMITS;
   }
 
   return {
@@ -96,15 +98,15 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
     });
 
   mock.rest.pulls
-  .get({
-    owner: targetOwner,
-    repo: repo,
-    pull_number: sameOwnerPullRequestFixture.number
-  })
-  .reply({
-    status: 200,
-    data: sameOwnerPullRequestFixture
-  });
+    .get({
+      owner: targetOwner,
+      repo: repo,
+      pull_number: multipleCommitsPullRequestFixture.number
+    })
+    .reply({
+      status: 200,
+      data: multipleCommitsPullRequestFixture
+    });
   
   mock.rest.pulls
     .get({
@@ -118,15 +120,26 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
     });
   
   mock.rest.pulls
-  .get({
-    owner: targetOwner,
-    repo: repo,
-    pull_number: notMergedPullRequestFixture.number
-  })
-  .reply({
-    status: 200,
-    data: notMergedPullRequestFixture
-  });
+    .get({
+      owner: targetOwner,
+      repo: repo,
+      pull_number: notMergedPullRequestFixture.number
+    })
+    .reply({
+      status: 200,
+      data: notMergedPullRequestFixture
+    });
+  
+  mock.rest.pulls
+    .listCommits({
+      owner: targetOwner,
+      repo: repo,
+      pull_number: multipleCommitsPullRequestFixture.number
+    })
+    .reply({
+      status: 200,
+      data: multipleCommitsPullRequestCommits
+    });
   
   mock.rest.pulls
     .create()
@@ -155,7 +168,6 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       status: 200,
       data: {}
     });
-
 
   // invalid requests
   mock.rest.pulls

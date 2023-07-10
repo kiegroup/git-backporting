@@ -60,6 +60,7 @@ class ArgsParser {
             inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
             labels: this.getOrDefault(args.labels, []),
             inheritLabels: this.getOrDefault(args.inheritLabels, false),
+            squash: this.getOrDefault(args.squash, true),
         };
     }
 }
@@ -188,6 +189,7 @@ class GHAArgsParser extends args_parser_1.default {
                 inheritReviewers: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-inherit-reviewers")),
                 labels: (0, args_utils_1.getAsCommaSeparatedList)((0, core_1.getInput)("labels")),
                 inheritLabels: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("inherit-labels")),
+                squash: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-squash")),
             };
         }
         return args;
@@ -254,7 +256,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
     async parse(args) {
         let pr;
         try {
-            pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest);
+            pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest, args.squash);
         }
         catch (error) {
             this.logger.error("Something went wrong retrieving pull request");
@@ -593,18 +595,33 @@ class GitHubClient {
     getDefaultGitEmail() {
         return "noreply@github.com";
     }
-    async getPullRequest(owner, repo, prNumber) {
+    async getPullRequest(owner, repo, prNumber, squash = true) {
         this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);
         const { data } = await this.octokit.rest.pulls.get({
             owner: owner,
             repo: repo,
-            pull_number: prNumber
+            pull_number: prNumber,
         });
-        return this.mapper.mapPullRequest(data);
+        const commits = [];
+        if (!squash) {
+            // fetch all commits
+            try {
+                const { data } = await this.octokit.rest.pulls.listCommits({
+                    owner: owner,
+                    repo: repo,
+                    pull_number: prNumber,
+                });
+                commits.push(...data.map(c => c.sha));
+            }
+            catch (error) {
+                throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
+            }
+        }
+        return this.mapper.mapPullRequest(data, commits);
     }
-    async getPullRequestFromUrl(prUrl) {
+    async getPullRequestFromUrl(prUrl, squash = true) {
         const { owner, project, id } = this.extractPullRequestData(prUrl);
-        return this.getPullRequest(owner, project, id);
+        return this.getPullRequest(owner, project, id, squash);
     }
     // WRITE
     async createPullRequest(backport) {
@@ -698,7 +715,7 @@ class GitHubMapper {
                 return git_types_1.GitRepoState.CLOSED;
         }
     }
-    async mapPullRequest(pr) {
+    async mapPullRequest(pr, commits) {
         return {
             number: pr.number,
             author: pr.user.login,
@@ -715,9 +732,13 @@ class GitHubMapper {
             sourceRepo: await this.mapSourceRepo(pr),
             targetRepo: await this.mapTargetRepo(pr),
             nCommits: pr.commits,
-            // if pr is open use latest commit sha otherwise use merge_commit_sha
-            commits: pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha]
+            // if commits is provided use them, otherwise fetch the single sha representing the whole pr
+            commits: (commits && commits.length > 0) ? commits : this.getSha(pr),
         };
+    }
+    getSha(pr) {
+        // if pr is open use latest commit sha otherwise use merge_commit_sha
+        return pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha];
     }
     async mapSourceRepo(pr) {
         return Promise.resolve({
@@ -809,14 +830,26 @@ class GitLabClient {
     }
     // READ
     // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
-    async getPullRequest(namespace, repo, mrNumber) {
+    async getPullRequest(namespace, repo, mrNumber, squash = true) {
         const projectId = this.getProjectId(namespace, repo);
         const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
-        return this.mapper.mapPullRequest(data);
+        const commits = [];
+        if (!squash) {
+            // fetch all commits
+            try {
+                const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}/commits`);
+                // gitlab returns them in reverse order
+                commits.push(...data.map(c => c.id).reverse());
+            }
+            catch (error) {
+                throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`);
+            }
+        }
+        return this.mapper.mapPullRequest(data, commits);
     }
-    getPullRequestFromUrl(mrUrl) {
+    getPullRequestFromUrl(mrUrl, squash = true) {
         const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
-        return this.getPullRequest(namespace, project, id);
+        return this.getPullRequest(namespace, project, id, squash);
     }
     // WRITE
     async createPullRequest(backport) {
@@ -957,7 +990,7 @@ class GitLabMapper {
                 return git_types_1.GitRepoState.LOCKED;
         }
     }
-    async mapPullRequest(mr) {
+    async mapPullRequest(mr, commits) {
         return {
             number: mr.iid,
             author: mr.author.username,
@@ -973,11 +1006,15 @@ class GitLabMapper {
             labels: mr.labels ?? [],
             sourceRepo: await this.mapSourceRepo(mr),
             targetRepo: await this.mapTargetRepo(mr),
-            nCommits: 1,
-            // if mr is merged, use merge_commit_sha otherwise use sha
-            // what is the difference between sha and diff_refs.head_sha?
-            commits: this.isMerged(mr) ? [mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha] : [mr.sha]
+            // if commits list is provided use that as source
+            nCommits: (commits && commits.length > 1) ? commits.length : 1,
+            commits: (commits && commits.length > 1) ? commits : this.getSha(mr)
         };
+    }
+    getSha(mr) {
+        // if mr is merged, use merge_commit_sha otherwise use sha
+        // what is the difference between sha and diff_refs.head_sha?
+        return this.isMerged(mr) ? [mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha] : [mr.sha];
     }
     async mapSourceRepo(mr) {
         const project = await this.getProject(mr.source_project_id);

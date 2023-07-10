@@ -5,8 +5,10 @@ import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
 import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
 import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../../support/utils";
-import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner } from "../../../support/mock/github-data";
+import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner, multipleCommitsPullRequestFixture } from "../../../support/mock/github-data";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
+import GitHubMapper from "@bp/service/git/github/github-mapper";
+import GitHubClient from "@bp/service/git/github/github-client";
 
 const GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME = "./github-pr-configs-parser-simple-pr-merged.json";
 const GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT = {
@@ -32,11 +34,15 @@ const GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
   "inheritLabels": true,
 };
 
+jest.spyOn(GitHubMapper.prototype, "mapPullRequest");
+jest.spyOn(GitHubClient.prototype, "getPullRequest");
+
 describe("github pull request config parser", () => {
 
   const mergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`;
   const openPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${openPullRequestFixture.number}`;
   const notMergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${notMergedPullRequestFixture.number}`;
+  const multipleCommitsPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${multipleCommitsPullRequestFixture.number}`;
   
   let argsParser: CLIArgsParser;
   let configParser: PullRequestConfigsParser;
@@ -67,10 +73,6 @@ describe("github pull request config parser", () => {
     configParser = new PullRequestConfigsParser();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   test("parse configs from pull request", async () => {
     const args: Args = {
       dryRun: false,
@@ -85,6 +87,11 @@ describe("github pull request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -184,6 +191,11 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 4444, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
     expect(configs.targetBranch).toEqual("prod");
@@ -234,10 +246,9 @@ describe("github pull request config parser", () => {
       inheritReviewers: true,
     };
 
-    expect(async () => await configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 
-  
   test("override backport pr data inheriting reviewers", async () => {
     const args: Args = {
       dryRun: false,
@@ -255,6 +266,11 @@ describe("github pull request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -332,6 +348,11 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "Me",
@@ -407,6 +428,11 @@ describe("github pull request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -486,6 +512,11 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "Me",
@@ -553,6 +584,11 @@ describe("github pull request config parser", () => {
     const args: Args = argsParser.parse();
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "GitHub",
@@ -619,6 +655,11 @@ describe("github pull request config parser", () => {
     const args: Args = argsParser.parse();
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "Me",
@@ -663,6 +704,84 @@ describe("github pull request config parser", () => {
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
       labels: ["cherry-pick :cherries:", "original-label"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      bpBranchName: undefined,
+    });
+  });
+
+  test("parse configs from pull request without squashing with multiple commits", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: multipleCommitsPRUrl,
+      targetBranch: "prod",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+      squash: false,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 8632, false);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
+    expect(configs.auth).toEqual("");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 8632,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/8632",
+      htmlUrl: "https://github.com/owner/reponame/pull/8632",
+      state: "closed",
+      merged: true,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["requested-gh-user", "gh-user"],
+      assignees: [],
+      labels: [],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      nCommits: 2,
+      commits: ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]
+    });
+    expect(configs.backportPullRequest).toEqual({
+      author: "GitHub",
+      url: undefined,
+      htmlUrl: undefined,
+      title: "[prod] PR Title",
+      body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+      reviewers: ["gh-user", "that-s-a-user"],
+      assignees: [],
+      labels: [],
       targetRepo: {
         owner: "owner",
         project: "reponame",

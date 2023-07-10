@@ -13,7 +13,7 @@ export default class GitHubMapper implements GitResponseMapper<PullRequest, "ope
     }
   }
 
-  async mapPullRequest(pr: PullRequest): Promise<GitPullRequest> {
+  async mapPullRequest(pr: PullRequest, commits?: string[]): Promise<GitPullRequest> {
     return {
       number: pr.number,
       author: pr.user.login,
@@ -30,9 +30,14 @@ export default class GitHubMapper implements GitResponseMapper<PullRequest, "ope
       sourceRepo: await this.mapSourceRepo(pr),
       targetRepo: await this.mapTargetRepo(pr),
       nCommits: pr.commits,
-      // if pr is open use latest commit sha otherwise use merge_commit_sha
-      commits: pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha as string]
+      // if commits is provided use them, otherwise fetch the single sha representing the whole pr
+      commits: (commits && commits.length > 0) ? commits : this.getSha(pr),
     };
+  }
+
+  private getSha(pr: PullRequest) {
+    // if pr is open use latest commit sha otherwise use merge_commit_sha
+    return pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha as string];
   }
 
   async mapSourceRepo(pr: PullRequest): Promise<GitRepository> {

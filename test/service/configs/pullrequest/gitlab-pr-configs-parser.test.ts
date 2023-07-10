@@ -7,6 +7,8 @@ import { getAxiosMocked } from "../../../support/mock/git-client-mock-support";
 import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, OPEN_MR } from "../../../support/mock/gitlab-data";
 import GHAArgsParser from "@bp/service/args/gha/gha-args-parser";
 import { createTestFile, removeTestFile, spyGetInput } from "../../../support/utils";
+import GitLabClient from "@bp/service/git/gitlab/gitlab-client";
+import GitLabMapper from "@bp/service/git/gitlab/gitlab-mapper";
 
 const GITLAB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME = "./gitlab-pr-configs-parser-simple-pr-merged.json";
 const GITLAB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT = {
@@ -32,6 +34,8 @@ const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
   "inheritLabels": true,
 };
 
+jest.spyOn(GitLabMapper.prototype, "mapPullRequest");
+jest.spyOn(GitLabClient.prototype, "getPullRequest");
 
 jest.mock("axios", () => {
   return {
@@ -70,10 +74,6 @@ describe("gitlab merge request config parser", () => {
     configParser = new PullRequestConfigsParser();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   test("parse configs from merge request", async () => {
     const args: Args = {
       dryRun: false,
@@ -88,6 +88,11 @@ describe("gitlab merge request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -163,6 +168,11 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
     expect(configs.targetBranch).toEqual("prod");
@@ -187,6 +197,11 @@ describe("gitlab merge request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 2, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
@@ -238,7 +253,7 @@ describe("gitlab merge request config parser", () => {
       inheritReviewers: true,
     };
 
-    expect(async () => await configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 
   test("override backport pr data inheriting reviewers", async () => {
@@ -258,6 +273,11 @@ describe("gitlab merge request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -334,6 +354,11 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "Me",
@@ -408,6 +433,11 @@ describe("gitlab merge request config parser", () => {
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -486,6 +516,11 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "Me",
@@ -550,6 +585,11 @@ describe("gitlab merge request config parser", () => {
 
     const args: Args = argsParser.parse();
     const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -616,6 +656,11 @@ describe("gitlab merge request config parser", () => {
     const args: Args = argsParser.parse();
     const configs: Configs = await configParser.parseAndValidate(args);
 
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
       user: "Me",
@@ -670,6 +715,63 @@ describe("gitlab merge request config parser", () => {
         cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
       },
       bpBranchName: undefined,
+    });
+  });
+
+  test("still open pull request without squash", async () => {
+    const args: Args = {
+      dryRun: true,
+      auth: "whatever",
+      pullRequest: openPRUrl,
+      targetBranch: "prod",
+      gitUser: "Gitlab",
+      gitEmail: "noreply@gitlab.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+      squash: false,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 2, false);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), ["e4dd336a4a20f394df6665994df382fb1d193a11", "974519f65c9e0ed65277cd71026657a09fca05e7"]);
+
+    expect(configs.dryRun).toEqual(true);
+    expect(configs.auth).toEqual("whatever");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.git).toEqual({
+      user: "Gitlab",
+      email: "noreply@gitlab.com"
+    });
+    expect(configs.originalPullRequest).toEqual({
+      number: 2,
+      author: "superuser",
+      url: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2",
+      htmlUrl: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2",
+      state: "open",
+      merged: false,
+      mergedBy: undefined,
+      title: "Update test.txt opened",
+      body: "Still opened mr body",
+      reviewers: ["superuser"],
+      assignees: ["superuser"],
+      labels: [],
+      targetRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      sourceRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      bpBranchName: undefined,
+      nCommits: 2,
+      commits: ["e4dd336a4a20f394df6665994df382fb1d193a11", "974519f65c9e0ed65277cd71026657a09fca05e7"]
     });
   });
 });

@@ -1341,7 +1341,7 @@ export const notMergedPullRequestFixture = {
   "changed_files": 2
 };
 
-export const sameOwnerPullRequestFixture = {
+export const multipleCommitsPullRequestFixture = {
   "url": "https://api.github.com/repos/owner/reponame/pulls/8632",
   "id": 1137188271,
   "node_id": "PR_kwDOABTq6s5DyB2v",
@@ -1803,3 +1803,164 @@ export const sameOwnerPullRequestFixture = {
   "deletions": 2,
   "changed_files": 2
 };
+
+export const multipleCommitsPullRequestCommits = [
+  {
+    "sha": "0404fb922ab75c3a8aecad5c97d9af388df04695",
+    "node_id": "C_kwDOImgs99oAKDA0MDRmYjkyMmFiNzVjM2E4YWVjYWQ1Yzk3ZDlhZjM4OGRmMDQ2OTU",
+    "commit": {
+      "author": {
+        "name": "owner",
+        "email": "owner@email.com",
+        "date": "2023-07-06T13:46:30Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2023-07-06T13:46:30Z"
+      },
+      "message": "Update file1.txt",
+      "tree": {
+        "sha": "50be1d7031b02a2ae609f432f2a1e0f818d827b2",
+        "url": "https://api.github.com/repos/owner/reponame/git/trees/50be1d7031b02a2ae609f432f2a1e0f818d827b2"
+      },
+      "url": "https://api.github.com/repos/owner/reponame/git/commits/0404fb922ab75c3a8aecad5c97d9af388df04695",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nno-signature=\n=fivd\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 50be1d7031b02a2ae609f432f2a1e0f818d827b2\nparent c85b8fcdb741814b3e90e6e5729455cf46ff26ea\nauthor Owner <owner@email.com> 1688651190 +0200\ncommitter GitHub <noreply@github.com> 1688651190 +0200\n\nUpdate file1.txt"
+      }
+    },
+    "url": "https://api.github.com/repos/owner/reponame/commits/0404fb922ab75c3a8aecad5c97d9af388df04695",
+    "html_url": "https://github.com/owner/reponame/commit/0404fb922ab75c3a8aecad5c97d9af388df04695",
+    "comments_url": "https://api.github.com/repos/owner/reponame/commits/0404fb922ab75c3a8aecad5c97d9af388df04695/comments",
+    "author": {
+      "login": "owner",
+      "id": 26715795,
+      "node_id": "MDQ6VXNlcjI2NzE1Nzk1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26715795?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/owner",
+      "html_url": "https://github.com/owner",
+      "followers_url": "https://api.github.com/users/owner/followers",
+      "following_url": "https://api.github.com/users/owner/following{/other_user}",
+      "gists_url": "https://api.github.com/users/owner/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/owner/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/owner/subscriptions",
+      "organizations_url": "https://api.github.com/users/owner/orgs",
+      "repos_url": "https://api.github.com/users/owner/repos",
+      "events_url": "https://api.github.com/users/owner/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/owner/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "c85b8fcdb741814b3e90e6e5729455cf46ff26ea",
+        "url": "https://api.github.com/repos/owner/reponame/commits/c85b8fcdb741814b3e90e6e5729455cf46ff26ea",
+        "html_url": "https://github.com/owner/reponame/commit/c85b8fcdb741814b3e90e6e5729455cf46ff26ea"
+      }
+    ]
+  },
+  {
+    "sha": "11da4e38aa3e577ffde6d546f1c52e53b04d3151",
+    "node_id": "C_kwDOImgs99oAKDExZGE0ZTM4YWEzZTU3N2ZmZGU2ZDU0NmYxYzUyZTUzYjA0ZDMxNTE",
+    "commit": {
+      "author": {
+        "name": "Owner",
+        "email": "owner@email.com",
+        "date": "2023-07-10T13:23:44Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2023-07-10T13:23:44Z"
+      },
+      "message": "Update file2.txt",
+      "tree": {
+        "sha": "fdd16fb791eef26fd84c3bfa34fd89eb1f7a85be",
+        "url": "https://api.github.com/repos/owner/reponame/git/trees/fdd16fb791eef26fd84c3bfa34fd89eb1f7a85be"
+      },
+      "url": "https://api.github.com/repos/owner/reponame/git/commits/11da4e38aa3e577ffde6d546f1c52e53b04d3151",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nno-signature\n=//hm\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree fdd16fb791eef26fd84c3bfa34fd89eb1f7a85be\nparent 0404fb922ab75c3a8aecad5c97d9af388df04695\nauthor Owner <owner@email.com> 1688995424 +0200\ncommitter GitHub <noreply@github.com> 1688995424 +0200\n\nUpdate file2.txt"
+      }
+    },
+    "url": "https://api.github.com/repos/owner/reponame/commits/11da4e38aa3e577ffde6d546f1c52e53b04d3151",
+    "html_url": "https://github.com/owner/reponame/commit/11da4e38aa3e577ffde6d546f1c52e53b04d3151",
+    "comments_url": "https://api.github.com/repos/owner/reponame/commits/11da4e38aa3e577ffde6d546f1c52e53b04d3151/comments",
+    "author": {
+      "login": "owner",
+      "id": 26715795,
+      "node_id": "MDQ6VXNlcjI2NzE1Nzk1",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26715795?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/owner",
+      "html_url": "https://github.com/owner",
+      "followers_url": "https://api.github.com/users/owner/followers",
+      "following_url": "https://api.github.com/users/owner/following{/other_user}",
+      "gists_url": "https://api.github.com/users/owner/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/owner/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/owner/subscriptions",
+      "organizations_url": "https://api.github.com/users/owner/orgs",
+      "repos_url": "https://api.github.com/users/owner/repos",
+      "events_url": "https://api.github.com/users/owner/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/owner/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "0404fb922ab75c3a8aecad5c97d9af388df04695",
+        "url": "https://api.github.com/repos/owner/reponame/commits/0404fb922ab75c3a8aecad5c97d9af388df04695",
+        "html_url": "https://github.com/owner/reponame/commit/0404fb922ab75c3a8aecad5c97d9af388df04695"
+      }
+    ]
+  }
+];

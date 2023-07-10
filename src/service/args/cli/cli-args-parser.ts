@@ -26,6 +26,7 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request")
       .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", getAsCommaSeparatedList)
       .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
+      .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
       .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
   }
 
@@ -56,6 +57,7 @@ export default class CLIArgsParser extends ArgsParser {
         inheritReviewers: opts.inheritReviewers,
         labels: opts.labels,
         inheritLabels: opts.inheritLabels,
+        squash: opts.squash,
       };
     }
 

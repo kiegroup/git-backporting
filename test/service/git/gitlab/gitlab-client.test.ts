@@ -29,11 +29,7 @@ describe("github service", () => {
     GitClientFactory.reset();
     gitClient = GitClientFactory.getOrCreate(GitClientType.GITLAB, "whatever", "apiUrl") as GitLabClient;
   });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
+  
   test("get merged pull request", async () => {
     const res: GitPullRequest = await gitClient.getPullRequest("superuser", "backporting-example", 1);
     
