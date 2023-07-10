@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/kiegroup/git-backporting/compare/v4.0.0...v4.1.0) (2023-07-10)
+
+
+### Features
+
+* **issue-41:** set and inherit labels ([#48](https://github.com/kiegroup/git-backporting/issues/48)) ([fcc0167](https://github.com/kiegroup/git-backporting/commit/fcc01673f4bc9aa2786faf6dfd503a29e5ca0cd9))
+
 ## [4.0.0](https://github.com/kiegroup/git-backporting/compare/v3.0.0...v4.0.0) (2023-07-06)
 
 Project moved under @kiegroup organization.
