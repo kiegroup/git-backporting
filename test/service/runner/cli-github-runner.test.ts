@@ -5,6 +5,8 @@ import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../support/utils";
 import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
+import GitClientFactory from "@bp/service/git/git-client-factory";
+import { GitClientType } from "@bp/service/git/git.types";
 
 const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT_PATHNAME = "./cli-github-runner-pr-merged-with-overrides.json";
 const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
@@ -27,6 +29,7 @@ const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
 
 jest.mock("@bp/service/git/git-cli");
 jest.spyOn(GitHubClient.prototype, "createPullRequest");
+jest.spyOn(GitClientFactory, "getOrCreate");
 
 let parser: ArgsParser;
 let runner: Runner;
@@ -72,6 +75,9 @@ describe("cli runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
@@ -133,6 +139,9 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/folder";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -167,6 +176,9 @@ describe("cli runner", () => {
 
     const cwd = "/tmp/folder";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -194,6 +206,9 @@ describe("cli runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
@@ -236,6 +251,9 @@ describe("cli runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
@@ -288,6 +306,9 @@ describe("cli runner", () => {
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
@@ -343,6 +364,9 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -396,6 +420,9 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -441,6 +468,9 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -485,6 +515,9 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -525,6 +558,9 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, "my-auth-token", "https://api.github.com");
+
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
@@ -551,6 +587,52 @@ describe("cli runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: ["cli github cherry pick :cherries:", "original-label"],
+      }
+    );
+  });
+
+  // to check: https://github.com/kiegroup/git-backporting/issues/52
+  test("using github api url instead of html one", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://api.github.com/repos/owner/reponame/pulls/2368"
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        base: "target", 
+        title: "[target] PR Title", 
+        body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
       }
     );
   });

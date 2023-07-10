@@ -31,7 +31,7 @@ export const inferGitApiUrl = (prUrl: string, apiVersion = "v4"): string => {
   const url = new URL(prUrl);
   const baseUrl = `${url.protocol}//${url.host}`;
   
-  if (baseUrl.includes(PUBLIC_GITHUB_URL)) {
+  if (baseUrl.includes(PUBLIC_GITHUB_URL) || baseUrl.includes(PUBLIC_GITHUB_API)) {
     return PUBLIC_GITHUB_API;
   }
 

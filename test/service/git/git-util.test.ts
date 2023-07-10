@@ -24,14 +24,22 @@ describe("check git utilities", () => {
   });
 
   test("check infer github client", ()=> {
-    expect(inferGitClient("https://github.com/superuser/backporting-example/-/merge_requests/4")).toStrictEqual(GitClientType.GITHUB);
+    expect(inferGitClient("https://github.com/superuser/backporting-example/pull/4")).toStrictEqual(GitClientType.GITHUB);
   });
 
   test("check infer gitlab client", ()=> {
     expect(inferGitClient("https://my.gitlab.awesome.com/superuser/backporting-example/-/merge_requests/4")).toStrictEqual(GitClientType.GITLAB);
   });
 
-  test("Not recognized git client type", ()=> {
+  test("not recognized git client type", ()=> {
     expect(() => inferGitClient("https://not.recognized/superuser/backporting-example/-/merge_requests/4")).toThrowError("Remote git service not recognized from pr url: https://not.recognized/superuser/backporting-example/-/merge_requests/4");
+  });
+
+  test("check infer github client using github api", ()=> {
+    expect(inferGitClient("https://api.github.com/repos/owner/repo/pulls/1")).toStrictEqual(GitClientType.GITHUB);
+  });
+
+  test("check infer github api from github api url", ()=> {
+    expect(inferGitApiUrl("https://api.github.com/repos/owner/repo/pulls/1")).toStrictEqual("https://api.github.com");
   });
 });

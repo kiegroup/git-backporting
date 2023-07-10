@@ -149,6 +149,13 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       data: {}
     });
 
+  mock.rest.issues
+    .addLabels()
+    .reply({
+      status: 200,
+      data: {}
+    });
+
 
   // invalid requests
   mock.rest.pulls
