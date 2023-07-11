@@ -63,10 +63,11 @@ describe("github pull request config parser", () => {
   });
 
   beforeEach(() => {
-    mockGitHubClient("http://localhost/api/v3");
-
     // reset process.env variables
     resetProcessArgs();
+
+    // mock octokit
+    mockGitHubClient("http://localhost/api/v3");
 
     // create a fresh new instance every time
     argsParser = new CLIArgsParser();
