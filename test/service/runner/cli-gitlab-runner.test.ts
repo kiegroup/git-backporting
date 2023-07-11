@@ -60,6 +60,9 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  // reset process.env variables
+  resetProcessArgs();
+
   // create CLI arguments parser
   parser = new CLIArgsParser();
 
@@ -67,13 +70,7 @@ beforeEach(() => {
   runner = new Runner(parser);
 });
 
-afterEach(() => {
-  // reset process.env variables
-  resetProcessArgs();
-});
-
 describe("cli runner", () => {
-
   test("with dry run", async () => {
     addProcessArgs([
       "-d",

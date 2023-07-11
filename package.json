@@ -23,7 +23,7 @@
     "package:cli": "ncc build ./build/src/bin/cli.js -o dist/cli",
     "package:gha": "ncc build ./build/src/bin/gha.js -o dist/gha",
     "build": "npm run clean && npm run compile && npm run package",
-    "test": "jest",
+    "test": "jest --silent",
     "test:report": "npm test -- --coverage --testResultsProcessor=jest-sonar-reporter",
     "lint": "eslint . --ext .ts",
     "lint:fix": "npm run lint -- --fix",

@@ -45,6 +45,10 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  // reset process.env variables
+  resetProcessArgs();
+
+  // mock octokit
   mockGitHubClient();
 
   // create CLI arguments parser
@@ -52,11 +56,6 @@ beforeEach(() => {
 
   // create runner
   runner = new Runner(parser);
-});
-
-afterEach(() => {
-  // reset process.env variables
-  resetProcessArgs();
 });
 
 describe("cli runner", () => {

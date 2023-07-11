@@ -44,11 +44,11 @@ describe("cli args parser", () => {
   });
 
   beforeEach(() => {
-    // create a fresh new instance every time
-    parser = new CLIArgsParser();
-
     // reset process.env variables
     resetProcessArgs();
+
+    // create a fresh new instance every time
+    parser = new CLIArgsParser();
   });
 
   test("valid execution [default, short]", () => {
