@@ -29,8 +29,8 @@ Table of content
 * **[GitHub action](#github-action)**
 * **[Future works](#future-works)**
 * **[Migrating to v4](#migrating-to-v4)**
+* **[Development](#development)**
 * **[Contributing](#contributing)**
-* **[Package release](#package-release)**
 * **[License](#license)**
 
 ## Who is this tool for?
@@ -244,6 +244,43 @@ So everytime you would use older version keep in mind of these changes.
 
 > **REMARK**: since from capabilities point of view `v3.1.1` and `v4.0.0` are equivalent we would recommend to directly start using `v4`.
 
+## Development
+
+### Package release
+
+The release of this package is entirely based on [release-it](https://github.com/release-it/release-it) tool. I created some useful scripts that can make the release itself quite easy.
+
+
+#### Automatic release
+
+The first step is to prepare the changes for the next release, this is done by running:
+
+```bash
+$ npm run release:prepare:all
+```
+
+> NOTE: running locally this requires `npm login`, please consider using `.github/workflows/prepare-release.yml` if you don't have permission on the npm package.
+
+This script performs the following steps:
+ 1. Automatically computes the next version based on the last commits
+ 2. Create a new branch `release/v${computed_version}`
+ 3. Apply all changes, like version and changelog upgrade
+ 4. Commit those changes: `chore: release v${compute_version}`
+
+After that you should just push the new branch and open the pull request.
+> NOTE: if you don't want to run this preparation from you local environment, there is already a workflow that does all these steps, including the pull request. See [Prepare release](.github/workflows/prepare-release.yml) workflow.
+
+Once the release preparion pull request got merged, you can run [Release package](.github/workflows/release.yml) workflow that automatically performs the release itself, including npm publishing, git tag and github release.
+
+#### Manual release
+
+In case we would like to perform a manual release, it would be enough to open a pull request changing the following items:
+- Package version inside the `package.json`
+- Provide exhaustive changelog information inside `CHANGELOG.md`
+- Commit like `chore: release v<version>`
+
+Once the release preparion pull request got merged, run [Release package](.github/workflows/release.yml) workflow.
+
 ## Contributing
 
 This is an open source project, and you are more than welcome to contribute :heart:!
@@ -265,41 +302,6 @@ Every change must be submitted through a *GitHub* pull request (PR). Backporting
 > **Note**: you don't need to take care about typescript compilation and minifycation, there are automated [git hooks](./.husky) taking care of that!
 
 **Hint**: if you are still in a `work in progress` branch and you want to push your changes remotely, consider adding `--no-verify` for both `commit` and `push`, e.g., `git push origin <feat-branch> --no-verify`
-
-## Package release
-
-The release of this package is entirely based on [release-it](https://github.com/release-it/release-it) tool. I created some useful scripts that can make the release itself quite easy.
-
-
-### Automated release
-
-The first step is to prepare the changes for the next release, this is done by running:
-
-```bash
-$ npm run release:prepare:all
-```
-
-> NOTE: running locally this requires `npm login`, please consider using `.github/workflows/prepare-release.yml` if you don't have permission on the npm package.
-
-This script performs the following steps:
- 1. Automatically computes the next version based on the last commits
- 2. Create a new branch `release/v${computed_version}`
- 3. Apply all changes, like version and changelog upgrade
- 4. Commit those changes: `chore: release v${compute_version}`
-
-After that you should just push the new branch and open the pull request.
-> NOTE: if you don't want to run this preparation from you local environment, there is already a workflow that does all these steps, including the pull request. See [Prepare release](.github/workflows/prepare-release.yml) workflow.
-
-Once the release preparion pull request got merged, you can run [Release package](.github/workflows/release.yml) workflow that automatically performs the release itself, including npm publishing, git tag and github release.
-
-### Manual release
-
-In case we would like to perform a manual release, it would be enough to open a pull request changing the following items:
-- Package version inside the `package.json`
-- Provide exhaustive changelog information inside `CHANGELOG.md`
-- Commit like `chore: release v<version>`
-
-Once the release preparion pull request got merged, run [Release package](.github/workflows/release.yml) workflow.
 
 ## License
 
