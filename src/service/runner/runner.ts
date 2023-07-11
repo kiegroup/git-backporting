@@ -74,7 +74,18 @@ export default class Runner {
 
     // 5. create new branch from target one and checkout
     this.logger.debug("Creating local branch..");
-    const backportBranch = backportPR.branchName ?? `bp-${configs.targetBranch}-${originalPR.commits!.join("-")}`;
+    let backportBranch = backportPR.branchName;
+    if (backportBranch === undefined || backportBranch.trim() === "") {
+      // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
+      const concatenatedCommits: string = originalPR.commits!.map(c => c.slice(0, 7)).join("-");
+      backportBranch = `bp-${configs.targetBranch}-${concatenatedCommits}`;
+    }
+
+    if (backportBranch.length > 250) {
+      this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
+      backportBranch = backportBranch.slice(0, 250);
+    }
+
     await git.createLocalBranch(configs.folder, backportBranch);
 
     // 6. fetch pull request remote if source owner != target owner or pull request still open
