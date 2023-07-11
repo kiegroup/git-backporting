@@ -36,7 +36,7 @@ jest.mock("axios", () => {
           iid: 1, // FIXME: I am not testing this atm
         }
       }),
-      put: jest.fn(),
+      put: async () => undefined,
     }),
   };
 });

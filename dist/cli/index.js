@@ -665,45 +665,32 @@ class GitHubClient {
         if (!data) {
             throw new Error("Pull request creation failed");
         }
+        const promises = [];
         if (backport.labels.length > 0) {
-            try {
-                await this.octokit.issues.addLabels({
-                    owner: backport.owner,
-                    repo: backport.repo,
-                    issue_number: data.number,
-                    labels: backport.labels,
-                });
-            }
-            catch (error) {
-                this.logger.error(`Error setting labels: ${error}`);
-            }
+            promises.push(this.octokit.issues.addLabels({
+                owner: backport.owner,
+                repo: backport.repo,
+                issue_number: data.number,
+                labels: backport.labels,
+            }).catch(error => this.logger.error(`Error setting labels: ${error}`)));
         }
         if (backport.reviewers.length > 0) {
-            try {
-                await this.octokit.pulls.requestReviewers({
-                    owner: backport.owner,
-                    repo: backport.repo,
-                    pull_number: data.number,
-                    reviewers: backport.reviewers,
-                });
-            }
-            catch (error) {
-                this.logger.error(`Error requesting reviewers: ${error}`);
-            }
+            promises.push(this.octokit.pulls.requestReviewers({
+                owner: backport.owner,
+                repo: backport.repo,
+                pull_number: data.number,
+                reviewers: backport.reviewers,
+            }).catch(error => this.logger.error(`Error requesting reviewers: ${error}`)));
         }
         if (backport.assignees.length > 0) {
-            try {
-                await this.octokit.issues.addAssignees({
-                    owner: backport.owner,
-                    repo: backport.repo,
-                    issue_number: data.number,
-                    assignees: backport.assignees,
-                });
-            }
-            catch (error) {
-                this.logger.error(`Error setting assignees: ${error}`);
-            }
+            promises.push(this.octokit.issues.addAssignees({
+                owner: backport.owner,
+                repo: backport.repo,
+                issue_number: data.number,
+                assignees: backport.assignees,
+            }).catch(error => this.logger.error(`Error setting assignees: ${error}`)));
         }
+        await Promise.all(promises);
         return data.html_url;
     }
     // UTILS
@@ -892,64 +879,43 @@ class GitLabClient {
             assignee_ids: [],
         });
         const mr = data;
+        const promises = [];
         // labels
         if (backport.labels.length > 0) {
-            try {
-                this.logger.info("Setting labels: " + backport.labels);
-                await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
-                    labels: backport.labels.join(","),
-                });
-            }
-            catch (error) {
-                this.logger.warn("Failure trying to update labels. " + error);
-            }
+            this.logger.info("Setting labels: " + backport.labels);
+            promises.push(this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+                labels: backport.labels.join(","),
+            }).catch(error => this.logger.warn("Failure trying to update labels. " + error)));
         }
         // reviewers
-        const reviewerIds = [];
-        for (const r of backport.reviewers) {
-            try {
-                this.logger.debug("Retrieving user: " + r);
-                const user = await this.getUser(r);
-                reviewerIds.push(user.id);
-            }
-            catch (error) {
+        const reviewerIds = await Promise.all(backport.reviewers.map(async (r) => {
+            this.logger.debug("Retrieving user: " + r);
+            return this.getUser(r).then(user => user.id).catch(() => {
                 this.logger.warn(`Failed to retrieve reviewer ${r}`);
-            }
-        }
+                return undefined;
+            });
+        }));
         if (reviewerIds.length > 0) {
-            try {
-                this.logger.info("Setting reviewers: " + reviewerIds);
-                await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
-                    reviewer_ids: reviewerIds.filter(r => r !== undefined),
-                });
-            }
-            catch (error) {
-                this.logger.warn("Failure trying to update reviewers. " + error);
-            }
+            this.logger.info("Setting reviewers: " + reviewerIds);
+            promises.push(this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+                reviewer_ids: reviewerIds.filter(r => r !== undefined),
+            }).catch(error => this.logger.warn("Failure trying to update reviewers. " + error)));
         }
         // assignees
-        const assigneeIds = [];
-        for (const a of backport.assignees) {
-            try {
-                this.logger.debug("Retrieving user: " + a);
-                const user = await this.getUser(a);
-                assigneeIds.push(user.id);
-            }
-            catch (error) {
+        const assigneeIds = await Promise.all(backport.assignees.map(async (a) => {
+            this.logger.debug("Retrieving user: " + a);
+            return this.getUser(a).then(user => user.id).catch(() => {
                 this.logger.warn(`Failed to retrieve assignee ${a}`);
-            }
-        }
+                return undefined;
+            });
+        }));
         if (assigneeIds.length > 0) {
-            try {
-                this.logger.info("Setting assignees: " + assigneeIds);
-                await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
-                    assignee_ids: assigneeIds.filter(a => a !== undefined),
-                });
-            }
-            catch (error) {
-                this.logger.warn("Failure trying to update assignees. " + error);
-            }
+            this.logger.info("Setting assignees: " + assigneeIds);
+            promises.push(this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+                assignee_ids: assigneeIds.filter(a => a !== undefined),
+            }).catch(error => this.logger.warn("Failure trying to update assignees. " + error)));
         }
+        await Promise.all(promises);
         return mr.web_url;
     }
     /**
