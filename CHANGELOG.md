@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.1.0](https://github.com/kiegroup/git-backporting/compare/v4.0.0...v4.1.0) (2023-07-11)
+
+
+### Features
+
+* **issue-41:** set and inherit labels ([#48](https://github.com/kiegroup/git-backporting/issues/48)) ([fcc0167](https://github.com/kiegroup/git-backporting/commit/fcc01673f4bc9aa2786faf6dfd503a29e5ca0cd9))
+* **issue-54:** backport pr commits without squash ([#55](https://github.com/kiegroup/git-backporting/issues/55)) ([c4dbb26](https://github.com/kiegroup/git-backporting/commit/c4dbb26c1d9d266ed86f3f0d6016b8cff7743f8b))
+
+
+### Bug Fixes
+
+* **issue-52:** use pull request github api url as source ([#53](https://github.com/kiegroup/git-backporting/issues/53)) ([a737aa7](https://github.com/kiegroup/git-backporting/commit/a737aa7c4c66983de358b8472121ab918de922e3))
+
 ## [4.0.0](https://github.com/kiegroup/git-backporting/compare/v3.0.0...v4.0.0) (2023-07-06)
 
 Project moved under @kiegroup organization.
