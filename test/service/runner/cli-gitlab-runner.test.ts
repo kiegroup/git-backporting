@@ -91,7 +91,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674ebd48e05c6e428a1fa31dbb60a778d644");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
@@ -125,7 +125,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674ebd48e05c6e428a1fa31dbb60a778d644");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
@@ -159,7 +159,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674ebd48e05c6e428a1fa31dbb60a778d644");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
@@ -168,13 +168,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-9e15674ebd48e05c6e428a1fa31dbb60a778d644");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-9e15674");
 
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
-        head: "bp-target-9e15674ebd48e05c6e428a1fa31dbb60a778d644", 
+        head: "bp-target-9e15674", 
         base: "target", 
         title: "[target] Update test.txt opened", 
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2"),
@@ -215,7 +215,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
@@ -225,13 +225,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca");
 
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
-        head: "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        head: "bp-target-ebb1eca", 
         base: "target", 
         title: "[target] Update test.txt", 
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
@@ -378,7 +378,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
@@ -388,13 +388,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca");
 
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
-        head: "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        head: "bp-target-ebb1eca", 
         base: "target", 
         title: "[target] Update test.txt", 
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
@@ -426,7 +426,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
@@ -436,13 +436,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca");
 
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
-        head: "bp-target-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        head: "bp-target-ebb1eca", 
         base: "target", 
         title: "[target] Update test.txt", 
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
@@ -470,7 +470,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "prod");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-prod-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-prod-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
@@ -480,13 +480,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-prod-ebb1eca696c42fd067658bd9b5267709f78ef38e");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-prod-ebb1eca");
 
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
-        head: "bp-prod-ebb1eca696c42fd067658bd9b5267709f78ef38e", 
+        head: "bp-prod-ebb1eca", 
         base: "prod", 
         title: "New Title", 
         body: expect.stringContaining("**This is a backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
@@ -517,7 +517,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336a4a20f394df6665994df382fb1d193a11-974519f65c9e0ed65277cd71026657a09fca05e7");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336-974519f");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
@@ -527,13 +527,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "974519f65c9e0ed65277cd71026657a09fca05e7");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336a4a20f394df6665994df382fb1d193a11-974519f65c9e0ed65277cd71026657a09fca05e7");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336-974519f");
 
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
-        head: "bp-target-e4dd336a4a20f394df6665994df382fb1d193a11-974519f65c9e0ed65277cd71026657a09fca05e7",
+        head: "bp-target-e4dd336-974519f",
         base: "target", 
         title: "[target] Update test.txt opened", 
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2"),

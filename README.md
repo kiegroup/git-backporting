@@ -14,7 +14,7 @@
 
 ---
 
-## :bangbang: Starting from v4 git-backporting has been moved under @kiegroup organization and renamed :bangbang:
+## :bangbang: Starting from v4 git-backporting has been moved under @kiegroup organization :bangbang:
 
 ---
 
@@ -109,7 +109,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Reviewers       | --reviewers        | N            | Backporting pull request comma-separated reviewers list                                                           | []       |
 | Assignees       | --assignes        | N            | Backporting pull request comma-separated assignees list                                                           | []       |
 | No Reviewers Inheritance       | --no-inherit-reviewers        | N            | Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request                                                           | false       |
-| Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
+| Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch, if it exceeds 250 chars it will be truncated                                                           | bp-{target-branch}-{sha1}...{shaN}       |
 | Labels       | --labels        | N            | Provide custom labels to be added to the backporting pull request                                                           | []       |
 | Inherit labels       | --inherit-labels        | N            | If enabled inherit lables from the original pull request                                                           | false       |
 | No squash       | --no-squash        | N            | If provided the backporting will try to backport all pull request commits without squashing                                                           | false       |

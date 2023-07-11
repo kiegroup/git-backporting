@@ -74,7 +74,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
@@ -103,7 +103,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
@@ -112,13 +112,13 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
@@ -155,7 +155,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-91748965051fae1330ad58d15cf694e103267c87");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9174896");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/4444/head:pr/4444");
@@ -164,13 +164,13 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-91748965051fae1330ad58d15cf694e103267c87");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-9174896");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-91748965051fae1330ad58d15cf694e103267c87", 
+        head: "bp-target-9174896", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/4444"),
@@ -299,7 +299,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
@@ -308,13 +308,13 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
@@ -344,7 +344,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
@@ -353,13 +353,13 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
@@ -430,7 +430,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
@@ -439,13 +439,13 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", 
+        head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
@@ -474,7 +474,7 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb922ab75c3a8aecad5c97d9af388df04695-11da4e38aa3e577ffde6d546f1c52e53b04d3151");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
 
@@ -483,13 +483,13 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151");
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb922ab75c3a8aecad5c97d9af388df04695-11da4e38aa3e577ffde6d546f1c52e53b04d3151");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-0404fb922ab75c3a8aecad5c97d9af388df04695-11da4e38aa3e577ffde6d546f1c52e53b04d3151", 
+        head: "bp-target-0404fb9-11da4e3", 
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/8632"),
