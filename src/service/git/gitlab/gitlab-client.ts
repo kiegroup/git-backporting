@@ -84,64 +84,59 @@ export default class GitLabClient implements GitClient {
     });
     
     const mr = data as MergeRequestSchema;
+    const promises = [];
 
     // labels
     if (backport.labels.length > 0) {
-      try {
-        this.logger.info("Setting labels: " + backport.labels);
-        await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+      this.logger.info("Setting labels: " + backport.labels);
+      promises.push(
+        this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
           labels: backport.labels.join(","),
-        });
-      } catch(error) {
-        this.logger.warn("Failure trying to update labels. " + error);
-      }
+        }).catch(error => this.logger.warn("Failure trying to update labels. " + error))
+      );
     }
 
     // reviewers
-    const reviewerIds: number[] = [];
-    for(const r of backport.reviewers) {
-      try {
-        this.logger.debug("Retrieving user: " + r);
-        const user = await this.getUser(r);
-        reviewerIds.push(user.id);
-      } catch(error) {
-        this.logger.warn(`Failed to retrieve reviewer ${r}`);
-      }
-    }
+    const reviewerIds = await Promise.all(backport.reviewers.map(async r => {
+      this.logger.debug("Retrieving user: " + r);
+      return this.getUser(r).then(user => user.id).catch(
+        () => {
+          this.logger.warn(`Failed to retrieve reviewer ${r}`);
+          return undefined;
+        }
+      );
+    }));
 
     if (reviewerIds.length > 0) {
-      try {
-        this.logger.info("Setting reviewers: " + reviewerIds);
-        await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+      this.logger.info("Setting reviewers: " + reviewerIds);
+      promises.push(
+        this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
           reviewer_ids: reviewerIds.filter(r => r !== undefined),
-        });
-      } catch(error) {
-        this.logger.warn("Failure trying to update reviewers. " + error);
-      }
+        }).catch(error => this.logger.warn("Failure trying to update reviewers. " + error))
+      );
     }
 
     // assignees
-    const assigneeIds: number[] = [];
-    for(const a of backport.assignees) {
-      try {
-        this.logger.debug("Retrieving user: " + a);
-        const user = await this.getUser(a);
-        assigneeIds.push(user.id);
-      } catch(error) {
-        this.logger.warn(`Failed to retrieve assignee ${a}`);
-      }
-    }
+    const assigneeIds = await Promise.all(backport.assignees.map(async a => {
+      this.logger.debug("Retrieving user: " + a);
+      return this.getUser(a).then(user => user.id).catch(
+        () => {
+          this.logger.warn(`Failed to retrieve assignee ${a}`);
+          return undefined;
+        }
+      );
+    }));
     
     if (assigneeIds.length > 0) {
-      try {
-        this.logger.info("Setting assignees: " + assigneeIds);
-        await this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
+      this.logger.info("Setting assignees: " + assigneeIds);
+      promises.push(
+        this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
           assignee_ids: assigneeIds.filter(a => a !== undefined),
-        });
-      } catch(error) {
-        this.logger.warn("Failure trying to update assignees. " + error);
-      }
+        }).catch(error => this.logger.warn("Failure trying to update assignees. " + error))
+      );
     }
+
+    await Promise.all(promises);
 
     return mr.web_url;
   }

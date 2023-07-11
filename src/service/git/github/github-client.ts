@@ -82,44 +82,42 @@ export default class GitHubClient implements GitClient {
       throw new Error("Pull request creation failed");
     }
 
+    const promises = [];
+
     if (backport.labels.length > 0) {
-      try {
-        await this.octokit.issues.addLabels({
+      promises.push(
+        this.octokit.issues.addLabels({
           owner: backport.owner,
           repo: backport.repo,
           issue_number: (data as PullRequest).number,
           labels: backport.labels,
-        });
-      } catch (error) {
-        this.logger.error(`Error setting labels: ${error}`);
-      }
+        }).catch(error => this.logger.error(`Error setting labels: ${error}`))
+      );
     }
 
     if (backport.reviewers.length > 0) {
-      try {
-        await this.octokit.pulls.requestReviewers({
+      promises.push(
+        this.octokit.pulls.requestReviewers({
           owner: backport.owner,
           repo: backport.repo,
           pull_number: (data as PullRequest).number,
           reviewers: backport.reviewers,
-        });
-      } catch (error) {
-        this.logger.error(`Error requesting reviewers: ${error}`);
-      }
+        }).catch(error => this.logger.error(`Error requesting reviewers: ${error}`))
+      );
     }
 
     if (backport.assignees.length > 0) {
-      try {
-        await this.octokit.issues.addAssignees({
+      promises.push(
+        this.octokit.issues.addAssignees({
           owner: backport.owner,
           repo: backport.repo,
           issue_number: (data as PullRequest).number,
           assignees: backport.assignees,
-        });
-      } catch (error) {
-        this.logger.error(`Error setting assignees: ${error}`);
-      }
+        }).catch(error => this.logger.error(`Error setting assignees: ${error}`))
+      );
     }
+
+    await Promise.all(promises);
 
     return data.html_url;
   }

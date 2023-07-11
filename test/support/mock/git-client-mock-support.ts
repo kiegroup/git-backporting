@@ -59,7 +59,7 @@ export const postAxiosMocked = (_url: string, data?: {source_branch: string,}) =
   };
 };
 
-export const putAxiosMocked = (url: string, _data?: unknown) => {
+export const putAxiosMocked = async (url: string, _data?: unknown) => {
   const responseData = undefined;
 
   // gitlab
