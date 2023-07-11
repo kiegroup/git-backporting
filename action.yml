@@ -55,6 +55,10 @@ inputs:
     description: "If true the backported pull request will inherit labels from the original one"
     required: false
     default: "false"
+  no-squash:
+    description: "If set to true the tool will backport all commits as part of the pull request instead of the suqashed one"
+    required: false
+    default: "false"
 
 runs:
   using: node16

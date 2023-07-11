@@ -31,20 +31,36 @@ export default class GitHubClient implements GitClient {
     return "noreply@github.com";
   }
 
-  async getPullRequest(owner: string, repo: string, prNumber: number): Promise<GitPullRequest> {
+  async getPullRequest(owner: string, repo: string, prNumber: number, squash = true): Promise<GitPullRequest> {
     this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);
     const { data } = await this.octokit.rest.pulls.get({
       owner: owner,
       repo: repo,
-      pull_number: prNumber
+      pull_number: prNumber,
     });
 
-    return this.mapper.mapPullRequest(data as PullRequest);
+    const commits: string[] = [];
+    if (!squash) {
+      // fetch all commits
+      try {
+        const { data } = await this.octokit.rest.pulls.listCommits({
+          owner: owner,
+          repo: repo,
+          pull_number: prNumber,
+        });
+
+        commits.push(...data.map(c => c.sha));
+      } catch(error) {
+        throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
+      }
+    }
+
+    return this.mapper.mapPullRequest(data as PullRequest, commits);
   }
 
-  async getPullRequestFromUrl(prUrl: string): Promise<GitPullRequest> {
+  async getPullRequestFromUrl(prUrl: string, squash = true): Promise<GitPullRequest> {
     const { owner, project, id } = this.extractPullRequestData(prUrl);
-    return this.getPullRequest(owner, project, id);
+    return this.getPullRequest(owner, project, id, squash);
   }
 
   // WRITE

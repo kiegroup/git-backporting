@@ -26,11 +26,10 @@ Table of content
 
 * **[Who is this tool for](#who-is-this-tool-for)**
 * **[CLI tool](#cli-tool)**
-* **[Supported git services](#supported-git-services)**
 * **[GitHub action](#github-action)**
 * **[Future works](#future-works)**
-* **[Release](#release)**
-* **[Repository migration](#repository-migration)**
+* **[Migrating to v4](#migrating-to-v4)**
+* **[Development](#development)**
 * **[Contributing](#contributing)**
 * **[License](#license)**
 
@@ -72,6 +71,23 @@ This is the easiest invocation where you let the tool set / compute most of the 
 * Node 16 or higher, more details on Node can be found [here](https://nodejs.org/en).
 * Git, see [how to install](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) if you need help.
 
+### How it works?
+
+The simply works in this way: given the provided `pull/merge request` it infers the git client to use (either *Github* or *Gitlab* for now) and it retrieve the corresponding pull request object (original pull/merge request to be backported into another branch).
+
+After that it clones the corresponding git repository, check out in the provided `target branch` and create a new branch from that (name automatically generated if not provided as option).
+
+By default the tool will try to cherry-pick the single squashed/merged commit into the newly created branch (please consider using `--no-squash` option if you want to cherry-pick all commits belonging to the provided pull request).
+
+Based on the original pull request, creates a new one containing the backporting to the target branch. Note that most of these information can be overridden with appropriate CLI options or GHA inputs.
+
+Right now all commits are cherry-picked using the following git-equivalent command:
+```bash
+$ git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs <sha>
+```
+
+> **NOTE**: If there are any conflicts, the tool will block the process and exit signalling the failure as there are still no ways to interactively resolve them. In these cases a manual cherry-pick is needed, or alternatively users could manually resume the process in the cloned repository (here the user will have to resolve the conflicts, push the branch and create the pull request - all manually).
+
 ### Inputs
 
 This tool comes with some inputs that allow users to override the default behavior, here the full list of available inputs:
@@ -96,6 +112,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Backport Branch Name       | --bp-branch-name        | N            | Name of the backporting pull request branch                                                           | bp-{target-branch}-{sha}       |
 | Labels       | --labels        | N            | Provide custom labels to be added to the backporting pull request                                                           | []       |
 | Inherit labels       | --inherit-labels        | N            | If enabled inherit lables from the original pull request                                                           | false       |
+| No squash       | --no-squash        | N            | If provided the backporting will try to backport all pull request commits without squashing                                                           | false       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and `target branch` are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
@@ -114,7 +131,7 @@ This is an example of a configuration file that can be used.
 ```
 Keep in mind that its structue MUST match the [Args](src/service/args/args.types.ts) interface, which is actually a camel-case version of the CLI options.
 
-## Supported git services
+### Supported git services
 
 Right now **Git Backporting** supports the following git management services:
  * ***GITHUB***: Introduced since the first release of this tool (version `1.0.0`). The interaction with this system is performed using [*octokit*](https://octokit.github.io/rest.js) client library.
@@ -128,7 +145,7 @@ Right now **Git Backporting** supports the following git management services:
 This action can be used in any *GitHub* workflow, below you can find a simple example of manually triggered workflow backporting a specific pull request (provided as input).
 
 ```yml
-name: Pull Request Backporting using BPer
+name: Pull Request Backporting using Git Backporting
 
 on: 
   workflow_dispatch:
@@ -166,7 +183,7 @@ You can also use this action with other events - you'll just need to specify `ta
 For example, this configuration creates a pull request against branch `v1` once the current one is merged, provided that the label `backport-v1` is applied:
 
 ```yaml
-name: Pull Request Backporting using BPer
+name: Pull Request Backporting using Git Backporting
 
 on:
   pull_request_target:
@@ -203,19 +220,38 @@ For a complete description of all inputs see [Inputs section](#inputs).
 
 ## Future works
 
-**BPer** is still in development mode, this means that there are still many future works and extension. I'll try to summarize the most important ones:
+**Git Backporting** is still in development mode, this means that there are still many future works and extension that can be implemented. I'll try to summarize the most important ones:
 
-- Provide a way to backport single commit too (or a set of them), even if no original pull request is present.
+- Provide a way to backport single commit (or a set of them) if no original pull request is present.
 - Integrate this tool with other git management services (like Bitbucket) to make it as generic as possible.
 - Integrate it into other CI/CD services like gitlab CI.
 - Provide some reusable *GitHub* workflows.
 
-## Release
+## Migrating to v4
+
+From version `v4.0.0` the project has been moved under [@kiegroup](https://github.com/kiegroup) organization. During this migration we changed some things that you should be aware of. I'll try to summarize them in the following table:
+
+> **NOTE**: these changes did not affect the tool features.
+
+|             | **v4 (after migration)** | v3 or older (before migration) |
+|-------------|--------------------------|--------------------------------|
+| Owner       | kiegroup                 | lampajr                        |
+| Repository  | git-backporting          | backporting                    |
+| NPM package | @kie/git-backporting     | @lampajr/bper                  |
+| CLI tool    | git-backporting          | bper                           |
+
+So everytime you would use older version keep in mind of these changes.
+
+> **REMARK**: since from capabilities point of view `v3.1.1` and `v4.0.0` are equivalent we would recommend to directly start using `v4`.
+
+## Development
+
+### Package release
 
 The release of this package is entirely based on [release-it](https://github.com/release-it/release-it) tool. I created some useful scripts that can make the release itself quite easy.
 
 
-### Automated release
+#### Automatic release
 
 The first step is to prepare the changes for the next release, this is done by running:
 
@@ -236,7 +272,7 @@ After that you should just push the new branch and open the pull request.
 
 Once the release preparion pull request got merged, you can run [Release package](.github/workflows/release.yml) workflow that automatically performs the release itself, including npm publishing, git tag and github release.
 
-### Manual release
+#### Manual release
 
 In case we would like to perform a manual release, it would be enough to open a pull request changing the following items:
 - Package version inside the `package.json`
@@ -244,23 +280,6 @@ In case we would like to perform a manual release, it would be enough to open a 
 - Commit like `chore: release v<version>`
 
 Once the release preparion pull request got merged, run [Release package](.github/workflows/release.yml) workflow.
-
-## Repository Migration
-
-From version `v4.0.0` the project has been moved under [@kiegroup](https://github.com/kiegroup) organization. During this migration we changed some things that you should be aware of. I'll try to summarize them in the following table:
-
-> **NOTE**: these changes did not affect the tool features.
-
-|             | **v4 (after migration)** | v3 or older (before migration) |
-|-------------|--------------------------|--------------------------------|
-| Owner       | kiegroup                 | lampajr                        |
-| Repository  | git-backporting          | backporting                    |
-| NPM package | @kie/git-backporting     | @lampajr/bper                  |
-| CLI tool    | git-backporting          | bper                           |
-
-So everytime you would use older version keep in mind of these changes.
-
-> **REMARK**: since from capabilities point of view `v3.1.1` and `v4.0.0` are equivalent we would recommend to directly start using `v4`.
 
 ## Contributing
 

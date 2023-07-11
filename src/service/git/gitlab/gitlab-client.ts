@@ -2,7 +2,7 @@ import LoggerService from "@bp/service/logger/logger-service";
 import GitClient from "@bp/service/git/git-client";
 import { GitPullRequest, BackportPullRequest } from "@bp/service/git/git.types";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
-import { MergeRequestSchema, UserSchema } from "@gitbeaker/rest";
+import { CommitSchema, MergeRequestSchema, UserSchema } from "@gitbeaker/rest";
 import GitLabMapper from "@bp/service/git/gitlab/gitlab-mapper";
 import axios, { Axios } from "axios";
 import https from "https";
@@ -41,16 +41,29 @@ export default class GitLabClient implements GitClient {
   // READ
 
   // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
-  async getPullRequest(namespace: string, repo: string, mrNumber: number): Promise<GitPullRequest> {
+  async getPullRequest(namespace: string, repo: string, mrNumber: number, squash = true): Promise<GitPullRequest> {
     const projectId = this.getProjectId(namespace, repo);
     const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
 
-    return this.mapper.mapPullRequest(data as MergeRequestSchema);
+    const commits: string[] = [];
+    if (!squash) {
+      // fetch all commits
+      try {
+        const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}/commits`);
+
+        // gitlab returns them in reverse order
+        commits.push(...(data as CommitSchema[]).map(c => c.id).reverse());
+      } catch(error) {
+        throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`);
+      }
+    }
+
+    return this.mapper.mapPullRequest(data as MergeRequestSchema, commits);
   }
 
-  getPullRequestFromUrl(mrUrl: string): Promise<GitPullRequest> {
+  getPullRequestFromUrl(mrUrl: string, squash = true): Promise<GitPullRequest> {
     const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
-    return this.getPullRequest(namespace, project, id);
+    return this.getPullRequest(namespace, project, id, squash);
   }
   
   // WRITE

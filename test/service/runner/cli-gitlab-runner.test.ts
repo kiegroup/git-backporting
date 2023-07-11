@@ -68,8 +68,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
-  
   // reset process.env variables
   resetProcessArgs();
 });
@@ -198,7 +196,7 @@ describe("cli runner", () => {
       "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/3"
     ]);
 
-    expect(async () => await runner.execute()).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 
   test("merged pull request", async () => {
@@ -498,6 +496,53 @@ describe("cli runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: ["cli gitlab cherry pick :cherries:", "gitlab-original-label"],
+      }
+    );
+  });
+
+  test("multiple commits without squash", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2",
+      "--no-squash",
+    ]);
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336a4a20f394df6665994df382fb1d193a11-974519f65c9e0ed65277cd71026657a09fca05e7");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11");
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "974519f65c9e0ed65277cd71026657a09fca05e7");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336a4a20f394df6665994df382fb1d193a11-974519f65c9e0ed65277cd71026657a09fca05e7");
+
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "superuser", 
+        repo: "backporting-example", 
+        head: "bp-target-e4dd336a4a20f394df6665994df382fb1d193a11-974519f65c9e0ed65277cd71026657a09fca05e7",
+        base: "target", 
+        title: "[target] Update test.txt opened", 
+        body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2"),
+        reviewers: ["superuser"],
+        assignees: [],
+        labels: [],
       }
     );
   });

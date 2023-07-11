@@ -17,16 +17,18 @@ import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
    * @param owner repository's owner
    * @param repo repository's name
    * @param prNumber pull request number
+   * @param squash if true keep just one single commit, otherwise get the full list
    * @returns {Promise<PullRequest>}
    */
-  getPullRequest(owner: string, repo: string, prNumber: number): Promise<GitPullRequest>;
+  getPullRequest(owner: string, repo: string, prNumber: number, squash: boolean): Promise<GitPullRequest>;
 
   /**
    * Get a pull request object from the underneath git service
    * @param prUrl pull request html url
+   * @param squash if true keep just one single commit, otherwise get the full list
    * @returns {Promise<PullRequest>}
    */
-   getPullRequestFromUrl(prUrl: string): Promise<GitPullRequest>;
+   getPullRequestFromUrl(prUrl: string, squash: boolean): Promise<GitPullRequest>;
 
   // WRITE
 

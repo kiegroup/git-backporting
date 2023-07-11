@@ -17,7 +17,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
   public async parse(args: Args): Promise<Configs> {
     let pr: GitPullRequest; 
     try {
-      pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest);
+      pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest, args.squash!);
     } catch(error) {
       this.logger.error("Something went wrong retrieving pull request");
       throw error;

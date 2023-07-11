@@ -38,6 +38,7 @@ export default abstract class ArgsParser {
       inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
       labels: this.getOrDefault(args.labels, []),
       inheritLabels: this.getOrDefault(args.inheritLabels, false),
+      squash: this.getOrDefault(args.squash, true),
     };
   }
 }

@@ -55,8 +55,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
-  
   // reset process.env variables
   resetProcessArgs();
 });
@@ -292,7 +290,7 @@ describe("cli runner", () => {
       "https://github.com/owner/reponame/pull/6666"
     ]);
 
-    expect(async () => await runner.execute()).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged!");
   });
 
   test("open pull request", async () => {
@@ -630,6 +628,52 @@ describe("cli runner", () => {
         base: "target", 
         title: "[target] PR Title", 
         body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/2368"),
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+      }
+    );
+  });
+
+  test("multiple commits pr", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/8632",
+      "--no-squash",
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb922ab75c3a8aecad5c97d9af388df04695-11da4e38aa3e577ffde6d546f1c52e53b04d3151");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695");
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151");
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb922ab75c3a8aecad5c97d9af388df04695-11da4e38aa3e577ffde6d546f1c52e53b04d3151");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-target-0404fb922ab75c3a8aecad5c97d9af388df04695-11da4e38aa3e577ffde6d546f1c52e53b04d3151", 
+        base: "target", 
+        title: "[target] PR Title", 
+        body: expect.stringContaining("**Backport:** https://github.com/owner/reponame/pull/8632"),
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],

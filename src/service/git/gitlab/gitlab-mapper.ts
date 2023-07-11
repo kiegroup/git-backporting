@@ -24,7 +24,7 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
     }
   }
   
-  async mapPullRequest(mr: MergeRequestSchema): Promise<GitPullRequest> {
+  async mapPullRequest(mr: MergeRequestSchema, commits?: string[]): Promise<GitPullRequest> {
     return {
       number: mr.iid,
       author: mr.author.username,
@@ -40,11 +40,16 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
       labels: mr.labels ?? [],
       sourceRepo: await this.mapSourceRepo(mr),
       targetRepo: await this.mapTargetRepo(mr),
-      nCommits: 1, // info not present on mr
-      // if mr is merged, use merge_commit_sha otherwise use sha
-      // what is the difference between sha and diff_refs.head_sha?
-      commits: this.isMerged(mr) ? [mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha as string] : [mr.sha]
+      // if commits list is provided use that as source
+      nCommits: (commits && commits.length > 1) ? commits.length : 1,
+      commits: (commits && commits.length > 1) ? commits : this.getSha(mr)
     };
+  }
+  
+  private getSha(mr: MergeRequestSchema) {
+    // if mr is merged, use merge_commit_sha otherwise use sha
+    // what is the difference between sha and diff_refs.head_sha?
+    return this.isMerged(mr) ? [mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha as string] : [mr.sha];
   }
 
   async mapSourceRepo(mr: MergeRequestSchema): Promise<GitRepository> {
