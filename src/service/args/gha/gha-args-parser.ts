@@ -30,6 +30,8 @@ export default class GHAArgsParser extends ArgsParser {
         labels: getAsCommaSeparatedList(getInput("labels")),
         inheritLabels: getAsBooleanOrDefault(getInput("inherit-labels")),
         squash: !getAsBooleanOrDefault(getInput("no-squash")),
+        strategy: getOrUndefined(getInput("strategy")),
+        strategyOption: getOrUndefined(getInput("strategy-option")),
       };
     }
 

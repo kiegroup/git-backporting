@@ -61,6 +61,8 @@ class ArgsParser {
             labels: this.getOrDefault(args.labels, []),
             inheritLabels: this.getOrDefault(args.inheritLabels, false),
             squash: this.getOrDefault(args.squash, true),
+            strategy: this.getOrDefault(args.strategy),
+            strategyOption: this.getOrDefault(args.strategyOption),
         };
     }
 }
@@ -190,6 +192,8 @@ class GHAArgsParser extends args_parser_1.default {
                 labels: (0, args_utils_1.getAsCommaSeparatedList)((0, core_1.getInput)("labels")),
                 inheritLabels: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("inherit-labels")),
                 squash: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-squash")),
+                strategy: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy")),
+                strategyOption: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy-option")),
             };
         }
         return args;
@@ -268,6 +272,8 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             auth: args.auth,
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             targetBranch: args.targetBranch,
+            mergeStrategy: args.strategy,
+            mergeStrategyOption: args.strategyOption,
             originalPullRequest: pr,
             backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
             git: {
@@ -419,9 +425,19 @@ class GitCLIService {
      * @param cwd repository in which the sha should be cherry picked to
      * @param sha commit sha
      */
-    async cherryPick(cwd, sha) {
+    async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs") {
         this.logger.info(`Cherry picking ${sha}.`);
-        await this.git(cwd).raw(["cherry-pick", "-m", "1", "--strategy=recursive", "--strategy-option=theirs", sha]);
+        const options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, sha];
+        try {
+            await this.git(cwd).raw(options);
+        }
+        catch (error) {
+            const diff = await this.git(cwd).diff();
+            if (diff) {
+                throw new Error(`${error}\r\nShowing git diff:\r\n` + diff);
+            }
+            throw error;
+        }
     }
     /**
      * Push a branch to a remote
@@ -1186,7 +1202,7 @@ class Runner {
         // 7. apply all changes to the new branch
         this.logger.debug("Cherry picking commits..");
         for (const sha of originalPR.commits) {
-            await git.cherryPick(configs.folder, sha);
+            await git.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
         }
         const backport = {
             owner: originalPR.targetRepo.owner,

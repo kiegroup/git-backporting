@@ -81,10 +81,14 @@ By default the tool will try to cherry-pick the single squashed/merged commit in
 
 Based on the original pull request, creates a new one containing the backporting to the target branch. Note that most of these information can be overridden with appropriate CLI options or GHA inputs.
 
-Right now all commits are cherry-picked using the following git-equivalent command:
+#### Default cherry-pick strategy
+
+The default cherry-pick strategy is `recursive` with `theirs` option for automatic conflicts resolution. Therefore, by default, all commits are cherry-picked using the following git-equivalent command:
 ```bash
 $ git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs <sha>
 ```
+
+From version `v4.2.0` we made both `strategy` and `strategy-option` fully configurable from CLI or GitHub action, so if users need a specific strategy which differs from the default one please consider using either `--strategy` or `--strategy-option`, or their equivalent GitHub action inputs, more details in [inputs](#inputs) section.
 
 > **NOTE**: If there are any conflicts, the tool will block the process and exit signalling the failure as there are still no ways to interactively resolve them. In these cases a manual cherry-pick is needed, or alternatively users could manually resume the process in the cloned repository (here the user will have to resolve the conflicts, push the branch and create the pull request - all manually).
 
@@ -113,6 +117,8 @@ This tool comes with some inputs that allow users to override the default behavi
 | Labels       | --labels        | N            | Provide custom labels to be added to the backporting pull request                                                           | []       |
 | Inherit labels       | --inherit-labels        | N            | If enabled inherit lables from the original pull request                                                           | false       |
 | No squash       | --no-squash        | N            | If provided the backporting will try to backport all pull request commits without squashing                                                           | false       |
+| Strategy       | --strategy        | N            | Cherry pick merging strategy, see [git-merge](https://git-scm.com/docs/git-merge#_merge_strategies) doc for all possible values                                                           | "recursive"       |
+| Strategy Option       | --strategy-option        | N            | Cherry pick merging strategy option, see [git-merge](https://git-scm.com/docs/git-merge#_merge_strategies) doc for all possible values                                                           | "theirs"       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and `target branch` are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).

@@ -59,6 +59,14 @@ inputs:
     description: "If set to true the tool will backport all commits as part of the pull request instead of the suqashed one"
     required: false
     default: "false"
+  strategy:
+    description: "Cherry-pick merge strategy"
+    required: false
+    default: "recursive"
+  strategy-option:
+    description: "Cherry-pick merge strategy option"
+    required: false
+    default: "theirs"
 
 runs:
   using: node16

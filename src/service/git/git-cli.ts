@@ -105,9 +105,20 @@ export default class GitCLIService {
    * @param cwd repository in which the sha should be cherry picked to
    * @param sha commit sha
    */
-  async cherryPick(cwd: string, sha: string): Promise<void> {
+  async cherryPick(cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs"): Promise<void> {
     this.logger.info(`Cherry picking ${sha}.`);
-    await this.git(cwd).raw(["cherry-pick", "-m", "1", "--strategy=recursive", "--strategy-option=theirs", sha]);
+    
+    const options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, sha];
+    try {
+      await this.git(cwd).raw(options);
+    } catch(error) {
+      const diff = await this.git(cwd).diff();
+      if (diff) {
+        throw new Error(`${error}\r\nShowing git diff:\r\n` + diff);
+      }
+
+      throw error;
+    }
   }
 
   /**

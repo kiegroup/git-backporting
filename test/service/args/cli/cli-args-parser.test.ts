@@ -77,6 +77,8 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("with config file [default, short]", () => {
@@ -103,6 +105,8 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("valid execution [default, long]", () => {
@@ -131,6 +135,8 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("with config file [default, long]", () => {
@@ -157,6 +163,8 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("valid execution [override, short]", () => {
@@ -192,6 +200,8 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("valid execution [override, long]", () => {
@@ -243,6 +253,8 @@ describe("cli args parser", () => {
     expectArrayEqual(args.labels!, ["cherry-pick :cherries:", "another spaced label"]);
     expect(args.inheritLabels).toEqual(true);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("override using config file", () => {
@@ -269,6 +281,8 @@ describe("cli args parser", () => {
     expectArrayEqual(args.labels!, ["cherry-pick :cherries:"]);
     expect(args.inheritLabels).toEqual(true);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("ignore custom option when config file is set", () => {
@@ -322,6 +336,8 @@ describe("cli args parser", () => {
     expectArrayEqual(args.labels!, ["cherry-pick :cherries:"]);
     expect(args.inheritLabels).toEqual(true);
     expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
   });
 
   test("override squash to false", () => {
@@ -351,5 +367,39 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(false);
+  });
+
+  test("override cherry pick strategies", () => {
+    addProcessArgs([
+      "--target-branch",
+      "target",
+      "--pull-request",
+      "https://localhost/whatever/pulls/1",
+      "--strategy",
+      "ort",
+      "--strategy-option",
+      "ours",
+    ]);
+
+    const args: Args = parser.parse();
+    expect(args.dryRun).toEqual(false);
+    expect(args.auth).toEqual(undefined);
+    expect(args.gitUser).toEqual(undefined);
+    expect(args.gitEmail).toEqual(undefined);
+    expect(args.folder).toEqual(undefined);
+    expect(args.targetBranch).toEqual("target");
+    expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
+    expect(args.title).toEqual(undefined);
+    expect(args.body).toEqual(undefined);
+    expect(args.bodyPrefix).toEqual(undefined);
+    expect(args.bpBranchName).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
+    expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual("ort");
+    expect(args.strategyOption).toEqual("ours");
   });
 });
