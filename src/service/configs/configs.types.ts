@@ -16,6 +16,8 @@ export interface Configs {
   git: LocalGit,
   folder: string,
   targetBranch: string,
+  mergeStrategy?: string, // cherry-pick merge strategy
+  mergeStrategyOption?: string, // cherry-pick merge strategy option
   originalPullRequest: GitPullRequest,
   backportPullRequest: GitPullRequest,
  }

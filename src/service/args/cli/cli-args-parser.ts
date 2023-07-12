@@ -27,6 +27,8 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", getAsCommaSeparatedList)
       .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
       .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
+      .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
+      .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
       .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
   }
 
@@ -58,6 +60,8 @@ export default class CLIArgsParser extends ArgsParser {
         labels: opts.labels,
         inheritLabels: opts.inheritLabels,
         squash: opts.squash,
+        strategy: opts.strategy,
+        strategyOption: opts.strategyOption,
       };
     }
 

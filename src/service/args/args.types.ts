@@ -19,4 +19,6 @@ export interface Args {
   labels?: string[], // backport pr labels
   inheritLabels?: boolean, // if true inherit labels from original pr
   squash?: boolean, // if false use squashed/merged commit otherwise backport all commits as part of the pr
+  strategy?: string, // cherry-pick merge strategy
+  strategyOption?: string, // cherry-pick merge strategy option
 }

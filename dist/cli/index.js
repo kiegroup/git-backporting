@@ -61,6 +61,8 @@ class ArgsParser {
             labels: this.getOrDefault(args.labels, []),
             inheritLabels: this.getOrDefault(args.inheritLabels, false),
             squash: this.getOrDefault(args.squash, true),
+            strategy: this.getOrDefault(args.strategy),
+            strategyOption: this.getOrDefault(args.strategyOption),
         };
     }
 }
@@ -187,6 +189,8 @@ class CLIArgsParser extends args_parser_1.default {
             .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", args_utils_1.getAsCommaSeparatedList)
             .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
             .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
+            .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
+            .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
             .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
     }
     readArgs() {
@@ -217,6 +221,8 @@ class CLIArgsParser extends args_parser_1.default {
                 labels: opts.labels,
                 inheritLabels: opts.inheritLabels,
                 squash: opts.squash,
+                strategy: opts.strategy,
+                strategyOption: opts.strategyOption,
             };
         }
         return args;
@@ -295,6 +301,8 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             auth: args.auth,
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             targetBranch: args.targetBranch,
+            mergeStrategy: args.strategy,
+            mergeStrategyOption: args.strategyOption,
             originalPullRequest: pr,
             backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
             git: {
@@ -446,9 +454,19 @@ class GitCLIService {
      * @param cwd repository in which the sha should be cherry picked to
      * @param sha commit sha
      */
-    async cherryPick(cwd, sha) {
+    async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs") {
         this.logger.info(`Cherry picking ${sha}.`);
-        await this.git(cwd).raw(["cherry-pick", "-m", "1", "--strategy=recursive", "--strategy-option=theirs", sha]);
+        const options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, sha];
+        try {
+            await this.git(cwd).raw(options);
+        }
+        catch (error) {
+            const diff = await this.git(cwd).diff();
+            if (diff) {
+                throw new Error(`${error}\r\nShowing git diff:\r\n` + diff);
+            }
+            throw error;
+        }
     }
     /**
      * Push a branch to a remote
@@ -1213,7 +1231,7 @@ class Runner {
         // 7. apply all changes to the new branch
         this.logger.debug("Cherry picking commits..");
         for (const sha of originalPR.commits) {
-            await git.cherryPick(configs.folder, sha);
+            await git.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
         }
         const backport = {
             owner: originalPR.targetRepo.owner,

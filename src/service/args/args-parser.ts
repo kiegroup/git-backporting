@@ -39,6 +39,8 @@ export default abstract class ArgsParser {
       labels: this.getOrDefault(args.labels, []),
       inheritLabels: this.getOrDefault(args.inheritLabels, false),
       squash: this.getOrDefault(args.squash, true),
+      strategy: this.getOrDefault(args.strategy),
+      strategyOption: this.getOrDefault(args.strategyOption),
     };
   }
 }
