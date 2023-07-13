@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.2.0](https://github.com/kiegroup/git-backporting/compare/v4.1.0...v4.2.0) (2023-07-13)
+
+
+### Features
+
+* **issue-62:** make cherry-pick strategy configurable ([#63](https://github.com/kiegroup/git-backporting/issues/63)) ([265955d](https://github.com/kiegroup/git-backporting/commit/265955dda77a8191fd1f64517fec20e8d5f8c5b4))
+
+
+### Bug Fixes
+
+* **issue-57:** truncate the bp branch name ([#58](https://github.com/kiegroup/git-backporting/issues/58)) ([ead1322](https://github.com/kiegroup/git-backporting/commit/ead1322c0f6bb5de96c487e8f6b6565734144853))
+
+
+### Performance Improvements
+
+* use concurrent promises instead of awaiting them one by one ([#59](https://github.com/kiegroup/git-backporting/issues/59)) ([49a7350](https://github.com/kiegroup/git-backporting/commit/49a73504066396ca2a074f55bb23815e13ae462e))
+
 ## [4.1.0](https://github.com/kiegroup/git-backporting/compare/v4.0.0...v4.1.0) (2023-07-11)
 
 
