@@ -79,7 +79,7 @@ export default class GitHubClient implements GitClient {
     });
 
     if (!data) {
-      throw new Error("Pull request creation failed");
+      throw new Error("Pull request creation failed :(");
     }
 
     const promises = [];

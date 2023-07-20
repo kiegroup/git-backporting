@@ -683,7 +683,7 @@ class GitHubClient {
             body: backport.body,
         });
         if (!data) {
-            throw new Error("Pull request creation failed");
+            throw new Error("Pull request creation failed :(");
         }
         const promises = [];
         if (backport.labels.length > 0) {
