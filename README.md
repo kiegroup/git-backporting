@@ -14,10 +14,6 @@
 
 ---
 
-## :bangbang: Starting from v4 git-backporting has been moved under @kiegroup organization :bangbang:
-
----
-
 **Git Backporting** is a [NodeJS](https://nodejs.org/) command line tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way. This tool also comes with a predefined *GitHub* action in order to make CI/CD integration easier for all users.
 
 
@@ -43,13 +39,13 @@ Therefore this tools is for anybody who is working on projects where they have t
 
 ## CLI tool
 
+>  All instructions provided below pertain to version `v4` of the tool. If you wish to use an earlier version, we strongly encourage you to consider migrating to version `v4` as there are no valid reason to keep using older versions. Please refer to [Migrating to v4](#migrating-to-v4) section for comprehensive details on how to properly migrate to version `v4`.
+
 This tool is released on the [public npm registry](https://www.npmjs.com/), therefore it can be easily installed using `npm`:
 
 ```bash
 $ npm install -g @kie/git-backporting
 ```
-
-> **NOTE**: if you want to download version 3 or older you must use the older package name `@lampajr/bper` instead of `@kie/git-backporting`.
 
 Then you just have to choose the pull request (or merge request on *Gitlab*) that you would like to backport and the target branch and the simply run the following command:
 
@@ -63,8 +59,6 @@ $ git-backporting -tb develop -pr https://github.com/kiegroup/git-backporting-ex
 ```
 
 This is the easiest invocation where you let the tool set / compute most of the backported pull request data. Obviously most of that data can be overridden with appropriate tool options, more details can be found in the [inputs](#inputs) section.
-
-> **NOTE**: if you are still using version 3 or older you must use the older CLI tool name `bper` instead of `git-backporting`.
 
 ### Requirements
 
@@ -235,7 +229,7 @@ For a complete description of all inputs see [Inputs section](#inputs).
 
 ## Migrating to v4
 
-From version `v4.0.0` the project has been moved under [@kiegroup](https://github.com/kiegroup) organization. During this migration we changed some things that you should be aware of. I'll try to summarize them in the following table:
+From version `v4` the project has been moved under [@kiegroup](https://github.com/kiegroup) organization. During this migration we changed some things that you should be aware of. I'll try to summarize them in the following table:
 
 > **NOTE**: these changes did not affect the tool features.
 
@@ -246,9 +240,9 @@ From version `v4.0.0` the project has been moved under [@kiegroup](https://githu
 | NPM package | @kie/git-backporting     | @lampajr/bper                  |
 | CLI tool    | git-backporting          | bper                           |
 
-So everytime you would use older version keep in mind of these changes.
+So everytime you would use older version keep in mind that these changes are madnatory to make the tool working.
 
-> **REMARK**: since from capabilities point of view `v3.1.1` and `v4.0.0` are equivalent we would recommend to directly start using `v4`.
+> **NOTE**: Versions `v3.1.1` and `v4.0.0` offer identical features; the only distinction lies in the project's renaming and organization movement.
 
 ## Development
 
