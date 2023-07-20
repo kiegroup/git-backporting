@@ -253,7 +253,7 @@ describe("gitlab merge request config parser", () => {
       inheritReviewers: true,
     };
 
-    await expect(() => configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged");
   });
 
   test("override backport pr data inheriting reviewers", async () => {

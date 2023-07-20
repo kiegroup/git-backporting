@@ -69,7 +69,7 @@ export default class GitLabClient implements GitClient {
   // WRITE
   
   async createPullRequest(backport: BackportPullRequest): Promise<string> {
-    this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}.`);
+    this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
     this.logger.info(`${JSON.stringify(backport, null, 2)}`);
 
     const projectId = this.getProjectId(backport.owner, backport.repo);

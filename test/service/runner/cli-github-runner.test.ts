@@ -289,7 +289,7 @@ describe("cli runner", () => {
       "https://github.com/owner/reponame/pull/6666"
     ]);
 
-    await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged");
   });
 
   test("open pull request", async () => {

@@ -79,7 +79,7 @@ export const putAxiosMocked = async (url: string, _data?: unknown) => {
 // GITHUB - OCTOKIT
 
 export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit => {
-  logger.debug("Setting up moctokit.");
+  logger.debug("Setting up moctokit..");
   
   const mock = new Moctokit(apiUrl);
 

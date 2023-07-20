@@ -193,7 +193,7 @@ describe("cli runner", () => {
       "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/3"
     ]);
 
-    await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged!");
+    await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged");
   });
 
   test("merged pull request", async () => {
