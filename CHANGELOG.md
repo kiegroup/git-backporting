@@ -1,5 +1,7 @@
 # Changelog
 
+## [4.2.1](https://github.com/kiegroup/git-backporting/compare/v4.2.0...v4.2.1) (2023-07-20)
+
 ## [4.2.0](https://github.com/kiegroup/git-backporting/compare/v4.1.0...v4.2.0) (2023-07-13)
 
 
