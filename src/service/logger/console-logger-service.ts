@@ -12,25 +12,25 @@ export default class ConsoleLoggerService implements LoggerService {
   }
   
   trace(message: string): void {
-    this.logger.log("[TRACE]", message);
+    this.logger.log("TRACE", message);
   }
   
   debug(message: string): void {
     if (this.verbose) {
-      this.logger.log("[DEBUG]", message);
+      this.logger.log("DEBUG", message);
     }
   }
   
   info(message: string): void {
-    this.logger.log("[INFO]", message);
+    this.logger.log("INFO", message);
   }
   
   warn(message: string): void {
-    this.logger.log("[WARN]", message);
+    this.logger.log("WARN", message);
   }
   
   error(message: string): void {
-    this.logger.log("[ERROR]", message);
+    this.logger.log("ERROR", message);
   }
 
 }

@@ -30,13 +30,13 @@ export default class Runner {
     try {
       await this.execute();
 
-      this.logger.info("Process succeeded!");
+      this.logger.info("Process succeeded");
       process.exit(0);
 
     } catch (error) {
       this.logger.error(`${error}`);
       
-      this.logger.info("Process failed!");
+      this.logger.info("Process failed");
       process.exit(1);
     }
   }
@@ -50,7 +50,7 @@ export default class Runner {
     const args: Args = this.argsParser.parse();
 
     if (args.dryRun) {
-      this.logger.warn("Dry run enabled!");
+      this.logger.warn("Dry run enabled");
     }
 
     // 2. init git service
@@ -123,7 +123,7 @@ export default class Runner {
       this.logger.info(`Pull request created: ${prUrl}`);
 
     } else {
-      this.logger.warn("Pull request creation and remote push skipped!");
+      this.logger.warn("Pull request creation and remote push skipped");
       this.logger.info(`${JSON.stringify(backport, null, 2)}`);
     }
   }

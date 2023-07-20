@@ -13,9 +13,10 @@ export default class GitClientFactory {
   private static logger: LoggerService = LoggerServiceFactory.getLogger();
   private static instance?: GitClient;
 
+  // this method assumes there already exists a singleton client instance, otherwise it will fail
   public static getClient(): GitClient {
     if (!GitClientFactory.instance) {
-      throw new Error("You must call `getOrCreate` method first!");
+      throw new Error("You must call `getOrCreate` method first");
     }
 
     return GitClientFactory.instance;
@@ -29,7 +30,7 @@ export default class GitClientFactory {
   public static getOrCreate(type: GitClientType, authToken: string | undefined, apiUrl: string): GitClient {
 
     if (GitClientFactory.instance) {
-      GitClientFactory.logger.warn("Git service already initialized!");
+      GitClientFactory.logger.warn("Git service already initialized");
       return GitClientFactory.instance;
     }
 
@@ -49,8 +50,9 @@ export default class GitClientFactory {
     return GitClientFactory.instance;
   }
 
+  // this is used for testing purposes
   public static reset(): void {
-    GitClientFactory.logger.warn("Resetting git service!");
+    GitClientFactory.logger.warn("Resetting git service");
     GitClientFactory.instance = undefined;
   }
 }

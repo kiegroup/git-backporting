@@ -60,7 +60,7 @@ export default class GitCLIService {
    * @param branch branch which should be cloned
    */
   async clone(from: string, to: string, branch: string): Promise<void> {
-    this.logger.info(`Cloning repository ${from} to ${to}.`);
+    this.logger.info(`Cloning repository ${from} to ${to}`);
     if (!fs.existsSync(to)) {
       await simpleGit().clone(this.remoteWithAuth(from), to, ["--quiet", "--shallow-submodules", "--no-tags", "--branch", branch]);
     } else {
@@ -74,7 +74,7 @@ export default class GitCLIService {
    * @param newBranch new branch name
    */
   async createLocalBranch(cwd: string, newBranch: string): Promise<void> {
-    this.logger.info(`Creating branch ${newBranch}.`);
+    this.logger.info(`Creating branch ${newBranch}`);
     await this.git(cwd).checkoutLocalBranch(newBranch);
   }
 
@@ -85,7 +85,7 @@ export default class GitCLIService {
    * @param remoteName [optional] name of the remote, by default 'fork' is used 
    */
   async addRemote(cwd: string, remote: string, remoteName = "fork"): Promise<void> {
-    this.logger.info(`Adding new remote ${remote}.`);
+    this.logger.info(`Adding new remote ${remote}`);
     await this.git(cwd).addRemote(remoteName, this.remoteWithAuth(remote));
   }
 
@@ -96,7 +96,7 @@ export default class GitCLIService {
    * @param remote [optional] the remote to fetch, by default origin
    */
   async fetch(cwd: string, branch: string, remote = "origin"): Promise<void> {
-    this.logger.info(`Fetching ${remote} ${branch}.`);
+    this.logger.info(`Fetching ${remote} ${branch}`);
     await this.git(cwd).fetch(remote, branch, ["--quiet"]);
   }
 
@@ -106,7 +106,7 @@ export default class GitCLIService {
    * @param sha commit sha
    */
   async cherryPick(cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs"): Promise<void> {
-    this.logger.info(`Cherry picking ${sha}.`);
+    this.logger.info(`Cherry picking ${sha}`);
     
     const options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, sha];
     try {
@@ -128,7 +128,7 @@ export default class GitCLIService {
    * @param remote [optional] remote to which the branch should be pushed to, by default 'origin'
    */
   async push(cwd: string, branch: string, remote = "origin", force = false): Promise<void> {
-    this.logger.info(`Pushing ${branch} to ${remote}.`);
+    this.logger.info(`Pushing ${branch} to ${remote}`);
     
     const options = ["--quiet"];
     if (force) {

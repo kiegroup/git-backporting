@@ -6,7 +6,7 @@
 
   log(prefix: string, ...str: string[]) {
     // eslint-disable-next-line no-console
-    console.log.apply(console, [prefix, ...str]);
+    console.log.apply(console, [`[${prefix.padEnd(5)}]`, ...str]);
   }
 
   emptyLine() {

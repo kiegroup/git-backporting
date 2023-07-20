@@ -227,11 +227,11 @@ class ConfigsParser {
         // apply validation, throw errors if something is wrong
         // if pr is opened check if the there exists one single commit
         if (configs.originalPullRequest.state == "open") {
-            this.logger.warn("Trying to backport an open pull request!");
+            this.logger.warn("Trying to backport an open pull request");
         }
-        // if PR is closed and not merged log a warning
+        // if PR is closed and not merged throw an error
         if (configs.originalPullRequest.state == "closed" && !configs.originalPullRequest.merged) {
-            throw new Error("Provided pull request is closed and not merged!");
+            throw new Error("Provided pull request is closed and not merged");
         }
         return Promise.resolve(configs);
     }
@@ -383,7 +383,7 @@ class GitCLIService {
      * @param branch branch which should be cloned
      */
     async clone(from, to, branch) {
-        this.logger.info(`Cloning repository ${from} to ${to}.`);
+        this.logger.info(`Cloning repository ${from} to ${to}`);
         if (!fs_1.default.existsSync(to)) {
             await (0, simple_git_1.default)().clone(this.remoteWithAuth(from), to, ["--quiet", "--shallow-submodules", "--no-tags", "--branch", branch]);
         }
@@ -397,7 +397,7 @@ class GitCLIService {
      * @param newBranch new branch name
      */
     async createLocalBranch(cwd, newBranch) {
-        this.logger.info(`Creating branch ${newBranch}.`);
+        this.logger.info(`Creating branch ${newBranch}`);
         await this.git(cwd).checkoutLocalBranch(newBranch);
     }
     /**
@@ -407,7 +407,7 @@ class GitCLIService {
      * @param remoteName [optional] name of the remote, by default 'fork' is used
      */
     async addRemote(cwd, remote, remoteName = "fork") {
-        this.logger.info(`Adding new remote ${remote}.`);
+        this.logger.info(`Adding new remote ${remote}`);
         await this.git(cwd).addRemote(remoteName, this.remoteWithAuth(remote));
     }
     /**
@@ -417,7 +417,7 @@ class GitCLIService {
      * @param remote [optional] the remote to fetch, by default origin
      */
     async fetch(cwd, branch, remote = "origin") {
-        this.logger.info(`Fetching ${remote} ${branch}.`);
+        this.logger.info(`Fetching ${remote} ${branch}`);
         await this.git(cwd).fetch(remote, branch, ["--quiet"]);
     }
     /**
@@ -426,7 +426,7 @@ class GitCLIService {
      * @param sha commit sha
      */
     async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs") {
-        this.logger.info(`Cherry picking ${sha}.`);
+        this.logger.info(`Cherry picking ${sha}`);
         const options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, sha];
         try {
             await this.git(cwd).raw(options);
@@ -446,7 +446,7 @@ class GitCLIService {
      * @param remote [optional] remote to which the branch should be pushed to, by default 'origin'
      */
     async push(cwd, branch, remote = "origin", force = false) {
-        this.logger.info(`Pushing ${branch} to ${remote}.`);
+        this.logger.info(`Pushing ${branch} to ${remote}`);
         const options = ["--quiet"];
         if (force) {
             options.push("--force-with-lease");
@@ -476,9 +476,10 @@ const gitlab_client_1 = __importDefault(__nccwpck_require__(4077));
  * Singleton git service factory class
  */
 class GitClientFactory {
+    // this method assumes there already exists a singleton client instance, otherwise it will fail
     static getClient() {
         if (!GitClientFactory.instance) {
-            throw new Error("You must call `getOrCreate` method first!");
+            throw new Error("You must call `getOrCreate` method first");
         }
         return GitClientFactory.instance;
     }
@@ -489,7 +490,7 @@ class GitClientFactory {
      */
     static getOrCreate(type, authToken, apiUrl) {
         if (GitClientFactory.instance) {
-            GitClientFactory.logger.warn("Git service already initialized!");
+            GitClientFactory.logger.warn("Git service already initialized");
             return GitClientFactory.instance;
         }
         this.logger.debug(`Setting up ${type} client: apiUrl=${apiUrl}, token=****`);
@@ -505,8 +506,9 @@ class GitClientFactory {
         }
         return GitClientFactory.instance;
     }
+    // this is used for testing purposes
     static reset() {
-        GitClientFactory.logger.warn("Resetting git service!");
+        GitClientFactory.logger.warn("Resetting git service");
         GitClientFactory.instance = undefined;
     }
 }
@@ -612,7 +614,7 @@ class GitHubClient {
         return "noreply@github.com";
     }
     async getPullRequest(owner, repo, prNumber, squash = true) {
-        this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);
+        this.logger.debug(`Fetching pull request ${owner}/${repo}/${prNumber}`);
         const { data } = await this.octokit.rest.pulls.get({
             owner: owner,
             repo: repo,
@@ -641,7 +643,7 @@ class GitHubClient {
     }
     // WRITE
     async createPullRequest(backport) {
-        this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}.`);
+        this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
         this.logger.info(`${JSON.stringify(backport, null, 2)}`);
         const { data } = await this.octokit.pulls.create({
             owner: backport.owner,
@@ -780,7 +782,6 @@ const rest_1 = __nccwpck_require__(5375);
 class OctokitFactory {
     static getOctokit(token, apiUrl) {
         if (!OctokitFactory.octokit) {
-            OctokitFactory.logger.info("Creating octokit instance.");
             OctokitFactory.octokit = new rest_1.Octokit({
                 auth: token,
                 userAgent: "kiegroup/git-backporting",
@@ -856,7 +857,7 @@ class GitLabClient {
     }
     // WRITE
     async createPullRequest(backport) {
-        this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}.`);
+        this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
         this.logger.info(`${JSON.stringify(backport, null, 2)}`);
         const projectId = this.getProjectId(backport.owner, backport.repo);
         const { data } = await this.client.post(`/projects/${projectId}/merge_requests`, {
@@ -1046,21 +1047,21 @@ class ConsoleLoggerService {
         this.verbose = verbose;
     }
     trace(message) {
-        this.logger.log("[TRACE]", message);
+        this.logger.log("TRACE", message);
     }
     debug(message) {
         if (this.verbose) {
-            this.logger.log("[DEBUG]", message);
+            this.logger.log("DEBUG", message);
         }
     }
     info(message) {
-        this.logger.log("[INFO]", message);
+        this.logger.log("INFO", message);
     }
     warn(message) {
-        this.logger.log("[WARN]", message);
+        this.logger.log("WARN", message);
     }
     error(message) {
-        this.logger.log("[ERROR]", message);
+        this.logger.log("ERROR", message);
     }
 }
 exports["default"] = ConsoleLoggerService;
@@ -1106,7 +1107,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 class Logger {
     log(prefix, ...str) {
         // eslint-disable-next-line no-console
-        console.log.apply(console, [prefix, ...str]);
+        console.log.apply(console, [`[${prefix.padEnd(5)}]`, ...str]);
     }
     emptyLine() {
         this.log("", "");
@@ -1146,12 +1147,12 @@ class Runner {
     async run() {
         try {
             await this.execute();
-            this.logger.info("Process succeeded!");
+            this.logger.info("Process succeeded");
             process.exit(0);
         }
         catch (error) {
             this.logger.error(`${error}`);
-            this.logger.info("Process failed!");
+            this.logger.info("Process failed");
             process.exit(1);
         }
     }
@@ -1162,7 +1163,7 @@ class Runner {
         // 1. parse args
         const args = this.argsParser.parse();
         if (args.dryRun) {
-            this.logger.warn("Dry run enabled!");
+            this.logger.warn("Dry run enabled");
         }
         // 2. init git service
         const gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
@@ -1223,7 +1224,7 @@ class Runner {
             this.logger.info(`Pull request created: ${prUrl}`);
         }
         else {
-            this.logger.warn("Pull request creation and remote push skipped!");
+            this.logger.warn("Pull request creation and remote push skipped");
             this.logger.info(`${JSON.stringify(backport, null, 2)}`);
         }
     }

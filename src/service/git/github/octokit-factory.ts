@@ -12,7 +12,6 @@ export default class OctokitFactory {
 
   public static getOctokit(token: string | undefined, apiUrl: string): Octokit {
     if (!OctokitFactory.octokit) {
-      OctokitFactory.logger.info("Creating octokit instance.");
       OctokitFactory.octokit = new Octokit({
         auth: token,
         userAgent: "kiegroup/git-backporting",

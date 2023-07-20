@@ -24,12 +24,12 @@ import LoggerServiceFactory from "../logger/logger-service-factory";
     
     // if pr is opened check if the there exists one single commit
     if (configs.originalPullRequest.state == "open") {
-      this.logger.warn("Trying to backport an open pull request!");
+      this.logger.warn("Trying to backport an open pull request");
     }
 
-    // if PR is closed and not merged log a warning
+    // if PR is closed and not merged throw an error
     if (configs.originalPullRequest.state == "closed" && !configs.originalPullRequest.merged) {
-      throw new Error("Provided pull request is closed and not merged!");
+      throw new Error("Provided pull request is closed and not merged");
     }
 
     return Promise.resolve(configs);

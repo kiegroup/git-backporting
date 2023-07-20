@@ -32,7 +32,7 @@ export default class GitHubClient implements GitClient {
   }
 
   async getPullRequest(owner: string, repo: string, prNumber: number, squash = true): Promise<GitPullRequest> {
-    this.logger.info(`Getting pull request ${owner}/${repo}/${prNumber}.`);
+    this.logger.debug(`Fetching pull request ${owner}/${repo}/${prNumber}`);
     const { data } = await this.octokit.rest.pulls.get({
       owner: owner,
       repo: repo,
@@ -66,7 +66,7 @@ export default class GitHubClient implements GitClient {
   // WRITE
   
   async createPullRequest(backport: BackportPullRequest): Promise<string> {
-    this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}.`);
+    this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
     this.logger.info(`${JSON.stringify(backport, null, 2)}`);
 
     const { data } = await this.octokit.pulls.create({
