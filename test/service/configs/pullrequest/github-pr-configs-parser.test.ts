@@ -725,4 +725,79 @@ describe("github pull request config parser", () => {
       comments: [],
     });
   });
+
+  test("override backport pr with additional comments", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      title: "New Title",
+      body: "New Body",
+      bodyPrefix: "New Body Prefix -",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      inheritReviewers: false,
+      labels: [],
+      inheritLabels: false,
+      comments: ["First comment", "Second comment"],
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "Me",
+      email: "me@email.com"
+    });
+    expect(configs.auth).toEqual("");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 2368,
+      author: "gh-user",
+      url: "https://api.github.com/repos/owner/reponame/pulls/2368",
+      htmlUrl: "https://github.com/owner/reponame/pull/2368",
+      state: "closed",
+      merged: true,
+      mergedBy: "that-s-a-user",
+      title: "PR Title",
+      body: "Please review and merge",
+      reviewers: ["requested-gh-user", "gh-user"],
+      assignees: [],
+      labels: ["original-label"],
+      targetRepo: {
+        owner: "owner",
+        project: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git"
+      },
+      sourceRepo: {
+        owner: "fork",
+        project: "reponame",
+        cloneUrl: "https://github.com/fork/reponame.git"
+      },
+      bpBranchName: undefined,
+      nCommits: 2,
+      commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
+    });
+    expect(configs.backportPullRequest).toEqual({
+      owner: "owner", 
+      repo: "reponame", 
+      head: "bp-prod-28f63db", 
+      base: "prod", 
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      labels: [],
+      comments: ["First comment", "Second comment"],
+    });
+  });
 });

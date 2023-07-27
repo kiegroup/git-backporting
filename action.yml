@@ -67,6 +67,9 @@ inputs:
     description: "Cherry-pick merge strategy option"
     required: false
     default: "theirs"
+  comments:
+    description: "Semicolon separated list of additional comments to be posted to the backported pull request"
+    required: false
 
 runs:
   using: node16

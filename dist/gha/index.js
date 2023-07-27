@@ -63,6 +63,7 @@ class ArgsParser {
             squash: this.getOrDefault(args.squash, true),
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
+            comments: this.getOrDefault(args.comments)
         };
     }
 }
@@ -100,7 +101,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getAsBooleanOrDefault = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
+exports.getAsBooleanOrDefault = exports.getAsSemicolonSeparatedList = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 /**
  * Parse the input configuation string as json object and
@@ -145,6 +146,12 @@ function getAsCommaSeparatedList(value) {
     return trimmed !== "" ? trimmed.split(",").map(v => v.trim()) : undefined;
 }
 exports.getAsCommaSeparatedList = getAsCommaSeparatedList;
+function getAsSemicolonSeparatedList(value) {
+    // trim the value
+    const trimmed = value.trim();
+    return trimmed !== "" ? trimmed.split(";").map(v => v.trim()) : undefined;
+}
+exports.getAsSemicolonSeparatedList = getAsSemicolonSeparatedList;
 function getAsBooleanOrDefault(value) {
     const trimmed = value.trim();
     return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
@@ -194,6 +201,7 @@ class GHAArgsParser extends args_parser_1.default {
                 squash: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-squash")),
                 strategy: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy")),
                 strategyOption: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy-option")),
+                comments: (0, args_utils_1.getAsSemicolonSeparatedList)((0, core_1.getInput)("comments")),
             };
         }
         return args;
@@ -327,7 +335,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             reviewers: [...new Set(reviewers)],
             assignees: [...new Set(args.assignees)],
             labels: [...new Set(labels)],
-            comments: [], // TODO fix comments
+            comments: args.comments ?? [],
         };
     }
 }
@@ -692,6 +700,16 @@ class GitHubClient {
                 assignees: backport.assignees,
             }).catch(error => this.logger.error(`Error setting assignees: ${error}`)));
         }
+        if (backport.comments.length > 0) {
+            backport.comments.forEach(c => {
+                promises.push(this.octokit.issues.createComment({
+                    owner: backport.owner,
+                    repo: backport.repo,
+                    issue_number: data.number,
+                    body: c,
+                }).catch(error => this.logger.error(`Error posting comment: ${error}`)));
+            });
+        }
         await Promise.all(promises);
         return data.html_url;
     }
@@ -887,6 +905,15 @@ class GitLabClient {
             promises.push(this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
                 labels: backport.labels.join(","),
             }).catch(error => this.logger.warn("Failure trying to update labels. " + error)));
+        }
+        // comments
+        if (backport.comments.length > 0) {
+            this.logger.info("Posting comments: " + backport.comments);
+            backport.comments.forEach(c => {
+                promises.push(this.client.post(`/projects/${projectId}/merge_requests/${mr.iid}/notes`, {
+                    body: c,
+                }).catch(error => this.logger.warn("Failure trying to post comment. " + error)));
+            });
         }
         // reviewers
         const reviewerIds = await Promise.all(backport.reviewers.map(async (r) => {

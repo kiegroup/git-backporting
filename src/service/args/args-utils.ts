@@ -44,6 +44,12 @@ export function getAsCommaSeparatedList(value: string): string[] | undefined {
   return trimmed !== "" ? trimmed.split(",").map(v => v.trim()) : undefined; 
 }
 
+export function getAsSemicolonSeparatedList(value: string): string[] | undefined {
+  // trim the value
+  const trimmed: string = value.trim();
+  return trimmed !== "" ? trimmed.split(";").map(v => v.trim()) : undefined; 
+}
+
 export function getAsBooleanOrDefault(value: string): boolean | undefined {
   const trimmed = value.trim();
   return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;

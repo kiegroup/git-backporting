@@ -236,4 +236,30 @@ describe("gha args parser", () => {
     expect(args.strategy).toEqual("ort");
     expect(args.strategyOption).toEqual("ours");
   });
+
+  test("additional pr comments", () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://localhost/whatever/pulls/1",
+      "comments": "first comment;second comment",
+    });
+
+    const args: Args = parser.parse();
+    expect(args.dryRun).toEqual(false);
+    expect(args.auth).toEqual(undefined);
+    expect(args.gitUser).toEqual(undefined);
+    expect(args.gitEmail).toEqual(undefined);
+    expect(args.folder).toEqual(undefined);
+    expect(args.targetBranch).toEqual("target");
+    expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
+    expect(args.title).toEqual(undefined);
+    expect(args.body).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
+    expect(args.squash).toEqual(true);
+    expectArrayEqual(args.comments!,["first comment", "second comment"]);
+  });
 });

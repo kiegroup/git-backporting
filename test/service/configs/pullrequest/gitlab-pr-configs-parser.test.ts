@@ -723,4 +723,78 @@ describe("gitlab merge request config parser", () => {
       comments: [],
     });
   });
+
+  test("override backport pr with additional comments", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      title: "New Title",
+      body: "New Body",
+      bodyPrefix: "New Body Prefix -",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      inheritReviewers: false,
+      labels: [],
+      inheritLabels: false,
+      comments: ["First comment", "Second comment"],
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "Me",
+      email: "me@email.com"
+    });
+    expect(configs.auth).toEqual("");
+    expect(configs.targetBranch).toEqual("prod");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.originalPullRequest).toEqual({
+      number: 1,
+      author: "superuser",
+      url: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1",
+      htmlUrl: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1",
+      state: "merged",
+      merged: true,
+      mergedBy: "superuser",
+      title: "Update test.txt",
+      body: "This is the body",
+      reviewers: ["superuser1", "superuser2"],
+      assignees: ["superuser"],
+      labels: ["gitlab-original-label"],
+      targetRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      sourceRepo: {
+        owner: "superuser",
+        project: "backporting-example",
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
+      },
+      nCommits: 1,
+      commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
+    });
+    expect(configs.backportPullRequest).toEqual({
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: [],
+      assignees: ["user3", "user4"],
+      labels: [],
+      comments: ["First comment", "Second comment"],
+    });
+  });
 });

@@ -92,7 +92,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       reviewers: [...new Set(reviewers)],
       assignees: [...new Set(args.assignees)],
       labels: [...new Set(labels)],
-      comments: [], // TODO fix comments
+      comments: args.comments ?? [],
     };
   }
 }

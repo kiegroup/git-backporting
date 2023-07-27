@@ -96,6 +96,18 @@ export default class GitLabClient implements GitClient {
       );
     }
 
+    // comments
+    if (backport.comments.length > 0) {
+      this.logger.info("Posting comments: " + backport.comments);
+      backport.comments.forEach(c => {
+        promises.push(
+          this.client.post(`/projects/${projectId}/merge_requests/${mr.iid}/notes`, {
+            body: c,
+          }).catch(error => this.logger.warn("Failure trying to post comment. " + error))
+        );
+      });
+    }
+
     // reviewers
     const reviewerIds = await Promise.all(backport.reviewers.map(async r => {
       this.logger.debug("Retrieving user: " + r);

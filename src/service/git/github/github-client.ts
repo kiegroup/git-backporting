@@ -117,6 +117,19 @@ export default class GitHubClient implements GitClient {
       );
     }
 
+    if (backport.comments.length > 0) {
+      backport.comments.forEach(c => {
+        promises.push(
+          this.octokit.issues.createComment({
+            owner: backport.owner,
+            repo: backport.repo,
+            issue_number: (data as PullRequest).number,
+            body: c,
+          }).catch(error => this.logger.error(`Error posting comment: ${error}`))
+        );
+      });
+    }
+
     await Promise.all(promises);
 
     return data.html_url;

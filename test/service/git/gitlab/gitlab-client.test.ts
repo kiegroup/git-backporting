@@ -305,7 +305,7 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + SECOND_NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
+    expect(axiosInstanceSpy.post).toBeCalledTimes(3); // also comments
     expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch-2",
       target_branch: "old/branch",
@@ -315,10 +315,12 @@ describe("github service", () => {
       assignee_ids: [],
     }));
     expect(axiosInstanceSpy.get).toBeCalledTimes(0);
-    // FIXME
-    // expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just comments
-    // expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
-    //   labels: "label1,label2",
-    // });
+    
+    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID + "/notes", {
+      body: "this is first comment",
+    });
+    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID + "/notes", {
+      body: "this is second comment",
+    });
   });
 });
