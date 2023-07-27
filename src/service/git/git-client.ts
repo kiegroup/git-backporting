@@ -38,4 +38,5 @@ import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
    * @returns {Promise<string>} the pull request url
    */
   createPullRequest(backport: BackportPullRequest): Promise<string>;
+
 }

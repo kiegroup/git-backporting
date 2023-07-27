@@ -34,18 +34,24 @@ export const getAxiosMocked = (url: string) => {
 
 export const NEW_GITLAB_MR_ID = 999;
 export const SECOND_NEW_GITLAB_MR_ID = 1000;
-export const postAxiosMocked = (_url: string, data?: {source_branch: string,}) => {
+export const postAxiosMocked = async (url: string, data?: {source_branch: string,}) => {
   let responseData = undefined;
 
   // gitlab
 
-  if (data?.source_branch === "bp-branch") {
+  if (url.includes("notes")) {
+    // creating comments
+    responseData = {
+      // we do not need the whole response
+      iid: NEW_GITLAB_MR_ID,
+    };
+  } else if (data?.source_branch === "bp-branch") {
     responseData = {
       // we do not need the whole response
       iid: NEW_GITLAB_MR_ID,
       web_url: "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + NEW_GITLAB_MR_ID
     };
-  } if (data?.source_branch === "bp-branch-2") {
+  } else if (data?.source_branch === "bp-branch-2") {
     responseData = {
       // we do not need the whole response
       iid: SECOND_NEW_GITLAB_MR_ID,
@@ -166,6 +172,13 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
     .addLabels()
     .reply({
       status: 200,
+      data: {}
+    });
+
+  mock.rest.issues
+    .createComment()
+    .reply({
+      status: 201,
       data: {}
     });
 

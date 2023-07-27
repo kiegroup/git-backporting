@@ -13,8 +13,8 @@ export interface GitPullRequest {
   labels: string[],
   targetRepo: GitRepository,
   sourceRepo: GitRepository,
-  nCommits?: number, // number of commits in the pr
-  commits?: string[], // merge commit or last one
+  nCommits: number, // number of commits in the pr
+  commits: string[], // merge commit or last one
   branchName?: string,
 }
 
@@ -34,7 +34,8 @@ export interface BackportPullRequest {
   reviewers: string[], // pr list of reviewers
   assignees: string[], // pr list of assignees
   labels: string[], // pr list of assigned labels
-  branchName?: string,
+  comments: string[], // pr list of additional comments
+  // branchName?: string,
 }
 
 export enum GitClientType {

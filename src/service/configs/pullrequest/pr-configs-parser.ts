@@ -3,7 +3,7 @@ import ConfigsParser from "@bp/service/configs/configs-parser";
 import { Configs } from "@bp/service/configs/configs.types";
 import GitClient from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
-import { GitPullRequest } from "@bp/service/git/git.types";
+import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
 
 export default class PullRequestConfigsParser extends ConfigsParser {
 
@@ -52,7 +52,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
    * @param targetBranch target branch where the backport should be applied
    * @returns {GitPullRequest}
    */
-  private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, args: Args): GitPullRequest {
+  private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, args: Args): BackportPullRequest {
     const reviewers = args.reviewers ?? [];
     if (reviewers.length == 0 && args.inheritReviewers) {
       // inherit only if args.reviewers is empty and args.inheritReviewers set to true
@@ -70,16 +70,29 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       labels.push(...originalPullRequest.labels);
     }
 
+    let backportBranch = args.bpBranchName;
+    if (backportBranch === undefined || backportBranch.trim() === "") {
+      // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
+      const concatenatedCommits: string = originalPullRequest.commits!.map(c => c.slice(0, 7)).join("-");
+      backportBranch = `bp-${args.targetBranch}-${concatenatedCommits}`;
+    }
+
+    if (backportBranch.length > 250) {
+      this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
+      backportBranch = backportBranch.slice(0, 250);
+    }
+
     return {
-      author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
+      owner: originalPullRequest.targetRepo.owner,
+      repo: originalPullRequest.targetRepo.project,
+      head: backportBranch,
+      base: args.targetBranch,
       title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
       body: `${bodyPrefix}${body}`,
       reviewers: [...new Set(reviewers)],
       assignees: [...new Set(args.assignees)],
       labels: [...new Set(labels)],
-      targetRepo: originalPullRequest.targetRepo,
-      sourceRepo: originalPullRequest.targetRepo,
-      branchName: args.bpBranchName,
+      comments: args.comments ?? [],
     };
   }
 }

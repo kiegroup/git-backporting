@@ -63,6 +63,7 @@ class ArgsParser {
             squash: this.getOrDefault(args.squash, true),
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
+            comments: this.getOrDefault(args.comments)
         };
     }
 }
@@ -100,7 +101,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getAsBooleanOrDefault = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
+exports.getAsBooleanOrDefault = exports.getAsSemicolonSeparatedList = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 /**
  * Parse the input configuation string as json object and
@@ -145,6 +146,12 @@ function getAsCommaSeparatedList(value) {
     return trimmed !== "" ? trimmed.split(",").map(v => v.trim()) : undefined;
 }
 exports.getAsCommaSeparatedList = getAsCommaSeparatedList;
+function getAsSemicolonSeparatedList(value) {
+    // trim the value
+    const trimmed = value.trim();
+    return trimmed !== "" ? trimmed.split(";").map(v => v.trim()) : undefined;
+}
+exports.getAsSemicolonSeparatedList = getAsSemicolonSeparatedList;
 function getAsBooleanOrDefault(value) {
     const trimmed = value.trim();
     return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
@@ -191,6 +198,7 @@ class CLIArgsParser extends args_parser_1.default {
             .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
             .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
             .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
+            .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", args_utils_1.getAsSemicolonSeparatedList)
             .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
     }
     readArgs() {
@@ -223,6 +231,7 @@ class CLIArgsParser extends args_parser_1.default {
                 squash: opts.squash,
                 strategy: opts.strategy,
                 strategyOption: opts.strategyOption,
+                comments: opts.comments,
             };
         }
         return args;
@@ -336,16 +345,27 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         if (args.inheritLabels) {
             labels.push(...originalPullRequest.labels);
         }
+        let backportBranch = args.bpBranchName;
+        if (backportBranch === undefined || backportBranch.trim() === "") {
+            // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
+            const concatenatedCommits = originalPullRequest.commits.map(c => c.slice(0, 7)).join("-");
+            backportBranch = `bp-${args.targetBranch}-${concatenatedCommits}`;
+        }
+        if (backportBranch.length > 250) {
+            this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
+            backportBranch = backportBranch.slice(0, 250);
+        }
         return {
-            author: args.gitUser ?? this.gitClient.getDefaultGitUser(),
+            owner: originalPullRequest.targetRepo.owner,
+            repo: originalPullRequest.targetRepo.project,
+            head: backportBranch,
+            base: args.targetBranch,
             title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
             body: `${bodyPrefix}${body}`,
             reviewers: [...new Set(reviewers)],
             assignees: [...new Set(args.assignees)],
             labels: [...new Set(labels)],
-            targetRepo: originalPullRequest.targetRepo,
-            sourceRepo: originalPullRequest.targetRepo,
-            branchName: args.bpBranchName,
+            comments: args.comments ?? [],
         };
     }
 }
@@ -710,6 +730,16 @@ class GitHubClient {
                 assignees: backport.assignees,
             }).catch(error => this.logger.error(`Error setting assignees: ${error}`)));
         }
+        if (backport.comments.length > 0) {
+            backport.comments.forEach(c => {
+                promises.push(this.octokit.issues.createComment({
+                    owner: backport.owner,
+                    repo: backport.repo,
+                    issue_number: data.number,
+                    body: c,
+                }).catch(error => this.logger.error(`Error posting comment: ${error}`)));
+            });
+        }
         await Promise.all(promises);
         return data.html_url;
     }
@@ -905,6 +935,15 @@ class GitLabClient {
             promises.push(this.client.put(`/projects/${projectId}/merge_requests/${mr.iid}`, {
                 labels: backport.labels.join(","),
             }).catch(error => this.logger.warn("Failure trying to update labels. " + error)));
+        }
+        // comments
+        if (backport.comments.length > 0) {
+            this.logger.info("Posting comments: " + backport.comments);
+            backport.comments.forEach(c => {
+                promises.push(this.client.post(`/projects/${projectId}/merge_requests/${mr.iid}/notes`, {
+                    body: c,
+                }).catch(error => this.logger.warn("Failure trying to post comment. " + error)));
+            });
         }
         // reviewers
         const reviewerIds = await Promise.all(backport.reviewers.map(async (r) => {
@@ -1211,17 +1250,7 @@ class Runner {
         await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
         // 5. create new branch from target one and checkout
         this.logger.debug("Creating local branch..");
-        let backportBranch = backportPR.branchName;
-        if (backportBranch === undefined || backportBranch.trim() === "") {
-            // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
-            const concatenatedCommits = originalPR.commits.map(c => c.slice(0, 7)).join("-");
-            backportBranch = `bp-${configs.targetBranch}-${concatenatedCommits}`;
-        }
-        if (backportBranch.length > 250) {
-            this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
-            backportBranch = backportBranch.slice(0, 250);
-        }
-        await git.createLocalBranch(configs.folder, backportBranch);
+        await git.createLocalBranch(configs.folder, backportPR.head);
         // 6. fetch pull request remote if source owner != target owner or pull request still open
         if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
             configs.originalPullRequest.state === "open") {
@@ -1234,27 +1263,16 @@ class Runner {
         for (const sha of originalPR.commits) {
             await git.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
         }
-        const backport = {
-            owner: originalPR.targetRepo.owner,
-            repo: originalPR.targetRepo.project,
-            head: backportBranch,
-            base: configs.targetBranch,
-            title: backportPR.title,
-            body: backportPR.body,
-            reviewers: backportPR.reviewers,
-            assignees: backportPR.assignees,
-            labels: backportPR.labels,
-        };
         if (!configs.dryRun) {
             // 8. push the new branch to origin
-            await git.push(configs.folder, backportBranch);
+            await git.push(configs.folder, backportPR.head);
             // 9. create pull request new branch -> target branch (using octokit)
-            const prUrl = await gitApi.createPullRequest(backport);
+            const prUrl = await gitApi.createPullRequest(backportPR);
             this.logger.info(`Pull request created: ${prUrl}`);
         }
         else {
             this.logger.warn("Pull request creation and remote push skipped");
-            this.logger.info(`${JSON.stringify(backport, null, 2)}`);
+            this.logger.info(`${JSON.stringify(backportPR, null, 2)}`);
         }
     }
 }

@@ -1,7 +1,7 @@
 import ArgsParser from "@bp/service/args/args-parser";
 import { Args } from "@bp/service/args/args.types";
 import { getInput } from "@actions/core";
-import { getAsBooleanOrDefault, getAsCleanedCommaSeparatedList, getAsCommaSeparatedList, getOrUndefined, readConfigFile } from "@bp/service/args/args-utils";
+import { getAsBooleanOrDefault, getAsCleanedCommaSeparatedList, getAsCommaSeparatedList, getAsSemicolonSeparatedList, getOrUndefined, readConfigFile } from "@bp/service/args/args-utils";
 
 export default class GHAArgsParser extends ArgsParser {
 
@@ -32,6 +32,7 @@ export default class GHAArgsParser extends ArgsParser {
         squash: !getAsBooleanOrDefault(getInput("no-squash")),
         strategy: getOrUndefined(getInput("strategy")),
         strategyOption: getOrUndefined(getInput("strategy-option")),
+        comments: getAsSemicolonSeparatedList(getInput("comments")),
       };
     }
 
