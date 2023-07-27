@@ -141,7 +141,6 @@ export default class GitLabClient implements GitClient {
     return mr.web_url;
   }
 
-
   /**
    * Retrieve a gitlab user given its username
    * @param username 

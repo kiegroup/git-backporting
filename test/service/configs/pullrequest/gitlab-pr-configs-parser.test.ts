@@ -129,25 +129,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Gitlab",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "[prod] Update test.txt",
       body: "**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1\r\n\r\nThis is the body",
       reviewers: ["superuser"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -314,25 +305,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: ["superuser"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -394,25 +376,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
       labels: [],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -474,25 +447,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
       labels: [],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -556,25 +520,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
       labels: ["custom-label", "gitlab-original-label"],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
     
@@ -626,25 +581,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Gitlab",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "[prod] Update test.txt",
       body: "**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1\r\n\r\nThis is the body",
       reviewers: ["superuser"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -696,25 +642,16 @@ describe("gitlab merge request config parser", () => {
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-ebb1eca", 
+      base: "prod",
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
       labels: ["cherry-pick :cherries:", "gitlab-original-label"],
-      targetRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      sourceRepo: {
-        owner: "superuser",
-        project: "backporting-example",
-        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -772,6 +709,18 @@ describe("gitlab merge request config parser", () => {
       bpBranchName: undefined,
       nCommits: 2,
       commits: ["e4dd336a4a20f394df6665994df382fb1d193a11", "974519f65c9e0ed65277cd71026657a09fca05e7"]
+    });
+    expect(configs.backportPullRequest).toEqual({
+      owner: "superuser", 
+      repo: "backporting-example", 
+      head: "bp-prod-e4dd336-974519f", 
+      base: "prod",
+      title: "[prod] Update test.txt opened",
+      body: "**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2\r\n\r\nStill opened mr body",
+      reviewers: ["superuser"],
+      assignees: [],
+      labels: [],
+      comments: [],
     });
   });
 });

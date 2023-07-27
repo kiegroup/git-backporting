@@ -136,6 +136,7 @@ describe("gha runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -187,6 +188,7 @@ describe("gha runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -236,6 +238,7 @@ describe("gha runner", () => {
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -286,6 +289,7 @@ describe("gha runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -330,6 +334,7 @@ describe("gha runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "another-label", "gitlab-original-label"],
+        comments: [],
       }
     );
   });
@@ -373,6 +378,7 @@ describe("gha runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "another-label"],
+        comments: [],
       }
     );
   });
@@ -416,6 +422,7 @@ describe("gha runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: ["gha gitlab cherry pick :cherries:", "gitlab-original-label"],
+        comments: [],
       }
     );
   });
@@ -461,6 +468,7 @@ describe("gha runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });

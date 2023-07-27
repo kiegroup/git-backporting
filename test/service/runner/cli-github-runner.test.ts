@@ -233,6 +233,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -277,6 +278,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -333,6 +335,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -390,6 +393,7 @@ describe("cli runner", () => {
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -446,6 +450,7 @@ describe("cli runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -494,11 +499,12 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "original-label"],
+        comments: [],
       }
     );
   });
 
-  test("set custom lables without inheritance", async () => {
+  test("set custom labels without inheritance", async () => {
     addProcessArgs([
       "-tb",
       "target",
@@ -541,6 +547,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: ["first-label", "second-label"],
+        comments: [],
       }
     );
   });
@@ -584,6 +591,7 @@ describe("cli runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: ["cli github cherry pick :cherries:", "original-label"],
+        comments: [],
       }
     );
   });
@@ -630,6 +638,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -676,6 +685,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -728,6 +738,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -778,6 +789,7 @@ describe("cli runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });

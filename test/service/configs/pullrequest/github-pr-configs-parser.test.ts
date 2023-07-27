@@ -129,25 +129,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "GitHub",
-      url: undefined,
-      htmlUrl: undefined,
-      title: "[prod] PR Title",
+      owner: "owner", 
+      repo: "reponame", 
+      head: "bp-prod-28f63db", 
+      base: "prod", 
+      title: "[prod] PR Title", 
       body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -264,6 +255,7 @@ describe("github pull request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      bpBranchName: "custom-branch"
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -309,25 +301,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame", 
+      head: "custom-branch", 
+      base: "prod", 
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -390,25 +373,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame", 
+      head: "bp-prod-28f63db", 
+      base: "prod", 
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
       labels: [],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -471,25 +445,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame", 
+      head: "bp-prod-28f63db", 
+      base: "prod", 
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
       labels: [],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -554,25 +519,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame", 
+      head: "bp-prod-28f63db", 
+      base: "prod", 
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: [],
       assignees: ["user3", "user4"],
       labels: ["custom-label", "original-label"],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
   
@@ -625,25 +581,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "GitHub",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame",
+      head: "bp-prod-28f63db",
+      base: "prod",
       title: "[prod] PR Title",
       body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -697,25 +644,16 @@ describe("github pull request config parser", () => {
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "Me",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame",
+      head: "bp-prod-28f63db",
+      base: "prod",
       title: "New Title",
       body: "New Body Prefix -New Body",
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
       labels: ["cherry-pick :cherries:", "original-label"],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 
@@ -775,25 +713,16 @@ describe("github pull request config parser", () => {
       commits: ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]
     });
     expect(configs.backportPullRequest).toEqual({
-      author: "GitHub",
-      url: undefined,
-      htmlUrl: undefined,
+      owner: "owner", 
+      repo: "reponame",
+      head: "bp-prod-0404fb9-11da4e3",
+      base: "prod",
       title: "[prod] PR Title",
       body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
       reviewers: ["gh-user", "that-s-a-user"],
       assignees: [],
       labels: [],
-      targetRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      sourceRepo: {
-        owner: "owner",
-        project: "reponame",
-        cloneUrl: "https://github.com/owner/reponame.git"
-      },
-      bpBranchName: undefined,
+      comments: [],
     });
   });
 });

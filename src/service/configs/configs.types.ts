@@ -1,6 +1,6 @@
 
 
-import { GitPullRequest } from "@bp/service/git/git.types";
+import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
 
 export interface LocalGit {
   user: string, // local git user
@@ -19,6 +19,6 @@ export interface Configs {
   mergeStrategy?: string, // cherry-pick merge strategy
   mergeStrategyOption?: string, // cherry-pick merge strategy option
   originalPullRequest: GitPullRequest,
-  backportPullRequest: GitPullRequest,
+  backportPullRequest: BackportPullRequest,
  }
 

@@ -63,7 +63,7 @@ export default class Runner {
     this.logger.debug("Parsing configs..");
     const configs: Configs = await new PullRequestConfigsParser().parseAndValidate(args);
     const originalPR: GitPullRequest = configs.originalPullRequest;
-    const backportPR: GitPullRequest = configs.backportPullRequest;
+    const backportPR: BackportPullRequest = configs.backportPullRequest;
 
     // start local git operations
     const git: GitCLIService = new GitCLIService(configs.auth, configs.git);
@@ -74,19 +74,8 @@ export default class Runner {
 
     // 5. create new branch from target one and checkout
     this.logger.debug("Creating local branch..");
-    let backportBranch = backportPR.branchName;
-    if (backportBranch === undefined || backportBranch.trim() === "") {
-      // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
-      const concatenatedCommits: string = originalPR.commits!.map(c => c.slice(0, 7)).join("-");
-      backportBranch = `bp-${configs.targetBranch}-${concatenatedCommits}`;
-    }
 
-    if (backportBranch.length > 250) {
-      this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
-      backportBranch = backportBranch.slice(0, 250);
-    }
-
-    await git.createLocalBranch(configs.folder, backportBranch);
+    await git.createLocalBranch(configs.folder, backportPR.head);
 
     // 6. fetch pull request remote if source owner != target owner or pull request still open
     if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner || 
@@ -102,29 +91,17 @@ export default class Runner {
       await git.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
     }
 
-    const backport: BackportPullRequest = {
-      owner: originalPR.targetRepo.owner,
-      repo: originalPR.targetRepo.project,
-      head: backportBranch,
-      base: configs.targetBranch,
-      title: backportPR.title,
-      body: backportPR.body,
-      reviewers: backportPR.reviewers,
-      assignees: backportPR.assignees,
-      labels: backportPR.labels,
-    };
-
     if (!configs.dryRun) {
       // 8. push the new branch to origin
-      await git.push(configs.folder, backportBranch);
+      await git.push(configs.folder, backportPR.head);
 
       // 9. create pull request new branch -> target branch (using octokit)
-      const prUrl = await gitApi.createPullRequest(backport);
+      const prUrl = await gitApi.createPullRequest(backportPR);
       this.logger.info(`Pull request created: ${prUrl}`);
 
     } else {
       this.logger.warn("Pull request creation and remote push skipped");
-      this.logger.info(`${JSON.stringify(backport, null, 2)}`);
+      this.logger.info(`${JSON.stringify(backportPR, null, 2)}`);
     }
   }
 

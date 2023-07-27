@@ -181,6 +181,7 @@ describe("cli runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -238,6 +239,7 @@ describe("cli runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -296,6 +298,7 @@ describe("cli runner", () => {
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -352,6 +355,7 @@ describe("cli runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -401,6 +405,7 @@ describe("cli runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "another-label", "gitlab-original-label"],
+        comments: [],
       }
     );
   });
@@ -449,6 +454,7 @@ describe("cli runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "another-label"],
+        comments: [],
       }
     );
   });
@@ -493,6 +499,7 @@ describe("cli runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: ["cli gitlab cherry pick :cherries:", "gitlab-original-label"],
+        comments: [],
       }
     );
   });
@@ -540,6 +547,7 @@ describe("cli runner", () => {
         reviewers: ["superuser"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });

@@ -125,6 +125,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -177,6 +178,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -226,6 +228,7 @@ describe("gha runner", () => {
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -276,6 +279,7 @@ describe("gha runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -321,6 +325,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "another-label", "original-label"],
+        comments: [],
       }
     );
   });
@@ -366,6 +371,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "another-label"],
+        comments: [],
       }
     );
   });
@@ -408,6 +414,7 @@ describe("gha runner", () => {
         reviewers: [],
         assignees: ["user3", "user4"],
         labels: ["gha github cherry pick :cherries:", "original-label"],
+        comments: [],
       }
     );
   });
@@ -452,6 +459,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -496,6 +504,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
@@ -541,6 +550,7 @@ describe("gha runner", () => {
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
+        comments: [],
       }
     );
   });
