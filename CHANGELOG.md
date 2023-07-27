@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.3.0](https://github.com/kiegroup/git-backporting/compare/v4.2.0...v4.3.0) (2023-07-27)
+
+
+### Features
+
+* **issue-70:** additional pr comments ([bed7e29](https://github.com/kiegroup/git-backporting/commit/bed7e29ddc1ba5498faa2c7cc33ec3b127947dcf))
+
+
+### Bug Fixes
+
+* gha skip whitespace trim on body ([#73](https://github.com/kiegroup/git-backporting/issues/73)) ([29589a6](https://github.com/kiegroup/git-backporting/commit/29589a63b503b30820a13a442de533239dec06f4))
+* preserve new lines in body and comments ([#72](https://github.com/kiegroup/git-backporting/issues/72)) ([fa43ffc](https://github.com/kiegroup/git-backporting/commit/fa43ffc1dc5572a06309c28e93ee6ab5fba14780))
+
 ## [4.2.0](https://github.com/kiegroup/git-backporting/compare/v4.1.0...v4.2.0) (2023-07-13)
 
 
