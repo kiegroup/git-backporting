@@ -63,7 +63,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     }
 
     const bodyPrefix = args.bodyPrefix ?? `**Backport:** ${originalPullRequest.htmlUrl}\r\n\r\n`;
-    const body = args.body ?? `${originalPullRequest.body}`;
+    const body = bodyPrefix + (args.body ?? `${originalPullRequest.body}`);
     
     const labels = args.labels ?? [];
     if (args.inheritLabels) {
@@ -87,12 +87,13 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       repo: originalPullRequest.targetRepo.project,
       head: backportBranch,
       base: args.targetBranch,
-      title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`, 
-      body: `${bodyPrefix}${body}`,
+      title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
+      // preserve new line chars
+      body: body.replace(/\\n/g, "\n").replace(/\\r/g, "\r"),
       reviewers: [...new Set(reviewers)],
       assignees: [...new Set(args.assignees)],
       labels: [...new Set(labels)],
-      comments: args.comments ?? [],
+      comments: args.comments?.map(c => c.replace(/\\n/g, "\n").replace(/\\r/g, "\r")) ?? [],
     };
   }
 }
