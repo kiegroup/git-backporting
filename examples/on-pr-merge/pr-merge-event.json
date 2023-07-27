@@ -1,0 +1,79 @@
+{
+  "pull_request": {
+    "url": "https://api.github.com/repos/lampajr/backporting-example/pulls/66",
+    "html_url": "https://github.com/lampajr/backporting-example/pull/66",
+    "diff_url": "https://github.com/lampajr/backporting-example/pull/66.diff",
+    "patch_url": "https://github.com/lampajr/backporting-example/pull/66.patch",
+    "issue_url": "https://api.github.com/repos/lampajr/backporting-example/issues/66",
+    "number": 66,
+    "state": "closed",
+    "title": "Feature1: multiple changes",
+    "user": {
+      "login": "lampajr"
+    },
+    "body": "This is the body of multiple change",
+    "merge_commit_sha": "0bcaa01cdd509ca434e123d2e2b9ce7f66234bd7",
+    "assignee": null,
+    "assignees": [
+  
+    ],
+    "requested_reviewers": [
+  
+    ],
+    "requested_teams": [
+  
+    ],
+    "labels": [
+      {
+        "name": "backport-develop",
+        "color": "AB975B",
+        "default": false,
+        "description": ""
+      }
+    ],
+    "head": {
+      "label": "lampajr:feature1",
+      "ref": "feature1",
+      "sha": "69e49388ea2ca9be272b188a9271806d487bf01e",
+      "user": {
+        "login": "lampajr"
+      },
+      "repo": {
+        "name": "backporting-example",
+        "full_name": "lampajr/backporting-example",
+        "owner": {
+          "login": "lampajr"
+        },
+        "html_url": "https://github.com/lampajr/backporting-example",
+        "clone_url": "https://github.com/lampajr/backporting-example.git"
+      }
+    },
+    "base": {
+      "label": "lampajr:main",
+      "ref": "main",
+      "sha": "c85b8fcdb741814b3e90e6e5729455cf46ff26ea",
+      "user": {
+        "login": "lampajr"
+      },
+      "repo": {
+        "name": "backporting-example",
+        "full_name": "lampajr/backporting-example",
+        "owner": {
+          "login": "lampajr"
+        },
+        "html_url": "https://github.com/lampajr/backporting-example",
+        "description": "Playground repository for automated backporting testing",
+        "url": "https://api.github.com/repos/lampajr/backporting-example",
+        "issues_url": "https://api.github.com/repos/lampajr/backporting-example/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/lampajr/backporting-example/pulls{/number}",
+        "clone_url": "https://github.com/lampajr/backporting-example.git"
+      }
+    },
+    "merged": true,
+    "merged_by": {
+      "login": "lampajr"
+    },
+    "comments": 0,
+    "commits": 2
+  }
+}
