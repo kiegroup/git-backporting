@@ -128,6 +128,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("closed and not merged pull request", async () => {
@@ -181,6 +182,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("override backporting pr data", async () => {
@@ -231,6 +233,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("set empty reviewers", async () => {
@@ -282,6 +285,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("set custom labels with inheritance", async () => {
@@ -328,6 +332,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("set custom labels without inheritance", async () => {
@@ -374,6 +379,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("using config file with overrides", async () => {
@@ -417,6 +423,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   // to check: https://github.com/kiegroup/git-backporting/issues/52
@@ -462,6 +469,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("multiple commits pr", async () => {
@@ -507,6 +515,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("using github api url and different strategy", async () => {
@@ -553,6 +562,7 @@ describe("gha runner", () => {
         comments: [],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
   test("additional pr comments", async () => {
@@ -598,5 +608,161 @@ describe("gha runner", () => {
         comments: ["first comment", "second comment"],
       }
     );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+  });
+
+  test("with multiple target branches", async () => {
+    spyGetInput({
+      "target-branch": "v1, v2, v3",
+      "pull-request": "https://github.com/owner/reponame/pull/2368",
+      "folder": "/tmp/folder",
+    });
+    
+    await runner.execute();
+
+    const cwd = "/tmp/folder";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v1-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v2-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v3-28f63db");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined);
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-v1-28f63db");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-v2-28f63db");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-v3-28f63db");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-v1-28f63db", 
+        base: "v1", 
+        title: "[v1] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-v2-28f63db", 
+        base: "v2", 
+        title: "[v2] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "bp-v3-28f63db", 
+        base: "v3", 
+        title: "[v3] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(3);
+  });
+
+  test("with multiple target branches and single custom bp branch", async () => {
+    spyGetInput({
+      "target-branch": "v1, v2, v3",
+      "pull-request": "https://github.com/owner/reponame/pull/2368",
+      "folder": "/tmp/folder",
+      "bp-branch-name": "custom"
+    });
+    
+    await runner.execute();
+
+    const cwd = "/tmp/folder";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-v1");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-v2");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-v3");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined);
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-v1");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-v2");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-v3");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "custom-v1", 
+        base: "v1", 
+        title: "[v1] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "custom-v2", 
+        base: "v2", 
+        title: "[v2] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "custom-v3", 
+        base: "v3", 
+        title: "[v3] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(3);
   });
 });

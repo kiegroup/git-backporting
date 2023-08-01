@@ -3,6 +3,10 @@
  */
 export default interface LoggerService {
 
+  setContext(newContext: string): void;
+
+  clearContext(): void;
+
   trace(message: string): void;
 
   debug(message: string): void;

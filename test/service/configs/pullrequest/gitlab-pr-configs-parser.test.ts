@@ -100,7 +100,6 @@ describe("gitlab merge request config parser", () => {
       email: "noreply@gitlab.com"
     });
     expect(configs.auth).toEqual(undefined);
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -128,7 +127,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -166,7 +166,6 @@ describe("gitlab merge request config parser", () => {
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual("/tmp/test");
     expect(configs.git).toEqual({
       user: "Gitlab",
@@ -196,7 +195,6 @@ describe("gitlab merge request config parser", () => {
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.git).toEqual({
       user: "Gitlab",
       email: "noreply@gitlab.com"
@@ -276,7 +274,6 @@ describe("gitlab merge request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -304,7 +301,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -347,7 +345,6 @@ describe("gitlab merge request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -375,7 +372,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -418,7 +416,6 @@ describe("gitlab merge request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -446,7 +443,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -491,7 +489,6 @@ describe("gitlab merge request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -519,7 +516,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -552,7 +550,6 @@ describe("gitlab merge request config parser", () => {
       email: "noreply@gitlab.com"
     });
     expect(configs.auth).toEqual(undefined);
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -580,7 +577,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -613,7 +611,6 @@ describe("gitlab merge request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("my-token");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -641,7 +638,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 
@@ -678,7 +676,6 @@ describe("gitlab merge request config parser", () => {
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.git).toEqual({
       user: "Gitlab",
       email: "noreply@gitlab.com"
@@ -710,7 +707,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 2,
       commits: ["e4dd336a4a20f394df6665994df382fb1d193a11", "974519f65c9e0ed65277cd71026657a09fca05e7"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-e4dd336-974519f", 
@@ -756,7 +754,6 @@ describe("gitlab merge request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 1,
@@ -784,7 +781,8 @@ describe("gitlab merge request config parser", () => {
       nCommits: 1,
       commits: ["ebb1eca696c42fd067658bd9b5267709f78ef38e"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
       head: "bp-prod-ebb1eca", 

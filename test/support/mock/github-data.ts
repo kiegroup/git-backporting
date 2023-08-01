@@ -1,9 +1,11 @@
-export const targetOwner = "owner";
-export const sourceOwner = "fork";
-export const repo = "reponame";
-export const notFoundPullRequestNumber = 1;
+export const TARGET_OWNER = "owner";
+export const SOURCE_OWNER = "fork";
+export const REPO = "reponame";
+export const NOT_FOUND_PR_NUMBER = 1;
+export const NEW_PR_URL = "new_pr_url";
+export const NEW_PR_NUMBER = 9999;
 
-export const mergedPullRequestFixture = {
+export const MERGED_PR_FIXTURE = {
   "url": "https://api.github.com/repos/owner/reponame/pulls/2368",
   "id": 1137188271,
   "node_id": "PR_kwDOABTq6s5DyB2v",
@@ -474,7 +476,7 @@ export const mergedPullRequestFixture = {
   "changed_files": 2
 };
 
-export const openPullRequestFixture = {
+export const OPEN_PR_FIXTURE = {
   "url": "https://api.github.com/repos/owner/reponame/pulls/4444",
   "id": 1137188271,
   "node_id": "PR_kwDOABTq6s5DyB2v",
@@ -898,7 +900,7 @@ export const openPullRequestFixture = {
   "changed_files": 2
 };
 
-export const notMergedPullRequestFixture = {
+export const NOT_MERGED_PR_FIXTURE = {
   "url": "https://api.github.com/repos/owner/reponame/pulls/6666",
   "id": 1137188271,
   "node_id": "PR_kwDOABTq6s5DyB2v",
@@ -1341,7 +1343,7 @@ export const notMergedPullRequestFixture = {
   "changed_files": 2
 };
 
-export const multipleCommitsPullRequestFixture = {
+export const MULT_COMMITS_PR_FIXTURE = {
   "url": "https://api.github.com/repos/owner/reponame/pulls/8632",
   "id": 1137188271,
   "node_id": "PR_kwDOABTq6s5DyB2v",
@@ -1804,7 +1806,7 @@ export const multipleCommitsPullRequestFixture = {
   "changed_files": 2
 };
 
-export const multipleCommitsPullRequestCommits = [
+export const MULT_COMMITS_PR_COMMITS = [
   {
     "sha": "0404fb922ab75c3a8aecad5c97d9af388df04695",
     "node_id": "C_kwDOImgs99oAKDA0MDRmYjkyMmFiNzVjM2E4YWVjYWQ1Yzk3ZDlhZjM4OGRmMDQ2OTU",

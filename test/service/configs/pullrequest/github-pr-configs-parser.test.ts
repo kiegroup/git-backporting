@@ -5,7 +5,7 @@ import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
 import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
 import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../../support/utils";
-import { mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, repo, targetOwner, multipleCommitsPullRequestFixture } from "../../../support/mock/github-data";
+import { MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, REPO, TARGET_OWNER, MULT_COMMITS_PR_FIXTURE } from "../../../support/mock/github-data";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import GitHubMapper from "@bp/service/git/github/github-mapper";
 import GitHubClient from "@bp/service/git/github/github-client";
@@ -13,14 +13,14 @@ import GitHubClient from "@bp/service/git/github/github-client";
 const GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT_PATHNAME = "./github-pr-configs-parser-simple-pr-merged.json";
 const GITHUB_MERGED_PR_SIMPLE_CONFIG_FILE_CONTENT = {
   "targetBranch": "prod",
-  "pullRequest": `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`,
+  "pullRequest": `https://github.com/${TARGET_OWNER}/${REPO}/pull/${MERGED_PR_FIXTURE.number}`,
 };
 
 const GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME = "./github-pr-configs-parser-complex-pr-merged.json";
 const GITHUB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
   "dryRun": false,
   "auth": "my-auth-token",
-  "pullRequest": `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`,
+  "pullRequest": `https://github.com/${TARGET_OWNER}/${REPO}/pull/${MERGED_PR_FIXTURE.number}`,
   "targetBranch": "prod",
   "gitUser": "Me",
   "gitEmail": "me@email.com",
@@ -39,10 +39,10 @@ jest.spyOn(GitHubClient.prototype, "getPullRequest");
 
 describe("github pull request config parser", () => {
 
-  const mergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${mergedPullRequestFixture.number}`;
-  const openPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${openPullRequestFixture.number}`;
-  const notMergedPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${notMergedPullRequestFixture.number}`;
-  const multipleCommitsPRUrl = `https://github.com/${targetOwner}/${repo}/pull/${multipleCommitsPullRequestFixture.number}`;
+  const mergedPRUrl = `https://github.com/${TARGET_OWNER}/${REPO}/pull/${MERGED_PR_FIXTURE.number}`;
+  const openPRUrl = `https://github.com/${TARGET_OWNER}/${REPO}/pull/${OPEN_PR_FIXTURE.number}`;
+  const notMergedPRUrl = `https://github.com/${TARGET_OWNER}/${REPO}/pull/${NOT_MERGED_PR_FIXTURE.number}`;
+  const multipleCommitsPRUrl = `https://github.com/${TARGET_OWNER}/${REPO}/pull/${MULT_COMMITS_PR_FIXTURE.number}`;
   
   let argsParser: CLIArgsParser;
   let configParser: PullRequestConfigsParser;
@@ -100,7 +100,6 @@ describe("github pull request config parser", () => {
       email: "noreply@github.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -128,7 +127,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame", 
       head: "bp-prod-28f63db", 
@@ -160,7 +160,6 @@ describe("github pull request config parser", () => {
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual("/tmp/test");
     expect(configs.git).toEqual({
       user: "GitHub",
@@ -190,7 +189,6 @@ describe("github pull request config parser", () => {
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.git).toEqual({
       user: "GitHub",
       email: "noreply@github.com"
@@ -271,7 +269,6 @@ describe("github pull request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -300,10 +297,53 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame", 
       head: "custom-branch", 
+      base: "prod", 
+      title: "New Title",
+      body: "New Body Prefix -New Body",
+      reviewers: ["gh-user", "that-s-a-user"],
+      assignees: [],
+      labels: [],
+      comments: [],
+    });
+  });
+
+  test("override backport with empty bp branch name", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      title: "New Title",
+      body: "New Body",
+      bodyPrefix: "New Body Prefix -",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+      bpBranchName: "  "
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.auth).toEqual("");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
+      owner: "owner", 
+      repo: "reponame", 
+      head: "bp-prod-28f63db", 
       base: "prod", 
       title: "New Title",
       body: "New Body Prefix -New Body",
@@ -343,7 +383,6 @@ describe("github pull request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -372,7 +411,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame", 
       head: "bp-prod-28f63db", 
@@ -415,7 +455,6 @@ describe("github pull request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -444,7 +483,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame", 
       head: "bp-prod-28f63db", 
@@ -489,7 +529,6 @@ describe("github pull request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -518,7 +557,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame", 
       head: "bp-prod-28f63db", 
@@ -552,7 +592,6 @@ describe("github pull request config parser", () => {
       email: "noreply@github.com"
     });
     expect(configs.auth).toEqual(undefined);
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -580,7 +619,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame",
       head: "bp-prod-28f63db",
@@ -614,7 +654,6 @@ describe("github pull request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("my-auth-token");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -643,7 +682,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame",
       head: "bp-prod-28f63db",
@@ -684,7 +724,6 @@ describe("github pull request config parser", () => {
       email: "noreply@github.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 8632,
@@ -712,7 +751,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame",
       head: "bp-prod-0404fb9-11da4e3",
@@ -758,7 +798,6 @@ describe("github pull request config parser", () => {
       email: "me@email.com"
     });
     expect(configs.auth).toEqual("");
-    expect(configs.targetBranch).toEqual("prod");
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -787,7 +826,8 @@ describe("github pull request config parser", () => {
       nCommits: 2,
       commits: ["28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc"],
     });
-    expect(configs.backportPullRequest).toEqual({
+    expect(configs.backportPullRequests.length).toEqual(1);
+    expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner", 
       repo: "reponame", 
       head: "bp-prod-28f63db", 

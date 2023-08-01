@@ -17,8 +17,8 @@ export default abstract class ArgsParser {
     const args = this.readArgs();
 
     // validate and fill with defaults
-    if (!args.pullRequest || !args.targetBranch) {
-      throw new Error("Missing option: pull request and target branch must be provided");
+    if (!args.pullRequest || !args.targetBranch || args.targetBranch.trim().length == 0) {
+      throw new Error("Missing option: pull request and target branches must be provided");
     }
     
     return {

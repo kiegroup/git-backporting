@@ -1,7 +1,7 @@
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitPullRequest, GitClientType } from "@bp/service/git/git.types";
 import GitHubClient from "@bp/service/git/github/github-client";
-import { mergedPullRequestFixture, repo, targetOwner } from "../../../support/mock/github-data";
+import { MERGED_PR_FIXTURE, REPO, TARGET_OWNER } from "../../../support/mock/github-data";
 import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
 
 describe("github service", () => {
@@ -22,7 +22,7 @@ describe("github service", () => {
   });
 
   test("get pull request: success", async () => {
-    const res: GitPullRequest = await gitClient.getPullRequest(targetOwner, repo, mergedPullRequestFixture.number);
+    const res: GitPullRequest = await gitClient.getPullRequest(TARGET_OWNER, REPO, MERGED_PR_FIXTURE.number);
     expect(res.sourceRepo).toEqual({
       owner: "fork",
       project: "reponame",

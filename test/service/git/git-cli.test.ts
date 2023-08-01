@@ -114,4 +114,13 @@ describe("git cli service", () => {
     const output = spawnSync("git", ["cherry", "-v"], { cwd }).stdout.toString();
     expect(output.includes(expressionToTest)).toBe(false);
   });
+
+
+  test("git clone on already created repo", async () => {
+    await git.clone("remote", cwd, "tbranch");
+    
+    // use rev-parse to double check the current branch is the expected one
+    const post = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd }).stdout.toString().trim();
+    expect(post).toEqual("tbranch");
+  });
 });

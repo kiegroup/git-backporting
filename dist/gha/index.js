@@ -40,8 +40,8 @@ class ArgsParser {
     parse() {
         const args = this.readArgs();
         // validate and fill with defaults
-        if (!args.pullRequest || !args.targetBranch) {
-            throw new Error("Missing option: pull request and target branch must be provided");
+        if (!args.pullRequest || !args.targetBranch || args.targetBranch.trim().length == 0) {
+            throw new Error("Missing option: pull request and target branches must be provided");
         }
         return {
             pullRequest: args.pullRequest,
@@ -258,6 +258,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const args_utils_1 = __nccwpck_require__(8048);
 const configs_parser_1 = __importDefault(__nccwpck_require__(5799));
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
@@ -275,15 +276,19 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             throw error;
         }
         const folder = args.folder ?? this.getDefaultFolder();
+        const targetBranches = [...new Set((0, args_utils_1.getAsCommaSeparatedList)(args.targetBranch))];
+        const bpBranchNames = [...new Set(args.bpBranchName ? ((0, args_utils_1.getAsCleanedCommaSeparatedList)(args.bpBranchName) ?? []) : [])];
+        if (bpBranchNames.length > 1 && bpBranchNames.length != targetBranches.length) {
+            throw new Error(`The number of backport branch names, if provided, must match the number of target branches or just one, provided ${bpBranchNames.length} branch names instead`);
+        }
         return {
             dryRun: args.dryRun,
             auth: args.auth,
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
-            targetBranch: args.targetBranch,
             mergeStrategy: args.strategy,
             mergeStrategyOption: args.strategyOption,
             originalPullRequest: pr,
-            backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
+            backportPullRequests: this.generateBackportPullRequestsData(pr, args, targetBranches, bpBranchNames),
             git: {
                 user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
                 email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
@@ -300,7 +305,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
      * @param targetBranch target branch where the backport should be applied
      * @returns {GitPullRequest}
      */
-    getDefaultBackportPullRequest(originalPullRequest, args) {
+    generateBackportPullRequestsData(originalPullRequest, args, targetBranches, bpBranchNames) {
         const reviewers = args.reviewers ?? [];
         if (reviewers.length == 0 && args.inheritReviewers) {
             // inherit only if args.reviewers is empty and args.inheritReviewers set to true
@@ -315,29 +320,37 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         if (args.inheritLabels) {
             labels.push(...originalPullRequest.labels);
         }
-        let backportBranch = args.bpBranchName;
-        if (backportBranch === undefined || backportBranch.trim() === "") {
-            // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
-            const concatenatedCommits = originalPullRequest.commits.map(c => c.slice(0, 7)).join("-");
-            backportBranch = `bp-${args.targetBranch}-${concatenatedCommits}`;
-        }
-        if (backportBranch.length > 250) {
-            this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
-            backportBranch = backportBranch.slice(0, 250);
-        }
-        return {
-            owner: originalPullRequest.targetRepo.owner,
-            repo: originalPullRequest.targetRepo.project,
-            head: backportBranch,
-            base: args.targetBranch,
-            title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
-            // preserve new line chars
-            body: body.replace(/\\n/g, "\n").replace(/\\r/g, "\r"),
-            reviewers: [...new Set(reviewers)],
-            assignees: [...new Set(args.assignees)],
-            labels: [...new Set(labels)],
-            comments: args.comments?.map(c => c.replace(/\\n/g, "\n").replace(/\\r/g, "\r")) ?? [],
-        };
+        return targetBranches.map((tb, idx) => {
+            // if there multiple branch names take the corresponding one, otherwise get the the first one if it exists
+            let backportBranch = bpBranchNames.length > 1 ? bpBranchNames[idx] : bpBranchNames[0];
+            if (backportBranch === undefined || backportBranch.trim() === "") {
+                // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
+                const concatenatedCommits = originalPullRequest.commits.map(c => c.slice(0, 7)).join("-");
+                backportBranch = `bp-${tb}-${concatenatedCommits}`;
+            }
+            else if (bpBranchNames.length == 1 && targetBranches.length > 1) {
+                // multiple targets and single custom backport branch name we need to differentiate branch names
+                // so append "-${tb}" to the provided name
+                backportBranch = backportBranch + `-${tb}`;
+            }
+            if (backportBranch.length > 250) {
+                this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
+                backportBranch = backportBranch.slice(0, 250);
+            }
+            return {
+                owner: originalPullRequest.targetRepo.owner,
+                repo: originalPullRequest.targetRepo.project,
+                head: backportBranch,
+                base: tb,
+                title: args.title ?? `[${tb}] ${originalPullRequest.title}`,
+                // preserve new line chars
+                body: body.replace(/\\n/g, "\n").replace(/\\r/g, "\r"),
+                reviewers: [...new Set(reviewers)],
+                assignees: [...new Set(args.assignees)],
+                labels: [...new Set(labels)],
+                comments: args.comments?.map(c => c.replace(/\\n/g, "\n").replace(/\\r/g, "\r")) ?? [],
+            };
+        });
     }
 }
 exports["default"] = PullRequestConfigsParser;
@@ -406,10 +419,12 @@ class GitCLIService {
         this.logger.info(`Cloning repository ${from} to ${to}`);
         if (!fs_1.default.existsSync(to)) {
             await (0, simple_git_1.default)().clone(this.remoteWithAuth(from), to, ["--quiet", "--shallow-submodules", "--no-tags", "--branch", branch]);
+            return;
         }
-        else {
-            this.logger.warn(`Folder ${to} already exist. Won't clone`);
-        }
+        this.logger.info(`Folder ${to} already exist. Won't clone`);
+        // checkout to the proper branch
+        this.logger.info(`Checking out branch ${branch}`);
+        await this.git(to).checkout(branch);
     }
     /**
      * Create a new branch starting from the current one and checkout in it
@@ -1085,22 +1100,31 @@ class ConsoleLoggerService {
         this.logger = new logger_1.default();
         this.verbose = verbose;
     }
+    setContext(newContext) {
+        this.context = newContext;
+    }
+    clearContext() {
+        this.context = undefined;
+    }
     trace(message) {
-        this.logger.log("TRACE", message);
+        this.logger.log("TRACE", this.fromContext(message));
     }
     debug(message) {
         if (this.verbose) {
-            this.logger.log("DEBUG", message);
+            this.logger.log("DEBUG", this.fromContext(message));
         }
     }
     info(message) {
-        this.logger.log("INFO", message);
+        this.logger.log("INFO", this.fromContext(message));
     }
     warn(message) {
-        this.logger.log("WARN", message);
+        this.logger.log("WARN", this.fromContext(message));
     }
     error(message) {
-        this.logger.log("ERROR", message);
+        this.logger.log("ERROR", this.fromContext(message));
+    }
+    fromContext(msg) {
+        return this.context ? `[${this.context}] ${msg}` : msg;
     }
 }
 exports["default"] = ConsoleLoggerService;
@@ -1212,39 +1236,62 @@ class Runner {
         // 3. parse configs
         this.logger.debug("Parsing configs..");
         const configs = await new pr_configs_parser_1.default().parseAndValidate(args);
-        const originalPR = configs.originalPullRequest;
-        const backportPR = configs.backportPullRequest;
+        const backportPRs = configs.backportPullRequests;
         // start local git operations
         const git = new git_cli_1.default(configs.auth, configs.git);
+        const failures = [];
+        // we need sequential backporting as they will operate on the same folder
+        // avoid cloning the same repo multiple times
+        for (const pr of backportPRs) {
+            try {
+                await this.executeBackport(configs, pr, {
+                    gitClientType: gitClientType,
+                    gitClientApi: gitApi,
+                    gitCli: git,
+                });
+            }
+            catch (error) {
+                this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
+                failures.push(error);
+            }
+        }
+        if (failures.length > 0) {
+            throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
+        }
+    }
+    async executeBackport(configs, backportPR, git) {
+        this.logger.setContext(backportPR.base);
+        const originalPR = configs.originalPullRequest;
         // 4. clone the repository
         this.logger.debug("Cloning repo..");
-        await git.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, configs.targetBranch);
+        await git.gitCli.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, backportPR.base);
         // 5. create new branch from target one and checkout
         this.logger.debug("Creating local branch..");
-        await git.createLocalBranch(configs.folder, backportPR.head);
+        await git.gitCli.createLocalBranch(configs.folder, backportPR.head);
         // 6. fetch pull request remote if source owner != target owner or pull request still open
         if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
             configs.originalPullRequest.state === "open") {
             this.logger.debug("Fetching pull request remote..");
-            const prefix = gitClientType === git_types_1.GitClientType.GITHUB ? "pull" : "merge-requests"; // default is for gitlab
-            await git.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+            const prefix = git.gitClientType === git_types_1.GitClientType.GITHUB ? "pull" : "merge-requests"; // default is for gitlab
+            await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
         }
         // 7. apply all changes to the new branch
         this.logger.debug("Cherry picking commits..");
         for (const sha of originalPR.commits) {
-            await git.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
+            await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
         }
         if (!configs.dryRun) {
             // 8. push the new branch to origin
-            await git.push(configs.folder, backportPR.head);
+            await git.gitCli.push(configs.folder, backportPR.head);
             // 9. create pull request new branch -> target branch (using octokit)
-            const prUrl = await gitApi.createPullRequest(backportPR);
+            const prUrl = await git.gitClientApi.createPullRequest(backportPR);
             this.logger.info(`Pull request created: ${prUrl}`);
         }
         else {
             this.logger.warn("Pull request creation and remote push skipped");
             this.logger.info(`${JSON.stringify(backportPR, null, 2)}`);
         }
+        this.logger.clearContext();
     }
 }
 exports["default"] = Runner;

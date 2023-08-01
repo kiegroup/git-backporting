@@ -1,7 +1,11 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
-import { targetOwner, repo, mergedPullRequestFixture, openPullRequestFixture, notMergedPullRequestFixture, notFoundPullRequestNumber, multipleCommitsPullRequestFixture, multipleCommitsPullRequestCommits } from "./github-data";
+import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER } from "./github-data";
 import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, SUPERUSER} from "./gitlab-data";
+
+// high number, for each test we are not expecting 
+// to send more than 3 reqs per api endpoint
+const REPEAT = 20;
 
 const logger = LoggerServiceFactory.getLogger();
 
@@ -94,76 +98,82 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
   // valid requests
   mock.rest.pulls
     .get({
-      owner: targetOwner,
-      repo: repo,
-      pull_number: mergedPullRequestFixture.number
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: MERGED_PR_FIXTURE.number
     })
     .reply({
       status: 200,
-      data: mergedPullRequestFixture
+      data: MERGED_PR_FIXTURE
     });
 
   mock.rest.pulls
     .get({
-      owner: targetOwner,
-      repo: repo,
-      pull_number: multipleCommitsPullRequestFixture.number
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: MULT_COMMITS_PR_FIXTURE.number
     })
     .reply({
       status: 200,
-      data: multipleCommitsPullRequestFixture
+      data: MULT_COMMITS_PR_FIXTURE
     });
   
   mock.rest.pulls
     .get({
-      owner: targetOwner,
-      repo: repo,
-      pull_number: openPullRequestFixture.number
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: OPEN_PR_FIXTURE.number
     })
     .reply({
       status: 200,
-      data: openPullRequestFixture
+      data: OPEN_PR_FIXTURE
     });
   
   mock.rest.pulls
     .get({
-      owner: targetOwner,
-      repo: repo,
-      pull_number: notMergedPullRequestFixture.number
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: NOT_MERGED_PR_FIXTURE.number
     })
     .reply({
       status: 200,
-      data: notMergedPullRequestFixture
+      data: NOT_MERGED_PR_FIXTURE
     });
   
   mock.rest.pulls
     .listCommits({
-      owner: targetOwner,
-      repo: repo,
-      pull_number: multipleCommitsPullRequestFixture.number
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: MULT_COMMITS_PR_FIXTURE.number
     })
     .reply({
       status: 200,
-      data: multipleCommitsPullRequestCommits
+      data: MULT_COMMITS_PR_COMMITS
     });
   
   mock.rest.pulls
     .create()
     .reply({
+      repeat: REPEAT,
       status: 201,
-      data: mergedPullRequestFixture
+      data: {
+        number: NEW_PR_NUMBER,
+        html_url: NEW_PR_URL,
+      }
     });
 
   mock.rest.pulls
     .requestReviewers()
     .reply({
+      repeat: REPEAT,
       status: 201,
-      data: mergedPullRequestFixture
+      data: MERGED_PR_FIXTURE
     });
 
   mock.rest.issues
     .addAssignees()
     .reply({
+      repeat: REPEAT,
       status: 201,
       data: {}
     });
@@ -171,6 +181,7 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
   mock.rest.issues
     .addLabels()
     .reply({
+      repeat: REPEAT,
       status: 200,
       data: {}
     });
@@ -178,6 +189,7 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
   mock.rest.issues
     .createComment()
     .reply({
+      repeat: REPEAT,
       status: 201,
       data: {}
     });
@@ -185,16 +197,17 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
   // invalid requests
   mock.rest.pulls
     .get({
-      owner: targetOwner,
-      repo: repo,
-      pull_number: notFoundPullRequestNumber
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: NOT_FOUND_PR_NUMBER
     })
     .reply({
+      repeat: REPEAT,
       status: 404,
       data: {
         message: "Not found"
       }
     });
-    
+
   return mock;
 };
