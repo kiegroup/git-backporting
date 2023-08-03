@@ -63,9 +63,13 @@ export default class GitCLIService {
     this.logger.info(`Cloning repository ${from} to ${to}`);
     if (!fs.existsSync(to)) {
       await simpleGit().clone(this.remoteWithAuth(from), to, ["--quiet", "--shallow-submodules", "--no-tags", "--branch", branch]);
-    } else {
-      this.logger.warn(`Folder ${to} already exist. Won't clone`);
+      return;
     }
+    
+    this.logger.info(`Folder ${to} already exist. Won't clone`);
+    // checkout to the proper branch
+    this.logger.info(`Checking out branch ${branch}`);
+    await this.git(to).checkout(branch);
   }
 
   /**

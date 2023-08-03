@@ -433,4 +433,63 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expectArrayEqual(args.comments!,["first comment", "second comment"]);
   });
+
+  test("valid execution with multiple branches", () => {
+    addProcessArgs([
+      "-tb",
+      "target, old",
+      "-pr",
+      "https://localhost/whatever/pulls/1"
+    ]);
+
+    const args: Args = parser.parse();
+    expect(args.dryRun).toEqual(false);
+    expect(args.auth).toEqual(undefined);
+    expect(args.gitUser).toEqual(undefined);
+    expect(args.gitEmail).toEqual(undefined);
+    expect(args.folder).toEqual(undefined);
+    expect(args.targetBranch).toEqual("target, old");
+    expect(args.pullRequest).toEqual("https://localhost/whatever/pulls/1");
+    expect(args.title).toEqual(undefined);
+    expect(args.body).toEqual(undefined);
+    expect(args.bodyPrefix).toEqual(undefined);
+    expect(args.bpBranchName).toEqual(undefined);
+    expect(args.reviewers).toEqual([]);
+    expect(args.assignees).toEqual([]);
+    expect(args.inheritReviewers).toEqual(true);
+    expect(args.labels).toEqual([]);
+    expect(args.inheritLabels).toEqual(false);
+    expect(args.squash).toEqual(true);
+    expect(args.strategy).toEqual(undefined);
+    expect(args.strategyOption).toEqual(undefined);
+  });
+
+  test("invalid execution with empty target branch", () => {
+    addProcessArgs([
+      "-tb",
+      " ",
+      "-pr",
+      "https://localhost/whatever/pulls/1"
+    ]);
+
+    expect(() => parser.parse()).toThrowError("Missing option: pull request and target branches must be provided");
+  });
+
+  test("invalid execution with missing mandatory target branch", () => {
+    addProcessArgs([
+      "-pr",
+      "https://localhost/whatever/pulls/1"
+    ]);
+
+    expect(() => parser.parse()).toThrowError("Missing option: pull request and target branches must be provided");
+  });
+
+  test("invalid execution with missin mandatory pull request", () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+    ]);
+
+    expect(() => parser.parse()).toThrowError("Missing option: pull request and target branches must be provided");
+  });
 });

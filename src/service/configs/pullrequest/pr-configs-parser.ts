@@ -1,3 +1,4 @@
+import { getAsCleanedCommaSeparatedList, getAsCommaSeparatedList } from "@bp/service/args/args-utils";
 import { Args } from "@bp/service/args/args.types";
 import ConfigsParser from "@bp/service/configs/configs-parser";
 import { Configs } from "@bp/service/configs/configs.types";
@@ -25,15 +26,21 @@ export default class PullRequestConfigsParser extends ConfigsParser {
 
     const folder: string = args.folder ?? this.getDefaultFolder();
 
+    const targetBranches: string[] = [...new Set(getAsCommaSeparatedList(args.targetBranch)!)];
+    const bpBranchNames: string[] = [...new Set(args.bpBranchName ? (getAsCleanedCommaSeparatedList(args.bpBranchName) ?? []) : [])];
+
+    if (bpBranchNames.length > 1 && bpBranchNames.length != targetBranches.length) {
+      throw new Error(`The number of backport branch names, if provided, must match the number of target branches or just one, provided ${bpBranchNames.length} branch names instead`);
+    }
+
     return {
       dryRun: args.dryRun!,
       auth: args.auth,
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
-      targetBranch: args.targetBranch,
       mergeStrategy: args.strategy,
       mergeStrategyOption: args.strategyOption,
       originalPullRequest: pr,
-      backportPullRequest: this.getDefaultBackportPullRequest(pr, args),
+      backportPullRequests: this.generateBackportPullRequestsData(pr, args, targetBranches, bpBranchNames),
       git: {
         user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
         email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
@@ -52,7 +59,13 @@ export default class PullRequestConfigsParser extends ConfigsParser {
    * @param targetBranch target branch where the backport should be applied
    * @returns {GitPullRequest}
    */
-  private getDefaultBackportPullRequest(originalPullRequest: GitPullRequest, args: Args): BackportPullRequest {
+  private generateBackportPullRequestsData(
+    originalPullRequest: GitPullRequest, 
+    args: Args, 
+    targetBranches: string[], 
+    bpBranchNames: string[]
+  ): BackportPullRequest[] {
+
     const reviewers = args.reviewers ?? [];
     if (reviewers.length == 0 && args.inheritReviewers) {
       // inherit only if args.reviewers is empty and args.inheritReviewers set to true
@@ -70,30 +83,38 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       labels.push(...originalPullRequest.labels);
     }
 
-    let backportBranch = args.bpBranchName;
-    if (backportBranch === undefined || backportBranch.trim() === "") {
-      // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
-      const concatenatedCommits: string = originalPullRequest.commits!.map(c => c.slice(0, 7)).join("-");
-      backportBranch = `bp-${args.targetBranch}-${concatenatedCommits}`;
-    }
+    return targetBranches.map((tb, idx) => {
 
-    if (backportBranch.length > 250) {
-      this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
-      backportBranch = backportBranch.slice(0, 250);
-    }
+      // if there multiple branch names take the corresponding one, otherwise get the the first one if it exists
+      let backportBranch = bpBranchNames.length > 1 ? bpBranchNames[idx] : bpBranchNames[0];
+      if (backportBranch === undefined || backportBranch.trim() === "") {
+        // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
+        const concatenatedCommits: string = originalPullRequest.commits!.map(c => c.slice(0, 7)).join("-");
+        backportBranch = `bp-${tb}-${concatenatedCommits}`;
+      } else if (bpBranchNames.length == 1 && targetBranches.length > 1) {
+        // multiple targets and single custom backport branch name we need to differentiate branch names
+        // so append "-${tb}" to the provided name
+        backportBranch = backportBranch + `-${tb}`;
+      }
+  
+      if (backportBranch.length > 250) {
+        this.logger.warn(`Backport branch (length=${backportBranch.length}) exceeded the max length of 250 chars, branch name truncated!`);
+        backportBranch = backportBranch.slice(0, 250);
+      }
 
-    return {
-      owner: originalPullRequest.targetRepo.owner,
-      repo: originalPullRequest.targetRepo.project,
-      head: backportBranch,
-      base: args.targetBranch,
-      title: args.title ?? `[${args.targetBranch}] ${originalPullRequest.title}`,
-      // preserve new line chars
-      body: body.replace(/\\n/g, "\n").replace(/\\r/g, "\r"),
-      reviewers: [...new Set(reviewers)],
-      assignees: [...new Set(args.assignees)],
-      labels: [...new Set(labels)],
-      comments: args.comments?.map(c => c.replace(/\\n/g, "\n").replace(/\\r/g, "\r")) ?? [],
-    };
+      return {
+        owner: originalPullRequest.targetRepo.owner,
+        repo: originalPullRequest.targetRepo.project,
+        head: backportBranch,
+        base: tb,
+        title: args.title ?? `[${tb}] ${originalPullRequest.title}`,
+        // preserve new line chars
+        body: body.replace(/\\n/g, "\n").replace(/\\r/g, "\r"),
+        reviewers: [...new Set(reviewers)],
+        assignees: [...new Set(args.assignees)],
+        labels: [...new Set(labels)],
+        comments: args.comments?.map(c => c.replace(/\\n/g, "\n").replace(/\\r/g, "\r")) ?? [],
+      };
+    }) as BackportPullRequest[];
   }
 }

@@ -5,7 +5,7 @@ inputs:
     description: "URL of the pull request to backport, e.g., https://github.com/kiegroup/git-backporting/pull/1"
     required: false
   target-branch:
-    description: "Branch where the pull request must be backported to"
+    description: "Comma separated list of branches where the pull request must be backported to"
     required: false
   config-file:
     description: "Path to a file containing the json configuration for this tool, the object must match the Args interface"
@@ -36,7 +36,7 @@ inputs:
     description: "Backporting PR body. Default is the original PR body"
     required: false
   bp-branch-name:
-    description: "Backporting PR branch name. Default is auto-generated from commit"
+    description: "Comma separated list of backporting PR branch names. Default is auto-generated from commit and target branches"
     required: false
   reviewers:
     description: "Comma separated list of reviewers for the backporting pull request"

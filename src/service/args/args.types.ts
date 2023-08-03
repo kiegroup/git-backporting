@@ -1,8 +1,9 @@
 /**
- * Input arguments
+ * Tool's input arguments interface
  */
 export interface Args {
-  targetBranch: string,  // branch on the target repo where the change should be backported to
+  // NOTE: keep targetBranch as singular and of type string for backward compatibilities
+  targetBranch: string,  // comma separated list of branches on the target repo where the change should be backported to
   pullRequest: string, // url of the pull request to backport
   dryRun?: boolean, // if enabled do not push anything remotely
   auth?: string, // git service auth, like github token
@@ -12,7 +13,8 @@ export interface Args {
   title?: string, // backport pr title, default original pr title prefixed by target branch
   body?: string, // backport pr title, default original pr body prefixed by bodyPrefix
   bodyPrefix?: string, // backport pr body prefix, default `backport <original-pr-link>`
-  bpBranchName?: string, // backport pr branch name, default computed from commit
+  // NOTE: keep bpBranchName as singular and of type string for backward compatibilities
+  bpBranchName?: string, // comma separated list of backport pr branch names, default computed from commit and target branches
   reviewers?: string[], // backport pr reviewers
   assignees?: string[], // backport pr assignees
   inheritReviewers?: boolean, // if true and reviewers == [] then inherit reviewers from original pr
