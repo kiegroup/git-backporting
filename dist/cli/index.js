@@ -566,6 +566,9 @@ class GitClientFactory {
             case git_types_1.GitClientType.GITLAB:
                 GitClientFactory.instance = new gitlab_client_1.default(authToken, apiUrl);
                 break;
+            case git_types_1.GitClientType.CODEBERG:
+                GitClientFactory.instance = new github_client_1.default(authToken, apiUrl);
+                break;
             default:
                 throw new Error(`Invalid git service type received: ${type}`);
         }
@@ -607,6 +610,9 @@ const inferGitClient = (prUrl) => {
     else if (stdPrUrl.includes(git_types_1.GitClientType.GITLAB.toString())) {
         return git_types_1.GitClientType.GITLAB;
     }
+    else if (stdPrUrl.includes(git_types_1.GitClientType.CODEBERG.toString())) {
+        return git_types_1.GitClientType.CODEBERG;
+    }
     throw new Error(`Remote git service not recognized from pr url: ${prUrl}`);
 };
 exports.inferGitClient = inferGitClient;
@@ -640,6 +646,7 @@ var GitClientType;
 (function (GitClientType) {
     GitClientType["GITHUB"] = "github";
     GitClientType["GITLAB"] = "gitlab";
+    GitClientType["CODEBERG"] = "codeberg";
 })(GitClientType = exports.GitClientType || (exports.GitClientType = {}));
 var GitRepoState;
 (function (GitRepoState) {
@@ -661,6 +668,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const git_types_1 = __nccwpck_require__(750);
 const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
@@ -673,7 +681,7 @@ class GitHubClient {
     }
     // READ
     getDefaultGitUser() {
-        return "GitHub";
+        return this.apiUrl.includes(git_types_1.GitClientType.CODEBERG.toString()) ? "Codeberg" : "GitHub";
     }
     getDefaultGitEmail() {
         return "noreply@github.com";
@@ -806,9 +814,9 @@ class GitHubMapper {
             state: this.mapGitState(pr.state),
             merged: pr.merged ?? false,
             mergedBy: pr.merged_by?.login,
-            reviewers: pr.requested_reviewers.filter(r => "login" in r).map((r => r?.login)),
-            assignees: pr.assignees.filter(r => "login" in r).map(r => r.login),
-            labels: pr.labels.map(l => l.name),
+            reviewers: pr.requested_reviewers?.filter(r => "login" in r).map((r => r?.login)) ?? [],
+            assignees: pr.assignees?.filter(r => "login" in r).map(r => r.login) ?? [],
+            labels: pr.labels?.map(l => l.name) ?? [],
             sourceRepo: await this.mapSourceRepo(pr),
             targetRepo: await this.mapTargetRepo(pr),
             nCommits: pr.commits,
@@ -1260,8 +1268,8 @@ class Runner {
         }
         // 2. init git service
         const gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
-        // right now the apiVersion is set to v4
-        const apiUrl = (0, git_util_1.inferGitApiUrl)(args.pullRequest);
+        // the api version is ignored in case of github
+        const apiUrl = (0, git_util_1.inferGitApiUrl)(args.pullRequest, gitClientType === git_types_1.GitClientType.CODEBERG ? "v1" : undefined);
         const gitApi = git_client_factory_1.default.getOrCreate(gitClientType, args.auth, apiUrl);
         // 3. parse configs
         this.logger.debug("Parsing configs..");
@@ -1302,7 +1310,7 @@ class Runner {
         if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
             configs.originalPullRequest.state === "open") {
             this.logger.debug("Fetching pull request remote..");
-            const prefix = git.gitClientType === git_types_1.GitClientType.GITHUB ? "pull" : "merge-requests"; // default is for gitlab
+            const prefix = git.gitClientType === git_types_1.GitClientType.GITLAB ? "merge-requests" : "pull"; // default is for gitlab
             await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
         }
         // 7. apply all changes to the new branch

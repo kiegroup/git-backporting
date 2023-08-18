@@ -16,6 +16,8 @@ export const inferGitClient = (prUrl: string): GitClientType => {
     return GitClientType.GITHUB;
   } else if (stdPrUrl.includes(GitClientType.GITLAB.toString())) {
     return GitClientType.GITLAB;
+  } else if (stdPrUrl.includes(GitClientType.CODEBERG.toString())) {
+    return GitClientType.CODEBERG;
   }
 
   throw new Error(`Remote git service not recognized from pr url: ${prUrl}`);

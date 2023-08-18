@@ -31,7 +31,7 @@ Table of content
 
 ## Who is this tool for?
 
-`git-backporting` is a tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way.
+`git-backporting` is a fully configurable tool that provides capabilities to *backport* pull requests (on *GitHub*) and merge requests (on *GitLab*) in an automated way.
 
 > *What is backporting?* - backporting is an action aiming to move a change (usually a commit) from a branch (usually the main one) to another one, which is generally referring to a still maintained release branch. Keeping it simple: it is about to move a specific change or a set of them from one branch to another.
 
@@ -138,6 +138,8 @@ Right now **Git Backporting** supports the following git management services:
  * ***GITHUB***: Introduced since the first release of this tool (version `1.0.0`). The interaction with this system is performed using [*octokit*](https://octokit.github.io/rest.js) client library.
 
  * ***GITLAB***: This has been introduced since version `3.0.0`, it works for both public and private *GitLab* servers. The interaction with this service is performed using plain [*axios*](https://axios-http.com) requests. The *gitlab* api version that is used to make requests is `v4`, at the moment there is no possibility to override it.
+
+ * ***CODEBERG***: Introduced since version `4.4.0`, it works for public [codeberg.org](https://codeberg.org/) platform. Thanks to the api compatibility with GitHub, the interaction with this service is performed using using [*octokit*](https://octokit.github.io/rest.js) client library.
 
 > **NOTE**: by default, all gitlab requests are performed setting `rejectUnauthorized=false`, planning to make this configurable too.
 

@@ -1,5 +1,5 @@
 import GitClient from "@bp/service/git/git-client";
-import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
+import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
 import GitHubMapper from "@bp/service/git/github/github-mapper";
 import OctokitFactory from "@bp/service/git/github/octokit-factory";
 import LoggerService from "@bp/service/logger/logger-service";
@@ -24,7 +24,7 @@ export default class GitHubClient implements GitClient {
   // READ
 
   getDefaultGitUser(): string {
-    return "GitHub";
+    return this.apiUrl.includes(GitClientType.CODEBERG.toString()) ? "Codeberg" : "GitHub";
   }
   
   getDefaultGitEmail(): string {

@@ -20,6 +20,11 @@ describe("git client factory test", () => {
     expect(client).toBeInstanceOf(GitLabClient);
   });
 
+  test("correctly create codeberg client", () => {
+    const client = GitClientFactory.getOrCreate(GitClientType.CODEBERG, "auth", "apiurl");
+    expect(client).toBeInstanceOf(GitHubClient);
+  });
+
   test("check get service github", () => {
     const create = GitClientFactory.getOrCreate(GitClientType.GITHUB, "auth", "apiurl");
     const get = GitClientFactory.getClient();
@@ -28,6 +33,12 @@ describe("git client factory test", () => {
 
   test("check get service gitlab", () => {
     const create = GitClientFactory.getOrCreate(GitClientType.GITLAB, "auth", "apiurl");
+    const get = GitClientFactory.getClient();
+    expect(create).toStrictEqual(get);
+  });
+
+  test("check get service codeberg", () => {
+    const create = GitClientFactory.getOrCreate(GitClientType.CODEBERG, "auth", "apiurl");
     const get = GitClientFactory.getClient();
     expect(create).toStrictEqual(get);
   });
