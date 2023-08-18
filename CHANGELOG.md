@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.0](https://github.com/kiegroup/git-backporting/compare/v4.3.0...v4.4.0) (2023-08-18)
+
+
+### Features
+
+* integrate with codeberg ([#80](https://github.com/kiegroup/git-backporting/issues/80)) ([9f0fbc0](https://github.com/kiegroup/git-backporting/commit/9f0fbc0b2fd8d449207660323be87f6d2fa8c017))
+* **issue-77:** handle multiple target branches ([#78](https://github.com/kiegroup/git-backporting/issues/78)) ([5fc72e1](https://github.com/kiegroup/git-backporting/commit/5fc72e127bedb3177f4e17ff1182827c78154ef1))
+
 ## [4.3.0](https://github.com/kiegroup/git-backporting/compare/v4.2.0...v4.3.0) (2023-07-27)
 
 
