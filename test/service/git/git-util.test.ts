@@ -23,6 +23,18 @@ describe("check git utilities", () => {
     expect(inferGitApiUrl("http://github.acme-inc.com/superuser/backporting-example/pull/4", "v3")).toStrictEqual("http://github.acme-inc.com/api/v3");
   });
 
+  test("check infer github api from github api url", ()=> {
+    expect(inferGitApiUrl("https://api.github.com/repos/owner/repo/pulls/1")).toStrictEqual("https://api.github.com");
+  });
+
+  test("check infer codeberg api", ()=> {
+    expect(inferGitApiUrl("https://codeberg.org/lampajr/backporting-example/pulls/1", "v1")).toStrictEqual("https://codeberg.org/api/v1");
+  });
+
+  test("check infer codeberg api", ()=> {
+    expect(inferGitApiUrl("https://codeberg.org/lampajr/backporting-example/pulls/1", undefined)).toStrictEqual("https://codeberg.org/api/v4");
+  });
+
   test("check infer github client", ()=> {
     expect(inferGitClient("https://github.com/superuser/backporting-example/pull/4")).toStrictEqual(GitClientType.GITHUB);
   });
@@ -39,7 +51,7 @@ describe("check git utilities", () => {
     expect(inferGitClient("https://api.github.com/repos/owner/repo/pulls/1")).toStrictEqual(GitClientType.GITHUB);
   });
 
-  test("check infer github api from github api url", ()=> {
-    expect(inferGitApiUrl("https://api.github.com/repos/owner/repo/pulls/1")).toStrictEqual("https://api.github.com");
+  test("check infer codeberg client", ()=> {
+    expect(inferGitClient("https://codeberg.org/lampajr/backporting-example/pulls/1")).toStrictEqual(GitClientType.CODEBERG);
   });
 });

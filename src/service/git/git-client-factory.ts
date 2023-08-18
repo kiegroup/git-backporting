@@ -43,6 +43,9 @@ export default class GitClientFactory {
       case GitClientType.GITLAB:
         GitClientFactory.instance = new GitLabClient(authToken, apiUrl);
         break;
+      case GitClientType.CODEBERG:
+        GitClientFactory.instance = new GitHubService(authToken, apiUrl);
+        break;
       default:
         throw new Error(`Invalid git service type received: ${type}`);
     }

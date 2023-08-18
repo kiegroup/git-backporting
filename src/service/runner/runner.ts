@@ -61,8 +61,8 @@ export default class Runner {
 
     // 2. init git service
     const gitClientType: GitClientType = inferGitClient(args.pullRequest);
-    // right now the apiVersion is set to v4
-    const apiUrl = inferGitApiUrl(args.pullRequest);
+    // the api version is ignored in case of github
+    const apiUrl = inferGitApiUrl(args.pullRequest, gitClientType === GitClientType.CODEBERG ? "v1" : undefined);
     const gitApi: GitClient = GitClientFactory.getOrCreate(gitClientType, args.auth, apiUrl);
 
     // 3. parse configs
@@ -112,7 +112,7 @@ export default class Runner {
     if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner || 
         configs.originalPullRequest.state === "open") {
           this.logger.debug("Fetching pull request remote..");
-      const prefix = git.gitClientType === GitClientType.GITHUB ? "pull" : "merge-requests"; // default is for gitlab
+      const prefix = git.gitClientType === GitClientType.GITLAB ? "merge-requests" : "pull" ; // default is for gitlab
       await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
     }
 
