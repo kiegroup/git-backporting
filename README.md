@@ -306,4 +306,4 @@ Every change must be submitted through a *GitHub* pull request (PR). Backporting
 
 ## License
 
-Backporting (BPer) open source project is licensed under the [MIT](./LICENSE) license.
+Git backporting open source project is licensed under the [MIT](./LICENSE) license.
