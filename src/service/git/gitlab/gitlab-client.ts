@@ -181,9 +181,18 @@ export default class GitLabClient implements GitClient {
    * @returns {{owner: string, project: string}}
    */
   private extractMergeRequestData(mrUrl: string): {namespace: string, project: string, id: number} {
-    const elems: string[] = mrUrl.replace("/-/", "/").split("/");
+    const { pathname } = new URL(mrUrl);
+    const elems: string[] = pathname.substring(1).replace("/-/", "/").split("/");
+    let namespace = "";
+
+    for (let i = 0; i < elems.length - 3; i++) {
+      namespace += elems[i] + "/";
+    }
+
+    namespace = namespace.substring(0, namespace.length - 1);
+
     return {
-      namespace: elems[elems.length - 4],
+      namespace: namespace,
       project: elems[elems.length - 3],
       id: parseInt(mrUrl.substring(mrUrl.lastIndexOf("/") + 1, mrUrl.length)),
     };
