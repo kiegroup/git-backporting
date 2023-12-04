@@ -323,4 +323,29 @@ describe("github service", () => {
       body: "this is second comment",
     });
   });
+
+  test("get pull request for nested namespaces", async () => {
+    const res: GitPullRequest = await gitClient.getPullRequestFromUrl("https://my.gitlab.host.com/mysuperorg/6/mysuperproduct/mysuperunit/backporting-example/-/merge_requests/4");
+    
+    // check content
+    expect(res.sourceRepo).toEqual({
+      owner: "superuser",
+      project: "backporting-example",
+      cloneUrl: "https://my.gitlab.host.com/mysuperorg/6/mysuperproduct/mysuperunit/backporting-example.git"
+    });
+    expect(res.targetRepo).toEqual({
+      owner: "superuser",
+      project: "backporting-example",
+      cloneUrl: "https://my.gitlab.host.com/mysuperorg/6/mysuperproduct/mysuperunit/backporting-example.git"
+    });
+    expect(res.title).toBe("Update test.txt");
+    expect(res.commits!.length).toBe(1);
+    expect(res.commits).toEqual(["ebb1eca696c42fd067658bd9b5267709f78ef38e"]);
+    
+    // check axios invocation
+    expect(axiosInstanceSpy.get).toBeCalledTimes(3); // merge request and 2 repos
+    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/mysuperorg%2F6%2Fmysuperproduct%2Fmysuperunit%2Fbackporting-example/merge_requests/4");
+    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/1645");
+    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/1645");
+  });
 });
