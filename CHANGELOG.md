@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.1](https://github.com/kiegroup/git-backporting/compare/v4.4.0...v4.4.1) (2023-12-05)
+
+
+### Bug Fixes
+
+* namespace parsing in gitlab ([#84](https://github.com/kiegroup/git-backporting/issues/84)) ([ed32d22](https://github.com/kiegroup/git-backporting/commit/ed32d2275b6008d31e456c41beecd536eceb23dc))
+
 ## [4.4.0](https://github.com/kiegroup/git-backporting/compare/v4.3.0...v4.4.0) (2023-08-18)
 
 
