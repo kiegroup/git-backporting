@@ -15,7 +15,7 @@ inputs:
     required: false
     default: "false"
   auth:
-    description: "GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)"
+    description: "GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT), if not provided will look for existing env variables like GITHUB_TOKEN"
     default: ${{ github.token }}
     required: false
   git-user:

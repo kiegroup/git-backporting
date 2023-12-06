@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import { AuthTokenId } from "@bp/service/configs/configs.types";
 import * as fs from "fs";
 
 export const addProcessArgs = (args: string[]) => {
@@ -7,6 +8,13 @@ export const addProcessArgs = (args: string[]) => {
 
 export const resetProcessArgs = () => {
   process.argv = ["node", "backporting"];
+};
+
+export const resetEnvTokens = () => {
+  delete process.env[AuthTokenId.GITHUB_TOKEN];
+  delete process.env[AuthTokenId.GITLAB_TOKEN];
+  delete process.env[AuthTokenId.CODEBERG_TOKEN];
+  delete process.env[AuthTokenId.GIT_TOKEN];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
