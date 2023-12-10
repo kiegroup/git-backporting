@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.0](https://github.com/kiegroup/git-backporting/compare/v4.4.1...v4.5.0) (2023-12-10)
+
+
+### Features
+
+* **gh-85:** take git tokens from environment ([#88](https://github.com/kiegroup/git-backporting/issues/88)) ([70da575](https://github.com/kiegroup/git-backporting/commit/70da575afce603190eafed927637922a37fbd087))
+
 ## [4.4.1](https://github.com/kiegroup/git-backporting/compare/v4.4.0...v4.4.1) (2023-12-05)
 
 
