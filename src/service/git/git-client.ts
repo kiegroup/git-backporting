@@ -1,10 +1,15 @@
-import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
+import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
 
 /**
  * Git management service interface, which provides a common API for interacting 
  * with several git management services like GitHub, Gitlab or Bitbucket.
  */
  export default interface GitClient {
+
+  /**
+   * @returns {GitClientType} specific git client enum type
+   */
+  getClientType(): GitClientType
 
   // READ
   

@@ -182,7 +182,7 @@ class CLIArgsParser extends args_parser_1.default {
             .option("-tb, --target-branch <branches>", "comma separated list of branches where changes must be backported to")
             .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/kiegroup/git-backporting/pull/1")
             .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
-            .option("-a, --auth <auth>", "git service authentication string, e.g., github token")
+            .option("-a, --auth <auth>", "git authentication string, if not provided fallback by looking for existing env variables like GITHUB_TOKEN")
             .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'")
             .option("-ge, --git-email <git-email>", "local git user email, default is 'noreply@github.com'")
             .option("-f, --folder <folder>", "local folder where the repo will be checked out, e.g., /tmp/folder")
@@ -251,7 +251,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const configs_types_1 = __nccwpck_require__(4753);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
+const git_types_1 = __nccwpck_require__(750);
 /**
  * Abstract configuration parser class in charge to parse
  * Args and produces a common Configs object
@@ -273,8 +275,66 @@ class ConfigsParser {
         }
         return Promise.resolve(configs);
     }
+    /**
+     * Retrieve the git token from env variable, the default is taken from GIT_TOKEN env.
+     * All specific git env variable have precedence and override the default one.
+     * @param gitType
+     * @returns tuple where
+     *      - the first element is the corresponding env value
+     *      - the second element is true if the value is not undefined nor empty
+     */
+    getGitTokenFromEnv(gitType) {
+        let [token] = this.getEnv(configs_types_1.AuthTokenId.GIT_TOKEN);
+        let [specToken, specOk] = [undefined, false];
+        if (git_types_1.GitClientType.GITHUB == gitType) {
+            [specToken, specOk] = this.getEnv(configs_types_1.AuthTokenId.GITHUB_TOKEN);
+        }
+        else if (git_types_1.GitClientType.GITLAB == gitType) {
+            [specToken, specOk] = this.getEnv(configs_types_1.AuthTokenId.GITLAB_TOKEN);
+        }
+        else if (git_types_1.GitClientType.CODEBERG == gitType) {
+            [specToken, specOk] = this.getEnv(configs_types_1.AuthTokenId.CODEBERG_TOKEN);
+        }
+        if (specOk) {
+            token = specToken;
+        }
+        return token;
+    }
+    /**
+     * Get process env variable given the input key string
+     * @param key
+     * @returns tuple where
+     *      - the first element is the corresponding env value
+     *      - the second element is true if the value is not undefined nor empty
+     */
+    getEnv(key) {
+        const val = process.env[key];
+        return [val, val !== undefined && val !== ""];
+    }
 }
 exports["default"] = ConfigsParser;
+
+
+/***/ }),
+
+/***/ 4753:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthTokenId = void 0;
+var AuthTokenId;
+(function (AuthTokenId) {
+    // github specific token
+    AuthTokenId["GITHUB_TOKEN"] = "GITHUB_TOKEN";
+    // gitlab specific token
+    AuthTokenId["GITLAB_TOKEN"] = "GITLAB_TOKEN";
+    // codeberg specific token
+    AuthTokenId["CODEBERG_TOKEN"] = "CODEBERG_TOKEN";
+    // generic git token
+    AuthTokenId["GIT_TOKEN"] = "GIT_TOKEN";
+})(AuthTokenId = exports.AuthTokenId || (exports.AuthTokenId = {}));
 
 
 /***/ }),
@@ -311,9 +371,18 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         if (bpBranchNames.length > 1 && bpBranchNames.length != targetBranches.length) {
             throw new Error(`The number of backport branch names, if provided, must match the number of target branches or just one, provided ${bpBranchNames.length} branch names instead`);
         }
+        // setup the auth token
+        let token = args.auth;
+        if (token === undefined) {
+            this.logger.info("Auth argument not provided, checking available tokens from env..");
+            token = this.getGitTokenFromEnv(this.gitClient.getClientType());
+            if (!token) {
+                this.logger.info("Git token not set in the env");
+            }
+        }
         return {
             dryRun: args.dryRun,
-            auth: args.auth,
+            auth: token,
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             mergeStrategy: args.strategy,
             mergeStrategyOption: args.strategyOption,
@@ -567,7 +636,7 @@ class GitClientFactory {
                 GitClientFactory.instance = new gitlab_client_1.default(authToken, apiUrl);
                 break;
             case git_types_1.GitClientType.CODEBERG:
-                GitClientFactory.instance = new github_client_1.default(authToken, apiUrl);
+                GitClientFactory.instance = new github_client_1.default(authToken, apiUrl, true);
                 break;
             default:
                 throw new Error(`Invalid git service type received: ${type}`);
@@ -673,11 +742,15 @@ const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 class GitHubClient {
-    constructor(token, apiUrl) {
+    constructor(token, apiUrl, isForCodeberg = false) {
         this.apiUrl = apiUrl;
+        this.isForCodeberg = isForCodeberg;
         this.logger = logger_service_factory_1.default.getLogger();
         this.octokit = octokit_factory_1.default.getOctokit(token, this.apiUrl);
         this.mapper = new github_mapper_1.default();
+    }
+    getClientType() {
+        return this.isForCodeberg ? git_types_1.GitClientType.CODEBERG : git_types_1.GitClientType.GITHUB;
     }
     // READ
     getDefaultGitUser() {
@@ -889,6 +962,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const gitlab_mapper_1 = __importDefault(__nccwpck_require__(2675));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
@@ -908,6 +982,9 @@ class GitLabClient {
             })
         });
         this.mapper = new gitlab_mapper_1.default(this.client);
+    }
+    getClientType() {
+        return git_types_1.GitClientType.GITLAB;
     }
     getDefaultGitUser() {
         return "Gitlab";

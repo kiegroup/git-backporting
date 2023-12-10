@@ -4,7 +4,7 @@ import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
 import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
-import { resetProcessArgs } from "../../../support/utils";
+import { resetEnvTokens, resetProcessArgs } from "../../../support/utils";
 import { MERGED_PR_FIXTURE, REPO, TARGET_OWNER, MULT_COMMITS_PR_FIXTURE } from "../../../support/mock/github-data";
 import GitHubMapper from "@bp/service/git/github/github-mapper";
 import GitHubClient from "@bp/service/git/github/github-client";
@@ -28,6 +28,9 @@ describe("github pull request config parser", () => {
     // reset process.env variables
     resetProcessArgs();
 
+    // reset env tokens
+    resetEnvTokens();
+    
     // mock octokit
     mockGitHubClient("http://localhost/api/v3");
 

@@ -11,14 +11,20 @@ export default class GitHubClient implements GitClient {
   
   private logger: LoggerService;
   private apiUrl: string;
+  private isForCodeberg: boolean;
   private octokit: Octokit;
   private mapper: GitHubMapper;
 
-  constructor(token: string | undefined, apiUrl: string) {
+  constructor(token: string | undefined, apiUrl: string, isForCodeberg = false) {
     this.apiUrl = apiUrl;
+    this.isForCodeberg = isForCodeberg;
     this.logger = LoggerServiceFactory.getLogger();
     this.octokit = OctokitFactory.getOctokit(token, this.apiUrl);
     this.mapper = new GitHubMapper();
+  }
+
+  getClientType(): GitClientType {
+    return this.isForCodeberg ? GitClientType.CODEBERG : GitClientType.GITHUB;
   }
 
   // READ

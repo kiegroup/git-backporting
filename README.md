@@ -97,7 +97,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Target Branches | -tb, --target-branch | N            | Comma separated list of branches where the changes must be backported to                                                                                                         |             |
 | Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/kiegroup/git-backporting/pull/1                                        |             |
 | Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
-| Auth          | -a, --auth           | N            | `GITHUB_TOKEN`, `GITLAB_TOKEN` or a `repo` scoped [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) | ""          |
+| Auth          | -a, --auth           | N            | Git access/authorization token, if provided all token env variables will be ignored. See [auth token](#authorization-token) section for more details | ""          |
 | Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
 | Git User       | -gu, --git-user        | N            | Local git user name                                                       | "GitHub"       |
 | Git Email       | -ge, --git-email        | N            | Local git user email                                                       | "noreply@github.com"       |
@@ -117,6 +117,17 @@ This tool comes with some inputs that allow users to override the default behavi
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and `target branch` are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
+
+#### Authorization token
+
+Since version `4.5.0` we introduced a new feature that allows user to provide the git access token through environment variables. These env variables are taken into consideration only if the `--auth/-a` is not provided as argument/input.
+Here the supported list of env variables:
+- `GITHUB_TOKEN`: this is checked only if backporting on Github platform.
+- `GITLAB_TOKEN`: this is checked only if backporting on Gitlab platform.
+- `CODEBERG_TOKEN`: this is checked only if backporting on Codeberg platform.
+- `GIT_TOKEN`: this is considered if none of the previous envs are set.
+
+> **NOTE**: if `--auth` argument is provided, all env variables will be ignored even if not empty.
 
 #### Configuration file example
 
@@ -194,6 +205,9 @@ on:
       - closed
       - labeled
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   backporting:
     name: "Backporting"
@@ -216,7 +230,6 @@ jobs:
         with:
           target-branch: v1
           pull-request: ${{ github.event.pull_request.url }}
-          auth: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 For a complete description of all inputs see [Inputs section](#inputs).

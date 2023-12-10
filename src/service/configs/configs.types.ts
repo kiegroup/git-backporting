@@ -21,3 +21,13 @@ export interface Configs {
   backportPullRequests: BackportPullRequest[],
  }
 
+export enum AuthTokenId {
+  // github specific token
+  GITHUB_TOKEN = "GITHUB_TOKEN",
+  // gitlab specific token
+  GITLAB_TOKEN = "GITLAB_TOKEN",
+  // codeberg specific token
+  CODEBERG_TOKEN = "CODEBERG_TOKEN",
+  // generic git token
+  GIT_TOKEN = "GIT_TOKEN",
+}

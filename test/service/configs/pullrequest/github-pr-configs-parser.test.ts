@@ -1,10 +1,10 @@
 import { Args } from "@bp/service/args/args.types";
-import { Configs } from "@bp/service/configs/configs.types";
+import { AuthTokenId, Configs } from "@bp/service/configs/configs.types";
 import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs-parser";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
 import { mockGitHubClient } from "../../../support/mock/git-client-mock-support";
-import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../../support/utils";
+import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../../support/utils";
 import { MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, REPO, TARGET_OWNER, MULT_COMMITS_PR_FIXTURE } from "../../../support/mock/github-data";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import GitHubMapper from "@bp/service/git/github/github-mapper";
@@ -66,6 +66,9 @@ describe("github pull request config parser", () => {
     // reset process.env variables
     resetProcessArgs();
 
+    // reset env tokens
+    resetEnvTokens();
+
     // mock octokit
     mockGitHubClient("http://localhost/api/v3");
 
@@ -77,7 +80,6 @@ describe("github pull request config parser", () => {
   test("parse configs from pull request", async () => {
     const args: Args = {
       dryRun: false,
-      auth: "",
       pullRequest: mergedPRUrl,
       targetBranch: "prod",
       gitUser: "GitHub",
@@ -99,7 +101,7 @@ describe("github pull request config parser", () => {
       user: "GitHub",
       email: "noreply@github.com"
     });
-    expect(configs.auth).toEqual("");
+    expect(configs.auth).toEqual(undefined);
     expect(configs.folder).toEqual(process.cwd() + "/bp");
     expect(configs.originalPullRequest).toEqual({
       number: 2368,
@@ -838,6 +840,84 @@ describe("github pull request config parser", () => {
       assignees: ["user3", "user4"],
       labels: [],
       comments: ["First comment", "Second comment"],
+    });
+  });
+
+  test("override token using auth arg", async () => {
+    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+    const args: Args = {
+      dryRun: true,
+      auth: "whatever",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      folder: "/tmp/test",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(true);
+    expect(configs.auth).toEqual("whatever");
+    expect(configs.folder).toEqual("/tmp/test");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
+  });
+
+  test("auth using GITHUB_TOKEN has precedence over GIT_TOKEN env variable", async () => {
+    process.env[AuthTokenId.GIT_TOKEN] = "mygittoken";
+    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+    const args: Args = {
+      dryRun: true,
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      folder: "/tmp/test",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(true);
+    expect(configs.auth).toEqual("mygithubtoken");
+    expect(configs.folder).toEqual("/tmp/test");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
+  });
+
+  test("ignore env variables related to other git platforms", async () => {
+    process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
+    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
+    const args: Args = {
+      dryRun: true,
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      folder: "/tmp/test",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.dryRun).toEqual(true);
+    expect(configs.auth).toEqual(undefined);
+    expect(configs.folder).toEqual("/tmp/test");
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
     });
   });
 });

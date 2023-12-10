@@ -1,7 +1,8 @@
 import { Args } from "@bp/service/args/args.types";
-import { Configs } from "@bp/service/configs/configs.types";
+import { AuthTokenId, Configs } from "@bp/service/configs/configs.types";
 import LoggerService from "../logger/logger-service";
 import LoggerServiceFactory from "../logger/logger-service-factory";
+import { GitClientType } from "../git/git.types";
 
 /**
  * Abstract configuration parser class in charge to parse 
@@ -33,5 +34,43 @@ import LoggerServiceFactory from "../logger/logger-service-factory";
     }
 
     return Promise.resolve(configs);
+  }
+
+  /**
+   * Retrieve the git token from env variable, the default is taken from GIT_TOKEN env.
+   * All specific git env variable have precedence and override the default one.
+   * @param gitType 
+   * @returns tuple where 
+   *      - the first element is the corresponding env value
+   *      - the second element is true if the value is not undefined nor empty
+   */
+  public getGitTokenFromEnv(gitType: GitClientType): string | undefined {
+    let [token] = this.getEnv(AuthTokenId.GIT_TOKEN);
+    let [specToken, specOk]: [string | undefined, boolean] = [undefined, false];
+    if (GitClientType.GITHUB == gitType) {
+      [specToken, specOk] = this.getEnv(AuthTokenId.GITHUB_TOKEN);
+    } else if (GitClientType.GITLAB == gitType) {
+      [specToken, specOk] = this.getEnv(AuthTokenId.GITLAB_TOKEN);
+    } else if (GitClientType.CODEBERG == gitType) {
+      [specToken, specOk] = this.getEnv(AuthTokenId.CODEBERG_TOKEN);
+    }
+
+    if (specOk) {
+      token = specToken;
+    }
+
+    return token;
+  }
+
+  /**
+   * Get process env variable given the input key string
+   * @param key 
+   * @returns tuple where 
+   *      - the first element is the corresponding env value
+   *      - the second element is true if the value is not undefined nor empty
+   */
+  public getEnv(key: string): [string | undefined, boolean] {
+    const val = process.env[key];
+    return [val, val !== undefined && val !== ""];
   }
 }

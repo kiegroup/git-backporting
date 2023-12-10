@@ -1,6 +1,6 @@
 import LoggerService from "@bp/service/logger/logger-service";
 import GitClient from "@bp/service/git/git-client";
-import { GitPullRequest, BackportPullRequest } from "@bp/service/git/git.types";
+import { GitPullRequest, BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { CommitSchema, MergeRequestSchema, UserSchema } from "@gitbeaker/rest";
 import GitLabMapper from "@bp/service/git/gitlab/gitlab-mapper";
@@ -28,6 +28,10 @@ export default class GitLabClient implements GitClient {
       })
     });
     this.mapper = new GitLabMapper(this.client);
+  }
+
+  getClientType(): GitClientType {
+    return GitClientType.GITLAB;
   }
 
   getDefaultGitUser(): string {
