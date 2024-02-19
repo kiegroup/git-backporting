@@ -41,8 +41,8 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
       sourceRepo: await this.mapSourceRepo(mr),
       targetRepo: await this.mapTargetRepo(mr),
       // if commits list is provided use that as source
-      nCommits: (commits && commits.length > 1) ? commits.length : 1,
-      commits: (commits && commits.length > 1) ? commits : this.getSha(mr)
+      nCommits: (commits && commits.length > 0) ? commits.length : 1,
+      commits: (commits && commits.length > 0) ? commits : this.getSha(mr)
     };
   }
   
