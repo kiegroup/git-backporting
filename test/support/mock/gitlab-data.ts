@@ -689,6 +689,29 @@ export const CLOSED_NOT_MERGED_MR = {
   }
 };
 
+export const MERGED_SQUASHED_MR_COMMITS = [
+   {
+      "id":"e4dd336a4a20f394df6665994df382fb1d193a11",
+      "short_id":"e4dd336a",
+      "created_at":"2023-06-29T09:59:10.000Z",
+      "parent_ids":[
+         
+      ],
+      "title":"Add new file",
+      "message":"Add new file",
+      "author_name":"Super User",
+      "author_email":"superuser@email.com",
+      "authored_date":"2023-06-29T09:59:10.000Z",
+      "committer_name":"Super User",
+      "committer_email":"superuser@email.com",
+      "committed_date":"2023-06-29T09:59:10.000Z",
+      "trailers":{
+         
+      },
+      "web_url":"https://gitlab.com/superuser/backporting-example/-/commit/e4dd336a4a20f394df6665994df382fb1d193a11"
+   },
+];
+
 export const OPEN_PR_COMMITS = [
    {
       "id":"974519f65c9e0ed65277cd71026657a09fca05e7",

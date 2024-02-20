@@ -1,7 +1,7 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
 import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER } from "./github-data";
-import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER} from "./gitlab-data";
+import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER, MERGED_SQUASHED_MR_COMMITS } from "./gitlab-data";
 
 // high number, for each test we are not expecting 
 // to send more than 3 reqs per api endpoint
@@ -30,6 +30,8 @@ export const getAxiosMocked = (url: string) => {
     data = NESTED_PROJECT_EXAMPLE;
   } else if (url.endsWith("users?username=superuser")) {
     data = [SUPERUSER];
+  } else if (url.endsWith("merge_requests/1/commits")) {
+    data = MERGED_SQUASHED_MR_COMMITS;
   } else if (url.endsWith("merge_requests/2/commits")) {
     data = OPEN_PR_COMMITS;
   }
