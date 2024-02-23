@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.5.1](https://github.com/kiegroup/git-backporting/compare/v4.5.0...v4.5.1) (2024-02-23)
+
+
+### Bug Fixes
+
+* --auth when --git-user contains space ([#95](https://github.com/kiegroup/git-backporting/issues/95)) ([9bcd6e6](https://github.com/kiegroup/git-backporting/commit/9bcd6e6b5547974c45ade756b623eb385bb76019))
+* --no-squash on single-commit GitLab MR ([#93](https://github.com/kiegroup/git-backporting/issues/93)) ([300fa91](https://github.com/kiegroup/git-backporting/commit/300fa91a8ae065b7f6f6370882b10929bbde6309))
+* **gh-96:** fix git token parsing ([#98](https://github.com/kiegroup/git-backporting/issues/98)) ([c57fca6](https://github.com/kiegroup/git-backporting/commit/c57fca6bd6b9c241c11ad1f728cc9bc0acfd7f88))
+
 ## [4.5.0](https://github.com/kiegroup/git-backporting/compare/v4.4.1...v4.5.0) (2023-12-10)
 
 
