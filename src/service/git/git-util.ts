@@ -1,4 +1,5 @@
 import { GitClientType } from "@bp/service/git/git.types";
+import { AuthTokenId } from "@bp/service/configs/configs.types";
 
 const PUBLIC_GITHUB_URL = "https://github.com";
 const PUBLIC_GITHUB_API = "https://api.github.com";
@@ -38,4 +39,42 @@ export const inferGitApiUrl = (prUrl: string, apiVersion = "v4"): string => {
   }
 
   return `${baseUrl}/api/${apiVersion}`;
+};
+
+/**
+ * Retrieve the git token from env variable, the default is taken from GIT_TOKEN env.
+ * All specific git env variable have precedence and override the default one.
+ * @param gitType 
+ * @returns tuple where 
+ *      - the first element is the corresponding env value
+ *      - the second element is true if the value is not undefined nor empty
+ */
+export const getGitTokenFromEnv = (gitType: GitClientType): string | undefined => {
+  let [token] = getEnv(AuthTokenId.GIT_TOKEN);
+  let [specToken, specOk]: [string | undefined, boolean] = [undefined, false];
+  if (GitClientType.GITHUB == gitType) {
+    [specToken, specOk] = getEnv(AuthTokenId.GITHUB_TOKEN);
+  } else if (GitClientType.GITLAB == gitType) {
+    [specToken, specOk] = getEnv(AuthTokenId.GITLAB_TOKEN);
+  } else if (GitClientType.CODEBERG == gitType) {
+    [specToken, specOk] = getEnv(AuthTokenId.CODEBERG_TOKEN);
+  }
+
+  if (specOk) {
+    token = specToken;
+  }
+
+  return token;
+};
+
+/**
+ * Get process env variable given the input key string
+ * @param key 
+ * @returns tuple where 
+ *      - the first element is the corresponding env value
+ *      - the second element is true if the value is not undefined nor empty
+ */
+export const getEnv = (key: string): [string | undefined, boolean] => {
+  const val = process.env[key];
+  return [val, val !== undefined && val !== ""];
 };

@@ -8,7 +8,7 @@ import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
-import { inferGitClient, inferGitApiUrl } from "@bp/service/git/git-util";
+import { inferGitClient, inferGitApiUrl, getGitTokenFromEnv } from "@bp/service/git/git-util";
 
 interface Git {
   gitClientType: GitClientType;
@@ -63,10 +63,12 @@ export default class Runner {
     const gitClientType: GitClientType = inferGitClient(args.pullRequest);
     // the api version is ignored in case of github
     const apiUrl = inferGitApiUrl(args.pullRequest, gitClientType === GitClientType.CODEBERG ? "v1" : undefined);
-    const gitApi: GitClient = GitClientFactory.getOrCreate(gitClientType, args.auth, apiUrl);
+    const token = this.fetchToken(args, gitClientType);
+    const gitApi: GitClient = GitClientFactory.getOrCreate(gitClientType, token, apiUrl);
 
     // 3. parse configs
     this.logger.debug("Parsing configs..");
+    args.auth = token; // override auth
     const configs: Configs = await new PullRequestConfigsParser().parseAndValidate(args);
     const backportPRs: BackportPullRequest[] = configs.backportPullRequests;
 
@@ -92,6 +94,27 @@ export default class Runner {
     if (failures.length > 0) {
       throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
     }
+  }
+
+  /**
+   * Fetch the GIT token from the provided Args obj, if not empty, otherwise fallback
+   * to the environment variables.
+   * @param args input arguments
+   * @param gitType git client type
+   * @returns the provided or fetched token, or undefined if not set anywhere
+   */
+  fetchToken(args: Args, gitType: GitClientType): string | undefined {
+    let token = args.auth;
+    if (token === undefined) {
+      // try to fetch the auth from env variable
+      this.logger.info("Auth argument not provided, checking available tokens from env..");
+      token = getGitTokenFromEnv(gitType);
+      if (!token) {
+        this.logger.info("Git token not found in the environment");
+      }
+    }
+
+    return token;
   }
 
   async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void> {
