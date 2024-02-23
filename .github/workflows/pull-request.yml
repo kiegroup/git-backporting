@@ -3,7 +3,15 @@
 
 name: "pull request check"
 
-on: pull_request
+on:
+  pull_request:
+    paths-ignore:
+      - 'LICENSE*'
+      - '**.gitignore'
+      - '**.md'
+      - '**.txt'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/dependabot.yml'
 
 jobs:
   build:
