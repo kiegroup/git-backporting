@@ -3,11 +3,12 @@ import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
 import GitLabClient from "@bp/service/git/gitlab/gitlab-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
-import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../support/utils";
+import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
 import { getAxiosMocked } from "../../support/mock/git-client-mock-support";
 import { MERGED_SQUASHED_MR } from "../../support/mock/gitlab-data";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
+import { AuthTokenId } from "@bp/service/configs/configs.types";
 
 const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT_PATHNAME = "./cli-gitlab-runner-pr-merged-with-overrides.json";
 const GITLAB_MERGED_PR_COMPLEX_CONFIG_FILE_CONTENT = {
@@ -62,6 +63,9 @@ afterAll(() => {
 beforeEach(() => {
   // reset process.env variables
   resetProcessArgs();
+
+  // reset git env tokens
+  resetEnvTokens();
 
   // create CLI arguments parser
   parser = new CLIArgsParser();
@@ -594,5 +598,60 @@ describe("cli runner", () => {
         comments: [],
       }
     );
+  });
+
+  test("auth using GITLAB_TOKEN takes precedence over GIT_TOKEN env variable", async () => {
+    process.env[AuthTokenId.GIT_TOKEN] = "mygittoken";
+    process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2"
+    ]);
+    
+    await runner.execute();
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, "mygitlabtoken", "https://my.gitlab.host.com/api/v4");
+  
+    // Not interested in all subsequent calls, already tested in other test cases
+  });
+
+  test("auth arg takes precedence over GITLAB_TOKEN", async () => {
+    process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2",
+      "-a",
+      "mytoken"
+    ]);
+    
+    await runner.execute();
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, "mytoken", "https://my.gitlab.host.com/api/v4");
+  
+    // Not interested in all subsequent calls, already tested in other test cases
+  });
+
+  test("ignore env variables related to other git platforms", async () => {
+    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/2"
+    ]);
+    
+    await runner.execute();
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+  
+    // Not interested in all subsequent calls, already tested in other test cases
   });
 });

@@ -1,5 +1,5 @@
 import { Args } from "@bp/service/args/args.types";
-import { AuthTokenId, Configs } from "@bp/service/configs/configs.types";
+import { Configs } from "@bp/service/configs/configs.types";
 import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs-parser";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
@@ -796,99 +796,6 @@ describe("gitlab merge request config parser", () => {
       assignees: ["user3", "user4"],
       labels: [],
       comments: ["First comment", "Second comment"],
-    });
-  });
-
-  test("override token using auth arg", async () => {
-    process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
-    const args: Args = {
-      dryRun: true,
-      auth: "whatever",
-      pullRequest: mergedPRUrl,
-      targetBranch: "prod",
-      folder: "/tmp/test",
-      gitUser: "Gitlab",
-      gitEmail: "noreply@gitlab.com",
-      reviewers: [],
-      assignees: [],
-      inheritReviewers: true,
-    };
-
-    const configs: Configs = await configParser.parseAndValidate(args);
-
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
-
-    expect(configs.dryRun).toEqual(true);
-    expect(configs.auth).toEqual("whatever");
-    expect(configs.folder).toEqual("/tmp/test");
-    expect(configs.git).toEqual({
-      user: "Gitlab",
-      email: "noreply@gitlab.com"
-    });
-  });
-
-  test("auth using GITLAB_TOKEN has precedence over GIT_TOKEN env variable", async () => {
-    process.env[AuthTokenId.GIT_TOKEN] = "mygittoken";
-    process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
-    const args: Args = {
-      dryRun: true,
-      pullRequest: mergedPRUrl,
-      targetBranch: "prod",
-      folder: "/tmp/test",
-      gitUser: "Gitlab",
-      gitEmail: "noreply@gitlab.com",
-      reviewers: [],
-      assignees: [],
-      inheritReviewers: true,
-    };
-
-    const configs: Configs = await configParser.parseAndValidate(args);
-
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
-
-    expect(configs.dryRun).toEqual(true);
-    expect(configs.auth).toEqual("mygitlabtoken");
-    expect(configs.folder).toEqual("/tmp/test");
-    expect(configs.git).toEqual({
-      user: "Gitlab",
-      email: "noreply@gitlab.com"
-    });
-  });
-  
-  test("ignore env variables related to other git platforms", async () => {
-    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
-    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
-    const args: Args = {
-      dryRun: true,
-      pullRequest: mergedPRUrl,
-      targetBranch: "prod",
-      folder: "/tmp/test",
-      gitUser: "Gitlab",
-      gitEmail: "noreply@gitlab.com",
-      reviewers: [],
-      assignees: [],
-      inheritReviewers: true,
-    };
-
-    const configs: Configs = await configParser.parseAndValidate(args);
-
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
-
-    expect(configs.dryRun).toEqual(true);
-    expect(configs.auth).toEqual(undefined);
-    expect(configs.folder).toEqual("/tmp/test");
-    expect(configs.git).toEqual({
-      user: "Gitlab",
-      email: "noreply@gitlab.com"
     });
   });
 });

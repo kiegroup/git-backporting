@@ -33,19 +33,9 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       throw new Error(`The number of backport branch names, if provided, must match the number of target branches or just one, provided ${bpBranchNames.length} branch names instead`);
     }
 
-    // setup the auth token
-    let token = args.auth;
-    if (token === undefined) {
-      this.logger.info("Auth argument not provided, checking available tokens from env..");
-      token = this.getGitTokenFromEnv(this.gitClient.getClientType());
-      if (!token) {
-        this.logger.info("Git token not set in the env");
-      }
-    }
-
     return {
       dryRun: args.dryRun!,
-      auth: token,
+      auth: args.auth, // this has been already pre-processed before parsing configs
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
       mergeStrategy: args.strategy,
       mergeStrategyOption: args.strategyOption,

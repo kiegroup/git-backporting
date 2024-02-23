@@ -3,7 +3,7 @@ import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
 import GitHubClient from "@bp/service/git/github/github-client";
 import GHAArgsParser from "@bp/service/args/gha/gha-args-parser";
-import { createTestFile, removeTestFile, spyGetInput } from "../../support/utils";
+import { createTestFile, removeTestFile, resetEnvTokens, spyGetInput } from "../../support/utils";
 import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { GitClientType } from "@bp/service/git/git.types";
@@ -46,6 +46,9 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  // reset git env tokens
+  resetEnvTokens();
+  
   mockGitHubClient();
 
   // create GHA arguments parser

@@ -221,9 +221,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const configs_types_1 = __nccwpck_require__(4753);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const git_types_1 = __nccwpck_require__(750);
 /**
  * Abstract configuration parser class in charge to parse
  * Args and produces a common Configs object
@@ -244,42 +242,6 @@ class ConfigsParser {
             throw new Error("Provided pull request is closed and not merged");
         }
         return Promise.resolve(configs);
-    }
-    /**
-     * Retrieve the git token from env variable, the default is taken from GIT_TOKEN env.
-     * All specific git env variable have precedence and override the default one.
-     * @param gitType
-     * @returns tuple where
-     *      - the first element is the corresponding env value
-     *      - the second element is true if the value is not undefined nor empty
-     */
-    getGitTokenFromEnv(gitType) {
-        let [token] = this.getEnv(configs_types_1.AuthTokenId.GIT_TOKEN);
-        let [specToken, specOk] = [undefined, false];
-        if (git_types_1.GitClientType.GITHUB == gitType) {
-            [specToken, specOk] = this.getEnv(configs_types_1.AuthTokenId.GITHUB_TOKEN);
-        }
-        else if (git_types_1.GitClientType.GITLAB == gitType) {
-            [specToken, specOk] = this.getEnv(configs_types_1.AuthTokenId.GITLAB_TOKEN);
-        }
-        else if (git_types_1.GitClientType.CODEBERG == gitType) {
-            [specToken, specOk] = this.getEnv(configs_types_1.AuthTokenId.CODEBERG_TOKEN);
-        }
-        if (specOk) {
-            token = specToken;
-        }
-        return token;
-    }
-    /**
-     * Get process env variable given the input key string
-     * @param key
-     * @returns tuple where
-     *      - the first element is the corresponding env value
-     *      - the second element is true if the value is not undefined nor empty
-     */
-    getEnv(key) {
-        const val = process.env[key];
-        return [val, val !== undefined && val !== ""];
     }
 }
 exports["default"] = ConfigsParser;
@@ -341,18 +303,9 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         if (bpBranchNames.length > 1 && bpBranchNames.length != targetBranches.length) {
             throw new Error(`The number of backport branch names, if provided, must match the number of target branches or just one, provided ${bpBranchNames.length} branch names instead`);
         }
-        // setup the auth token
-        let token = args.auth;
-        if (token === undefined) {
-            this.logger.info("Auth argument not provided, checking available tokens from env..");
-            token = this.getGitTokenFromEnv(this.gitClient.getClientType());
-            if (!token) {
-                this.logger.info("Git token not set in the env");
-            }
-        }
         return {
             dryRun: args.dryRun,
-            auth: token,
+            auth: args.auth,
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             mergeStrategy: args.strategy,
             mergeStrategyOption: args.strategyOption,
@@ -632,8 +585,9 @@ GitClientFactory.logger = logger_service_factory_1.default.getLogger();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.inferGitApiUrl = exports.inferGitClient = void 0;
+exports.getEnv = exports.getGitTokenFromEnv = exports.inferGitApiUrl = exports.inferGitClient = void 0;
 const git_types_1 = __nccwpck_require__(750);
+const configs_types_1 = __nccwpck_require__(4753);
 const PUBLIC_GITHUB_URL = "https://github.com";
 const PUBLIC_GITHUB_API = "https://api.github.com";
 /**
@@ -671,6 +625,44 @@ const inferGitApiUrl = (prUrl, apiVersion = "v4") => {
     return `${baseUrl}/api/${apiVersion}`;
 };
 exports.inferGitApiUrl = inferGitApiUrl;
+/**
+ * Retrieve the git token from env variable, the default is taken from GIT_TOKEN env.
+ * All specific git env variable have precedence and override the default one.
+ * @param gitType
+ * @returns tuple where
+ *      - the first element is the corresponding env value
+ *      - the second element is true if the value is not undefined nor empty
+ */
+const getGitTokenFromEnv = (gitType) => {
+    let [token] = (0, exports.getEnv)(configs_types_1.AuthTokenId.GIT_TOKEN);
+    let [specToken, specOk] = [undefined, false];
+    if (git_types_1.GitClientType.GITHUB == gitType) {
+        [specToken, specOk] = (0, exports.getEnv)(configs_types_1.AuthTokenId.GITHUB_TOKEN);
+    }
+    else if (git_types_1.GitClientType.GITLAB == gitType) {
+        [specToken, specOk] = (0, exports.getEnv)(configs_types_1.AuthTokenId.GITLAB_TOKEN);
+    }
+    else if (git_types_1.GitClientType.CODEBERG == gitType) {
+        [specToken, specOk] = (0, exports.getEnv)(configs_types_1.AuthTokenId.CODEBERG_TOKEN);
+    }
+    if (specOk) {
+        token = specToken;
+    }
+    return token;
+};
+exports.getGitTokenFromEnv = getGitTokenFromEnv;
+/**
+ * Get process env variable given the input key string
+ * @param key
+ * @returns tuple where
+ *      - the first element is the corresponding env value
+ *      - the second element is true if the value is not undefined nor empty
+ */
+const getEnv = (key) => {
+    const val = process.env[key];
+    return [val, val !== undefined && val !== ""];
+};
+exports.getEnv = getEnv;
 
 
 /***/ }),
@@ -1324,9 +1316,11 @@ class Runner {
         const gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
         // the api version is ignored in case of github
         const apiUrl = (0, git_util_1.inferGitApiUrl)(args.pullRequest, gitClientType === git_types_1.GitClientType.CODEBERG ? "v1" : undefined);
-        const gitApi = git_client_factory_1.default.getOrCreate(gitClientType, args.auth, apiUrl);
+        const token = this.fetchToken(args, gitClientType);
+        const gitApi = git_client_factory_1.default.getOrCreate(gitClientType, token, apiUrl);
         // 3. parse configs
         this.logger.debug("Parsing configs..");
+        args.auth = token; // override auth
         const configs = await new pr_configs_parser_1.default().parseAndValidate(args);
         const backportPRs = configs.backportPullRequests;
         // start local git operations
@@ -1350,6 +1344,25 @@ class Runner {
         if (failures.length > 0) {
             throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
         }
+    }
+    /**
+     * Fetch the GIT token from the provided Args obj, if not empty, otherwise fallback
+     * to the environment variables.
+     * @param args input arguments
+     * @param gitType git client type
+     * @returns the provided or fetched token, or undefined if not set anywhere
+     */
+    fetchToken(args, gitType) {
+        let token = args.auth;
+        if (token === undefined) {
+            // try to fetch the auth from env variable
+            this.logger.info("Auth argument not provided, checking available tokens from env..");
+            token = (0, git_util_1.getGitTokenFromEnv)(gitType);
+            if (!token) {
+                this.logger.info("Git token not found in the environment");
+            }
+        }
+        return token;
     }
     async executeBackport(configs, backportPR, git) {
         this.logger.setContext(backportPR.base);

@@ -7,7 +7,6 @@ import { getAxiosMocked } from "../../../support/mock/git-client-mock-support";
 import { MERGED_SQUASHED_MR } from "../../../support/mock/gitlab-data";
 import GitLabClient from "@bp/service/git/gitlab/gitlab-client";
 import GitLabMapper from "@bp/service/git/gitlab/gitlab-mapper";
-import { resetEnvTokens } from "../../../support/utils";
 
 jest.spyOn(GitLabMapper.prototype, "mapPullRequest");
 jest.spyOn(GitLabClient.prototype, "getPullRequest");
@@ -32,9 +31,6 @@ describe("gitlab merge request config parser", () => {
   });
 
   beforeEach(() => {
-    // reset env tokens
-    resetEnvTokens();
-
     configParser = new PullRequestConfigsParser();
   });
 

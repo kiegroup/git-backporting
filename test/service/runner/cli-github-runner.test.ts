@@ -3,10 +3,11 @@ import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
 import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
-import { addProcessArgs, createTestFile, removeTestFile, resetProcessArgs } from "../../support/utils";
+import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
 import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
+import { AuthTokenId } from "@bp/service/configs/configs.types";
 
 const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT_PATHNAME = "./cli-github-runner-pr-merged-with-overrides.json";
 const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
@@ -47,6 +48,9 @@ afterAll(() => {
 beforeEach(() => {
   // reset process.env variables
   resetProcessArgs();
+
+  // reset git env tokens
+  resetEnvTokens();
 
   // mock octokit
   mockGitHubClient();
@@ -1103,5 +1107,60 @@ describe("cli runner", () => {
         comments: [],
     });
     expect(GitHubClient.prototype.createPullRequest).toThrowError();
+  });
+
+  test("auth using GITHUB_TOKEN takes precedence over GIT_TOKEN env variable", async () => {
+    process.env[AuthTokenId.GIT_TOKEN] = "mygittoken";
+    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/8632"
+    ]);
+    
+    await runner.execute();
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, "mygithubtoken", "https://api.github.com");
+
+    // Not interested in all subsequent calls, already tested in other test cases
+  });
+
+  test("auth arg takes precedence over GITHUB_TOKEN", async () => {
+    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/8632",
+      "-a",
+      "mytoken"
+    ]);
+    
+    await runner.execute();
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, "mytoken", "https://api.github.com");
+
+    // Not interested in all subsequent calls, already tested in other test cases
+  });
+
+  test("ignore env variables related to other git platforms", async () => {
+    process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
+    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/8632"
+    ]);
+    
+    await runner.execute();
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    // Not interested in all subsequent calls, already tested in other test cases
   });
 });

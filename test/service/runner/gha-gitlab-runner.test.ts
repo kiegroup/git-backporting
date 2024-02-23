@@ -3,7 +3,7 @@ import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
 import GitLabClient from "@bp/service/git/gitlab/gitlab-client";
 import GHAArgsParser from "@bp/service/args/gha/gha-args-parser";
-import { createTestFile, removeTestFile, spyGetInput } from "../../support/utils";
+import { createTestFile, removeTestFile, resetEnvTokens, spyGetInput } from "../../support/utils";
 import { getAxiosMocked } from "../../support/mock/git-client-mock-support";
 import { MERGED_SQUASHED_MR } from "../../support/mock/gitlab-data";
 import GitClientFactory from "@bp/service/git/git-client-factory";
@@ -59,6 +59,9 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  // reset git env tokens
+  resetEnvTokens();
+  
   // create GHA arguments parser
   parser = new GHAArgsParser();
 
