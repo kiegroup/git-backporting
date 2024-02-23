@@ -35,8 +35,9 @@ export default class GitCLIService {
    * @param remoteURL remote link, e.g., https://github.com/kiegroup/git-backporting-example.git
    */
   private remoteWithAuth(remoteURL: string): string {
-    if (this.auth && this.gitData.user) {
-      return remoteURL.replace("://", `://${this.gitData.user}:${this.auth}@`);
+    if (this.auth) {
+      // Anything will work as a username.
+      return remoteURL.replace("://", `://token:${this.auth}@`);
     }
 
     // return remote as it is

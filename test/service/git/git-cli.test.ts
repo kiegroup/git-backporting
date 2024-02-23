@@ -123,4 +123,22 @@ describe("git cli service", () => {
     const post = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd }).stdout.toString().trim();
     expect(post).toEqual("tbranch");
   });
+
+  test("git clone set url with auth correctly for API token", async () => {
+    const git2 = new GitCLIService("api-token", {
+      user: "Backporting bot",
+      email: "bot@example.com",
+    });
+    const cwd2 = `${__dirname}/test-api-token`;
+
+    try {
+      await git2.clone(`file://${cwd}`, cwd2, "main");
+      const remoteURL = spawnSync("git", ["remote", "get-url", "origin"], { cwd: cwd2 }).stdout.toString().trim();
+
+      expect(remoteURL).toContain("api-token");
+      expect(remoteURL).not.toContain("Backporting bot");
+    } finally {
+      fs.rmSync(cwd2, { recursive: true, force: true });
+    }
+  });
 });
