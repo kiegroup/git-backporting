@@ -1,5 +1,7 @@
 # Changelog
 
+## [4.5.2](https://github.com/kiegroup/git-backporting/compare/v4.5.1...v4.5.2) (2024-03-08)
+
 ## [4.5.1](https://github.com/kiegroup/git-backporting/compare/v4.5.0...v4.5.1) (2024-02-23)
 
 
