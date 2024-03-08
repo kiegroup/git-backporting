@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.2](https://github.com/kiegroup/git-backporting/compare/v4.5.1...v4.5.2) (2024-03-08)
+
+### Improvements
+
+* upgrade to node20 for gha ([c8ede8d](https://github.com/kiegroup/git-backporting/commit/c8ede8d4e2428cb3f4dc2d727f24b37e5781cbb1))
+
 ## [4.5.1](https://github.com/kiegroup/git-backporting/compare/v4.5.0...v4.5.1) (2024-02-23)
 
 
