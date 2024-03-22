@@ -47,7 +47,7 @@ This tool is released on the [public npm registry](https://www.npmjs.com/), ther
 $ npm install -g @kie/git-backporting
 ```
 
-Then you just have to choose the pull request (or merge request on *Gitlab*) that you would like to backport and the target branch and the simply run the following command:
+Then you just have to choose the pull request (or merge request on *Gitlab*) that you would like to backport and the target branch and then simply run the following command:
 
 ```bash
 $ git-backporting -tb <branch> -pr <pull-request-url> -a <git-token>
@@ -67,7 +67,7 @@ This is the easiest invocation where you let the tool set / compute most of the 
 
 ### How it works?
 
-The simply works in this way: given the provided `pull/merge request` it infers the git client to use (either *Github* or *Gitlab* for now) and it retrieve the corresponding pull request object (original pull/merge request to be backported into another branch).
+It works in this way: given the provided `pull/merge request` it infers the server API to use (either *Github* or *Gitlab* for now) and retrieves the corresponding pull request object (original pull/merge request to be backported into another branch).
 
 After that it clones the corresponding git repository, check out in the provided `target branch` and create a new branch from that (name automatically generated if not provided as option).
 
@@ -141,7 +141,7 @@ This is an example of a configuration file that can be used.
   "auth": "*****"
 }
 ```
-Keep in mind that its structue MUST match the [Args](src/service/args/args.types.ts) interface, which is actually a camel-case version of the CLI options.
+Keep in mind that its structure MUST match the [Args](src/service/args/args.types.ts) interface, which is actually a camel-case version of the CLI options.
 
 ### Supported git services
 
