@@ -49,6 +49,7 @@ class ArgsParser {
             dryRun: this.getOrDefault(args.dryRun, false),
             auth: this.getOrDefault(args.auth),
             folder: this.getOrDefault(args.folder),
+            gitClient: this.getOrDefault(args.gitClient),
             gitUser: this.getOrDefault(args.gitUser),
             gitEmail: this.getOrDefault(args.gitEmail),
             title: this.getOrDefault(args.title),
@@ -183,6 +184,7 @@ class CLIArgsParser extends args_parser_1.default {
             .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/kiegroup/git-backporting/pull/1")
             .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
             .option("-a, --auth <auth>", "git authentication string, if not provided fallback by looking for existing env variables like GITHUB_TOKEN")
+            .option("--git-client <github|gitlab|codeberg>", "git client type, if not set it is infered from --pull-request")
             .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'")
             .option("-ge, --git-email <git-email>", "local git user email, default is 'noreply@github.com'")
             .option("-f, --folder <folder>", "local folder where the repo will be checked out, e.g., /tmp/folder")
@@ -217,6 +219,7 @@ class CLIArgsParser extends args_parser_1.default {
                 pullRequest: opts.pullRequest,
                 targetBranch: opts.targetBranch,
                 folder: opts.folder,
+                gitClient: opts.gitClient,
                 gitUser: opts.gitUser,
                 gitEmail: opts.gitEmail,
                 title: opts.title,
@@ -1343,7 +1346,13 @@ class Runner {
             this.logger.warn("Dry run enabled");
         }
         // 2. init git service
-        const gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
+        let gitClientType;
+        if (args.gitClient === undefined) {
+            gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
+        }
+        else {
+            gitClientType = args.gitClient;
+        }
         // the api version is ignored in case of github
         const apiUrl = (0, git_util_1.inferGitApiUrl)(args.pullRequest, gitClientType === git_types_1.GitClientType.CODEBERG ? "v1" : undefined);
         const token = this.fetchToken(args, gitClientType);

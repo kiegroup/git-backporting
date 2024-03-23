@@ -15,6 +15,7 @@ const RANDOM_CONFIG_FILE_CONTENT = {
   "targetBranch": "target-branch-name",
   "pullRequest": "https://github.com/user/repo/pull/123",
   "folder": "/path/to/local/folder",
+  "gitClient": "codeberg",
   "gitUser": "YourGitUser",
   "gitEmail": "your-email@example.com",
   "title": "Backport: Original PR Title",
@@ -62,6 +63,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -90,6 +92,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -120,6 +123,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -148,6 +152,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -185,6 +190,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("bearer-token");
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual("Me");
     expect(args.gitEmail).toEqual("me@email.com");
     expect(args.folder).toEqual(undefined);
@@ -213,6 +219,8 @@ describe("cli args parser", () => {
       "target",
       "--pull-request",
       "https://localhost/whatever/pulls/1",
+      "--git-client",
+      "codeberg",
       "--git-user",
       "Me",
       "--git-email",
@@ -238,6 +246,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("bearer-token");
+    expect(args.gitClient).toEqual("codeberg");
     expect(args.gitUser).toEqual("Me");
     expect(args.gitEmail).toEqual("me@email.com");
     expect(args.folder).toEqual(undefined);
@@ -266,6 +275,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("your-git-service-auth-token");
+    expect(args.gitClient).toEqual("codeberg");
     expect(args.gitUser).toEqual("YourGitUser");
     expect(args.gitEmail).toEqual("your-email@example.com");
     expect(args.folder).toEqual("/path/to/local/folder");
@@ -296,6 +306,8 @@ describe("cli args parser", () => {
       "target",
       "--pull-request",
       "https://localhost/whatever/pulls/1",
+      "--git-client",
+      "github",
       "--git-user",
       "Me",
       "--git-email",
@@ -321,6 +333,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(true);
     expect(args.auth).toEqual("your-git-service-auth-token");
+    expect(args.gitClient).toEqual("codeberg");
     expect(args.gitUser).toEqual("YourGitUser");
     expect(args.gitEmail).toEqual("your-email@example.com");
     expect(args.folder).toEqual("/path/to/local/folder");
@@ -352,6 +365,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -384,6 +398,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -416,6 +431,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);
@@ -445,6 +461,7 @@ describe("cli args parser", () => {
     const args: Args = parser.parse();
     expect(args.dryRun).toEqual(false);
     expect(args.auth).toEqual(undefined);
+    expect(args.gitClient).toEqual(undefined);
     expect(args.gitUser).toEqual(undefined);
     expect(args.gitEmail).toEqual(undefined);
     expect(args.folder).toEqual(undefined);

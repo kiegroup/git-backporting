@@ -18,6 +18,9 @@ inputs:
     description: "GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT), if not provided will look for existing env variables like GITHUB_TOKEN"
     default: ${{ github.token }}
     required: false
+  git-client:
+    description: "Git client type <github|gitlab|codeberg>, if not set it is infered from pull-request"
+    required: false
   git-user:
     description: "Local git user name"
     default: "GitHub"

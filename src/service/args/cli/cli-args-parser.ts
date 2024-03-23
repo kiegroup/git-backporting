@@ -14,6 +14,7 @@ export default class CLIArgsParser extends ArgsParser {
       .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/kiegroup/git-backporting/pull/1")
       .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
       .option("-a, --auth <auth>", "git authentication string, if not provided fallback by looking for existing env variables like GITHUB_TOKEN")
+      .option("--git-client <github|gitlab|codeberg>", "git client type, if not set it is infered from --pull-request")
       .option("-gu, --git-user <git-user>", "local git user name, default is 'GitHub'")
       .option("-ge, --git-email <git-email>", "local git user email, default is 'noreply@github.com'")
       .option("-f, --folder <folder>", "local folder where the repo will be checked out, e.g., /tmp/folder")
@@ -49,6 +50,7 @@ export default class CLIArgsParser extends ArgsParser {
         pullRequest: opts.pullRequest,
         targetBranch: opts.targetBranch,
         folder: opts.folder,
+        gitClient: opts.gitClient,
         gitUser: opts.gitUser,
         gitEmail: opts.gitEmail,
         title: opts.title,

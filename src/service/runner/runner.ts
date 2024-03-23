@@ -60,7 +60,12 @@ export default class Runner {
     }
 
     // 2. init git service
-    const gitClientType: GitClientType = inferGitClient(args.pullRequest);
+    let gitClientType: GitClientType;
+    if (args.gitClient === undefined) {
+      gitClientType = inferGitClient(args.pullRequest);
+    } else {
+      gitClientType = args.gitClient as GitClientType;
+    }
     // the api version is ignored in case of github
     const apiUrl = inferGitApiUrl(args.pullRequest, gitClientType === GitClientType.CODEBERG ? "v1" : undefined);
     const token = this.fetchToken(args, gitClientType);

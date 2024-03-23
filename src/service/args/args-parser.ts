@@ -27,6 +27,7 @@ export default abstract class ArgsParser {
       dryRun: this.getOrDefault(args.dryRun, false),
       auth: this.getOrDefault(args.auth),
       folder: this.getOrDefault(args.folder),
+      gitClient: this.getOrDefault(args.gitClient),
       gitUser: this.getOrDefault(args.gitUser),
       gitEmail: this.getOrDefault(args.gitEmail),
       title: this.getOrDefault(args.title),
