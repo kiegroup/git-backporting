@@ -99,6 +99,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
 | Auth          | -a, --auth           | N            | Git access/authorization token, if provided all token env variables will be ignored. See [auth token](#authorization-token) section for more details | ""          |
 | Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
+| Git Client       | --git-client        | N            | Git client type <github|gitlab|codeberg>, if not set it is infered from pull-request
 | Git User       | -gu, --git-user        | N            | Local git user name                                                       | "GitHub"       |
 | Git Email       | -ge, --git-email        | N            | Local git user email                                                       | "noreply@github.com"       |
 | Title       | --title        | N            | Backporting pull request title                                                       | "{original-pr-title}"       |

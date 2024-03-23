@@ -49,6 +49,7 @@ class ArgsParser {
             dryRun: this.getOrDefault(args.dryRun, false),
             auth: this.getOrDefault(args.auth),
             folder: this.getOrDefault(args.folder),
+            gitClient: this.getOrDefault(args.gitClient),
             gitUser: this.getOrDefault(args.gitUser),
             gitEmail: this.getOrDefault(args.gitEmail),
             title: this.getOrDefault(args.title),
@@ -187,6 +188,7 @@ class GHAArgsParser extends args_parser_1.default {
                 pullRequest: (0, core_1.getInput)("pull-request"),
                 targetBranch: (0, core_1.getInput)("target-branch"),
                 folder: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("folder")),
+                gitClient: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-client")),
                 gitUser: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-user")),
                 gitEmail: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-email")),
                 title: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("title")),
@@ -1313,7 +1315,13 @@ class Runner {
             this.logger.warn("Dry run enabled");
         }
         // 2. init git service
-        const gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
+        let gitClientType;
+        if (args.gitClient === undefined) {
+            gitClientType = (0, git_util_1.inferGitClient)(args.pullRequest);
+        }
+        else {
+            gitClientType = args.gitClient;
+        }
         // the api version is ignored in case of github
         const apiUrl = (0, git_util_1.inferGitApiUrl)(args.pullRequest, gitClientType === git_types_1.GitClientType.CODEBERG ? "v1" : undefined);
         const token = this.fetchToken(args, gitClientType);

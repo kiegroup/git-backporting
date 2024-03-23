@@ -768,4 +768,23 @@ describe("gha runner", () => {
     });
     expect(GitHubClient.prototype.createPullRequest).toReturnTimes(3);
   });
+
+  test("explicitly set git client", async () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://api.github.com/repos/owner/reponame/pulls/2368",
+      "git-client": "codeberg",
+    });
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+  });
+
 });
