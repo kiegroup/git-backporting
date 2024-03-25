@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.0](https://github.com/kiegroup/git-backporting/compare/v4.5.2...v4.6.0) (2024-03-25)
+
+
+### Features
+
+* add --git-client to explicitly set the type of forge ([#106](https://github.com/kiegroup/git-backporting/issues/106)) ([80a0b55](https://github.com/kiegroup/git-backporting/commit/80a0b554f0c1920a178e28bd678f709581a1b224))
+
 ## [4.5.2](https://github.com/kiegroup/git-backporting/compare/v4.5.1...v4.5.2) (2024-03-08)
 
 ### Improvements
