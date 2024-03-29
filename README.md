@@ -24,7 +24,6 @@ Table of content
 * **[CLI tool](#cli-tool)**
 * **[GitHub action](#github-action)**
 * **[Future works](#future-works)**
-* **[Migrating to v4](#migrating-to-v4)**
 * **[Development](#development)**
 * **[Contributing](#contributing)**
 * **[License](#license)**
@@ -39,7 +38,7 @@ Therefore this tools is for anybody who is working on projects where they have t
 
 ## CLI tool
 
->  All instructions provided below pertain to version `v4` of the tool. If you wish to use an earlier version, we strongly encourage you to consider migrating to version `v4` as there are no valid reason to keep using older versions. Please refer to [Migrating to v4](#migrating-to-v4) section for comprehensive details on how to properly migrate to version `v4`.
+>  All instructions provided below pertain to version `v4` of the tool. If you wish to use an earlier version, please refer to the documentation from the corresponding tag/release.
 
 This tool is released on the [public npm registry](https://www.npmjs.com/), therefore it can be easily installed using `npm`:
 
@@ -243,23 +242,6 @@ For a complete description of all inputs see [Inputs section](#inputs).
 - Integrate this tool with other git management services (like Bitbucket) to make it as generic as possible.
 - Integrate it into other CI/CD services like gitlab CI.
 - Provide some reusable *GitHub* workflows.
-
-## Migrating to v4
-
-From version `v4` the project has been moved under [@kiegroup](https://github.com/kiegroup) organization. During this migration we changed some things that you should be aware of. I'll try to summarize them in the following table:
-
-> **NOTE**: these changes did not affect the tool features.
-
-|             | **v4 (after migration)** | v3 or older (before migration) |
-|-------------|--------------------------|--------------------------------|
-| Owner       | kiegroup                 | lampajr                        |
-| Repository  | git-backporting          | backporting                    |
-| NPM package | @kie/git-backporting     | @lampajr/bper                  |
-| CLI tool    | git-backporting          | bper                           |
-
-So everytime you would use older version keep in mind that these changes are madnatory to make the tool working.
-
-> **NOTE**: Versions `v3.1.1` and `v4.0.0` offer identical features; the only distinction lies in the project's renaming and organization movement.
 
 ## Development
 
