@@ -353,7 +353,78 @@ describe("github pull request config parser", () => {
       dryRun: false,
       auth: "",
       pullRequest: multipleCommitsPRUrl,
-      targetBranch: "v1, v2, v3",
+      targetBranch: "v4, v5, v6",
+      gitUser: "GitHub",
+      gitEmail: "noreply@github.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: true,
+      squash: false,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 8632, false);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]);
+
+    expect(configs.dryRun).toEqual(false);
+    expect(configs.git).toEqual({
+      user: "GitHub",
+      email: "noreply@github.com"
+    });
+    expect(configs.auth).toEqual("");
+    expect(configs.folder).toEqual(process.cwd() + "/bp");
+    expect(configs.backportPullRequests.length).toEqual(3);
+    expect(configs.backportPullRequests).toEqual(
+      expect.arrayContaining([
+        {
+          owner: "owner", 
+          repo: "reponame", 
+          head: "bp-v4-0404fb9-11da4e3", 
+          base: "v4", 
+          title: "[v4] PR Title",
+          body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+          reviewers: ["gh-user", "that-s-a-user"],
+          assignees: [],
+          labels: [],
+          comments: [],
+        },
+        {
+          owner: "owner", 
+          repo: "reponame", 
+          head: "bp-v5-0404fb9-11da4e3", 
+          base: "v5", 
+          title: "[v5] PR Title",
+          body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+          reviewers: ["gh-user", "that-s-a-user"],
+          assignees: [],
+          labels: [],
+          comments: [],
+        },
+        {
+          owner: "owner", 
+          repo: "reponame", 
+          head: "bp-v6-0404fb9-11da4e3", 
+          base: "v6",
+          title: "[v6] PR Title",
+          body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+          reviewers: ["gh-user", "that-s-a-user"],
+          assignees: [],
+          labels: [],
+          comments: [],
+        },
+      ])
+    );
+  });
+
+  test("multiple extracted branches and multiple commits", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: multipleCommitsPRUrl,
+      targetBranchPattern: "^backport (?<target>([^ ]+))$",
       gitUser: "GitHub",
       gitEmail: "noreply@github.com",
       reviewers: [],

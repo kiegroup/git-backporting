@@ -16,14 +16,18 @@ export default abstract class ArgsParser {
   public parse(): Args {
     const args = this.readArgs();
 
+    if (!args.pullRequest) {
+      throw new Error("Missing option: pull request must be provided");
+    }
     // validate and fill with defaults
-    if (!args.pullRequest || !args.targetBranch || args.targetBranch.trim().length == 0) {
-      throw new Error("Missing option: pull request and target branches must be provided");
+    if ((!args.targetBranch || args.targetBranch.trim().length == 0) && !args.targetBranchPattern) {
+      throw new Error("Missing option: target branch(es) or target regular expression must be provided");
     }
     
     return {
       pullRequest: args.pullRequest,
       targetBranch: args.targetBranch,
+      targetBranchPattern: args.targetBranchPattern,
       dryRun: this.getOrDefault(args.dryRun, false),
       auth: this.getOrDefault(args.auth),
       folder: this.getOrDefault(args.folder),

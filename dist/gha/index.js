@@ -39,13 +39,17 @@ class ArgsParser {
     }
     parse() {
         const args = this.readArgs();
+        if (!args.pullRequest) {
+            throw new Error("Missing option: pull request must be provided");
+        }
         // validate and fill with defaults
-        if (!args.pullRequest || !args.targetBranch || args.targetBranch.trim().length == 0) {
-            throw new Error("Missing option: pull request and target branches must be provided");
+        if ((!args.targetBranch || args.targetBranch.trim().length == 0) && !args.targetBranchPattern) {
+            throw new Error("Missing option: target branch(es) or target regular expression must be provided");
         }
         return {
             pullRequest: args.pullRequest,
             targetBranch: args.targetBranch,
+            targetBranchPattern: args.targetBranchPattern,
             dryRun: this.getOrDefault(args.dryRun, false),
             auth: this.getOrDefault(args.auth),
             folder: this.getOrDefault(args.folder),
@@ -186,7 +190,8 @@ class GHAArgsParser extends args_parser_1.default {
                 dryRun: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("dry-run")),
                 auth: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("auth")),
                 pullRequest: (0, core_1.getInput)("pull-request"),
-                targetBranch: (0, core_1.getInput)("target-branch"),
+                targetBranch: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("target-branch")),
+                targetBranchPattern: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("target-reg-exp")),
                 folder: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("folder")),
                 gitClient: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-client")),
                 gitUser: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-user")),
@@ -300,7 +305,18 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             throw error;
         }
         const folder = args.folder ?? this.getDefaultFolder();
-        const targetBranches = [...new Set((0, args_utils_1.getAsCommaSeparatedList)(args.targetBranch))];
+        let targetBranches = [];
+        if (args.targetBranchPattern) {
+            // parse labels to extract target branch(es)
+            targetBranches = this.getTargetBranchesFromLabels(args.targetBranchPattern, pr.labels);
+            if (targetBranches.length === 0) {
+                throw new Error(`Unable to extract target branches with regular expression "${args.targetBranchPattern}"`);
+            }
+        }
+        else {
+            // target branch must be provided if targetRegExp is missing
+            targetBranches = [...new Set((0, args_utils_1.getAsCommaSeparatedList)(args.targetBranch))];
+        }
         const bpBranchNames = [...new Set(args.bpBranchName ? ((0, args_utils_1.getAsCleanedCommaSeparatedList)(args.bpBranchName) ?? []) : [])];
         if (bpBranchNames.length > 1 && bpBranchNames.length != targetBranches.length) {
             throw new Error(`The number of backport branch names, if provided, must match the number of target branches or just one, provided ${bpBranchNames.length} branch names instead`);
@@ -321,6 +337,28 @@ class PullRequestConfigsParser extends configs_parser_1.default {
     }
     getDefaultFolder() {
         return "bp";
+    }
+    /**
+     * Parse the provided labels and return a list of target branches
+     * obtained by applying the provided pattern as regular expression extractor
+     * @param pattern reg exp pattern to extract target branch from label name
+     * @param labels list of labels to check
+     * @returns list of target branches
+     */
+    getTargetBranchesFromLabels(pattern, labels) {
+        this.logger.debug(`Extracting branches from [${labels}] using ${pattern}`);
+        const regExp = new RegExp(pattern);
+        const branches = [];
+        for (const l of labels) {
+            const result = regExp.exec(l);
+            if (result?.groups) {
+                const { target } = result.groups;
+                if (target) {
+                    branches.push(target);
+                }
+            }
+        }
+        return [...new Set(branches)];
     }
     /**
      * Create a backport pull request starting from the target branch and
@@ -7621,7 +7659,6 @@ var preservedUrlFields = [
   "protocol",
   "query",
   "search",
-  "hash",
 ];
 
 // Create handlers that pass events from native requests
@@ -8055,7 +8092,7 @@ RedirectableRequest.prototype._processResponse = function (response) {
      redirectUrl.protocol !== "https:" ||
      redirectUrl.host !== currentHost &&
      !isSubdomain(redirectUrl.host, currentHost)) {
-    removeMatchingHeaders(/^(?:(?:proxy-)?authorization|cookie)$/i, this._options.headers);
+    removeMatchingHeaders(/^(?:authorization|cookie)$/i, this._options.headers);
   }
 
   // Evaluate the beforeRedirect callback

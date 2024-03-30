@@ -3,7 +3,8 @@
  */
 export interface Args {
   // NOTE: keep targetBranch as singular and of type string for backward compatibilities
-  targetBranch: string,  // comma separated list of branches on the target repo where the change should be backported to
+  targetBranch?: string,  // comma separated list of branches on the target repo where the change should be backported to
+  targetBranchPattern?: string, // regular expression to extract target branch(es) from pull request labels
   pullRequest: string, // url of the pull request to backport
   dryRun?: boolean, // if enabled do not push anything remotely
   auth?: string, // git service auth, like github token

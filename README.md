@@ -104,6 +104,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Version       | -V, --version        | -            | Current version of the tool                                                                                                                            |             |
 | Help          | -h, --help           | -            | Display the help message                                                                                                                               |             |
 | Target Branches | -tb, --target-branch | N            | Comma separated list of branches where the changes must be backported to                                                                                                         |             |
+| Target Branches Pattern | -tbp, --target-branch-pattern | N            | Regular expression pattern to extract target branch(es) from pr labels. The branches will be extracted from the pattern's required `target` named capturing group, e.g., `^backport (?<target>([^ ]+))$`                                                                                                         |             |
 | Pull Request  | -pr, --pull-request  | N            | Original pull request url, the one that must be backported, e.g., https://github.com/kiegroup/git-backporting/pull/1                                        |             |
 | Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
 | Auth          | -a, --auth           | N            | Git access/authorization token, if provided all token env variables will be ignored. See [auth token](#authorization-token) section for more details | ""          |
@@ -126,7 +127,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Additional comments       | --comments        | N            | Semicolon separated list of additional comments to be posted to the backported pull request                                                           | []       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
-> **NOTE**: `pull request` and `target branch` are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
+> **NOTE**: `pull request` and (`target branch` or `target branch pattern`) are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
 
 #### Authorization token
 

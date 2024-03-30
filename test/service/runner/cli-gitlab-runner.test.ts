@@ -408,7 +408,7 @@ describe("cli runner", () => {
         body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
         reviewers: ["superuser"],
         assignees: [],
-        labels: ["cherry-pick :cherries:", "another-label", "gitlab-original-label"],
+        labels: ["cherry-pick :cherries:", "another-label", "backport-prod"],
         comments: [],
       }
     );
@@ -502,7 +502,7 @@ describe("cli runner", () => {
         body: expect.stringContaining("**This is a backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/1"),
         reviewers: [],
         assignees: ["user3", "user4"],
-        labels: ["cli gitlab cherry pick :cherries:", "gitlab-original-label"],
+        labels: ["cli gitlab cherry pick :cherries:", "backport-prod"],
         comments: [],
       }
     );

@@ -401,7 +401,7 @@ export const MERGED_SQUASHED_MR = {
   "source_project_id":76316,
   "target_project_id":76316,
   "labels":[
-     "gitlab-original-label"
+     "backport-prod"
   ],
   "draft":false,
   "work_in_progress":false,

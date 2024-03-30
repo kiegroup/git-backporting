@@ -471,7 +471,7 @@ describe("cli runner", () => {
       "-pr",
       "https://github.com/owner/reponame/pull/2368",
       "--labels",
-      "cherry-pick :cherries:, original-label",
+      "cherry-pick :cherries:, backport prod",
       "--inherit-labels",
     ]);
     
@@ -507,7 +507,7 @@ describe("cli runner", () => {
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
-        labels: ["cherry-pick :cherries:", "original-label"],
+        labels: ["cherry-pick :cherries:", "backport prod"],
         comments: [],
       }
     );
@@ -601,7 +601,7 @@ describe("cli runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
-        labels: ["cli github cherry pick :cherries:", "original-label"],
+        labels: ["cli github cherry pick :cherries:", "backport prod"],
         comments: [],
       }
     );
@@ -1162,5 +1162,24 @@ describe("cli runner", () => {
     expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
 
     // Not interested in all subsequent calls, already tested in other test cases
+  });
+
+  test("extract target branch from label", async () => {
+    addProcessArgs([
+      "--target-branch-pattern",
+      "^backport (?<target>([^ ]+))$",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368"
+    ]);
+    
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "prod");
   });
 });

@@ -1,77 +1,105 @@
 name: "Backporting GitHub Action"
-description: "GitHub action providing an automated way to backport pull requests from one branch to another"
+description: GitHub action providing an automated way to backport pull requests from one branch to another
 inputs:
   pull-request:
-    description: "URL of the pull request to backport, e.g., https://github.com/kiegroup/git-backporting/pull/1"
+    description: >
+      URL of the pull request to backport, e.g., "https://github.com/kiegroup/git-backporting/pull/1"
     required: false
   target-branch:
-    description: "Comma separated list of branches where the pull request must be backported to"
+    description: >
+      Comma separated list of branches where the pull request must be backported to
+    required: false
+  target-branch-pattern:
+    description: >
+      Regular expression pattern to extract target branch(es) from pr labels. 
+      The branches will be extracted from the pattern's required `target` named capturing group, 
+      for instance "^backport (?<target>([^ ]+))$"
     required: false
   config-file:
-    description: "Path to a file containing the json configuration for this tool, the object must match the Args interface"
+    description: >
+      Path to a file containing the json configuration for this tool, 
+      the object must match the Args interface
     required: false
   dry-run:
-    description: "If enabled the tool does not create any pull request nor push anything remotely"
+    description: >
+      If enabled the tool does not create any pull request nor push anything remotely
     required: false
     default: "false"
   auth:
-    description: "GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT), if not provided will look for existing env variables like GITHUB_TOKEN"
+    description: >
+      GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT), 
+      if not provided will look for existing env variables like GITHUB_TOKEN
     default: ${{ github.token }}
     required: false
   git-client:
-    description: "Git client type <github|gitlab|codeberg>, if not set it is infered from pull-request"
+    description: > 
+      Git client type <github|gitlab|codeberg>, if not set it is infered from pull-request
     required: false
   git-user:
-    description: "Local git user name"
+    description: Local git user name
     default: "GitHub"
     required: false
   git-email:
-    description: "Local git user email"
+    description: Local git user email
     default: "noreply@github.com"
     required: false
   title:
-    description: "Backporting PR title. Default is the original PR title prefixed by the target branch"
+    description: >
+      Backporting PR title. Default is the original PR title prefixed by the target branch
     required: false
   body-prefix:
-    description: "Backporting PR body prefix. Default is `Backport: <original-pr-link>`"
+    description: >
+      Backporting PR body prefix. Default is `Backport: <original-pr-link>`
     required: false
   body:
-    description: "Backporting PR body. Default is the original PR body"
+    description: >
+      Backporting PR body. Default is the original PR body
     required: false
   bp-branch-name:
-    description: "Comma separated list of backporting PR branch names. Default is auto-generated from commit and target branches"
+    description: >
+      Comma separated list of backporting PR branch names. 
+      Default is auto-generated from commit and target branches
     required: false
   reviewers:
-    description: "Comma separated list of reviewers for the backporting pull request"
+    description: >
+      Comma separated list of reviewers for the backporting pull request
     required: false
   assignees:
-    description: "Comma separated list of reviewers for the backporting pull request"
+    description: >
+      Comma separated list of reviewers for the backporting pull request
     required: false
   no-inherit-reviewers:
-    description: "Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request"
+    description: >
+      Considered only if reviewers is empty, if true keep reviewers as empty list, 
+      otherwise inherit from original pull request
     required: false
     default: "false"
   labels:
-    description: "Comma separated list of labels to be assigned to the backported pull request"
+    description: >
+      Comma separated list of labels to be assigned to the backported pull request
     required: false
   inherit-labels:
-    description: "If true the backported pull request will inherit labels from the original one"
+    description: >
+      If true the backported pull request will inherit labels from the original one
     required: false
     default: "false"
   no-squash:
-    description: "If set to true the tool will backport all commits as part of the pull request instead of the suqashed one"
+    description: >
+      If set to true the tool will backport all commits as part of the pull request 
+      instead of the suqashed one
     required: false
     default: "false"
   strategy:
-    description: "Cherry-pick merge strategy"
+    description: Cherry-pick merge strategy
     required: false
     default: "recursive"
   strategy-option:
-    description: "Cherry-pick merge strategy option"
+    description: Cherry-pick merge strategy option
     required: false
     default: "theirs"
   comments:
-    description: "Semicolon separated list of additional comments to be posted to the backported pull request"
+    description: >
+      Semicolon separated list of additional comments to be posted to the backported pull request
     required: false
 
 runs:

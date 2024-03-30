@@ -331,7 +331,7 @@ describe("gha runner", () => {
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
-        labels: ["cherry-pick :cherries:", "another-label", "original-label"],
+        labels: ["cherry-pick :cherries:", "another-label", "backport prod"],
         comments: [],
       }
     );
@@ -422,7 +422,7 @@ describe("gha runner", () => {
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
-        labels: ["gha github cherry pick :cherries:", "original-label"],
+        labels: ["gha github cherry pick :cherries:", "backport prod"],
         comments: [],
       }
     );
