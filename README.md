@@ -74,14 +74,24 @@ By default the tool will try to cherry-pick the single squashed/merged commit in
 
 Based on the original pull request, creates a new one containing the backporting to the target branch. Note that most of these information can be overridden with appropriate CLI options or GHA inputs.
 
-#### Default cherry-pick strategy
+#### cherry-pick strategy
 
 The default cherry-pick strategy is `recursive` with `theirs` option for automatic conflicts resolution. Therefore, by default, all commits are cherry-picked using the following git-equivalent command:
 ```bash
 $ git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs <sha>
 ```
 
-From version `v4.2.0` we made both `strategy` and `strategy-option` fully configurable from CLI or GitHub action, so if users need a specific strategy which differs from the default one please consider using either `--strategy` or `--strategy-option`, or their equivalent GitHub action inputs, more details in [inputs](#inputs) section.
+From version `v4.2.0` both can be configured via the `strategy` or `strategy-option` inputs if using the action and the `--strategy` or `--strategy-option` arguments if using the CLI.
+
+The [default strategy](https://git-scm.com/docs/git-merge#Documentation/git-merge.txt--sltstrategygt) of the `git-cherry-pick` command is different from the defaults of `git-backporting`.
+```bash
+$ git cherry-pick -m 1 <sha>
+```
+is the same as:
+```bash
+$ git cherry-pick -m 1 --strategy=ort --strategy-option=find-renames <sha>
+```
+If there is a conflict the backport will fail and require manual intervention.
 
 > **NOTE**: If there are any conflicts, the tool will block the process and exit signalling the failure as there are still no ways to interactively resolve them. In these cases a manual cherry-pick is needed, or alternatively users could manually resume the process in the cloned repository (here the user will have to resolve the conflicts, push the branch and create the pull request - all manually).
 
