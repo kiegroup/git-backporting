@@ -96,8 +96,8 @@ export const MERGED_PR_FIXTURE = {
     {
       "id": 4901021057,
       "node_id": "LA_kwDOImgs2354988AAAABJB-lgQ",
-      "url": "https://api.github.com/repos/owner/reponame/labels/original-label",
-      "name": "original-label",
+      "url": "https://api.github.com/repos/owner/reponame/labels/backport-prod",
+      "name": "backport prod",
       "color": "AB975B",
       "default": false,
       "description": ""
@@ -1431,7 +1431,33 @@ export const MULT_COMMITS_PR_FIXTURE = {
 
   ],
   "labels": [
-
+    {
+      "id": 4901021057,
+      "node_id": "LA_kwDOImgs2354988AAAABJB-lgQ",
+      "url": "https://api.github.com/repos/owner/reponame/labels/backport-v1",
+      "name": "backport v1",
+      "color": "AB975B",
+      "default": false,
+      "description": ""
+    },
+    {
+      "id": 4901021057,
+      "node_id": "LA_kwDOImgs2354988AAAABJB-lgQ",
+      "url": "https://api.github.com/repos/owner/reponame/labels/backport-v2",
+      "name": "backport v2",
+      "color": "AB975B",
+      "default": false,
+      "description": ""
+    },
+    {
+      "id": 4901021057,
+      "node_id": "LA_kwDOImgs2354988AAAABJB-lgQ",
+      "url": "https://api.github.com/repos/owner/reponame/labels/backport-v3",
+      "name": "backport v3",
+      "color": "AB975B",
+      "default": false,
+      "description": ""
+    }
   ],
   "milestone": null,
   "draft": false,

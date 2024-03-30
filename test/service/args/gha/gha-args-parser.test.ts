@@ -296,7 +296,7 @@ describe("gha args parser", () => {
       "pull-request": "https://localhost/whatever/pulls/1"
     });
 
-    expect(() => parser.parse()).toThrowError("Missing option: pull request and target branches must be provided");
+    expect(() => parser.parse()).toThrowError("Missing option: target branch(es) or target regular expression must be provided");
   });
 
   test("invalid execution with missing mandatory target branch", () => {
@@ -304,7 +304,7 @@ describe("gha args parser", () => {
       "pull-request": "https://localhost/whatever/pulls/1"
     });
 
-    expect(() => parser.parse()).toThrowError("Missing option: pull request and target branches must be provided");
+    expect(() => parser.parse()).toThrowError("Missing option: target branch(es) or target regular expression must be provided");
   });
 
   test("invalid execution with missin mandatory pull request", () => {
@@ -312,6 +312,6 @@ describe("gha args parser", () => {
       "target-branch": "target,old",
     });
 
-    expect(() => parser.parse()).toThrowError("Missing option: pull request and target branches must be provided");
+    expect(() => parser.parse()).toThrowError("Missing option: pull request must be provided");
   });
 });

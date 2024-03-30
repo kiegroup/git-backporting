@@ -11,6 +11,7 @@ export default class CLIArgsParser extends ArgsParser {
       .version(version)
       .description(description)
       .option("-tb, --target-branch <branches>", "comma separated list of branches where changes must be backported to")
+      .option("-tbp, --target-branch-pattern <pattern>", "regular expression pattern to extract target branch(es) from pr labels, the branches will be extracted from the pattern's required `target` named capturing group")
       .option("-pr, --pull-request <pr-url>", "pull request url, e.g., https://github.com/kiegroup/git-backporting/pull/1")
       .option("-d, --dry-run", "if enabled the tool does not create any pull request nor push anything remotely")
       .option("-a, --auth <auth>", "git authentication string, if not provided fallback by looking for existing env variables like GITHUB_TOKEN")
@@ -49,6 +50,7 @@ export default class CLIArgsParser extends ArgsParser {
         auth: opts.auth,
         pullRequest: opts.pullRequest,
         targetBranch: opts.targetBranch,
+        targetBranchPattern: opts.targetBranchPattern,
         folder: opts.folder,
         gitClient: opts.gitClient,
         gitUser: opts.gitUser,

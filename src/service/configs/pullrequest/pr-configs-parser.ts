@@ -26,7 +26,17 @@ export default class PullRequestConfigsParser extends ConfigsParser {
 
     const folder: string = args.folder ?? this.getDefaultFolder();
 
-    const targetBranches: string[] = [...new Set(getAsCommaSeparatedList(args.targetBranch)!)];
+    let targetBranches: string[] = [];
+    if (args.targetBranchPattern) {
+      // parse labels to extract target branch(es)
+      targetBranches = this.getTargetBranchesFromLabels(args.targetBranchPattern, pr.labels);
+      if (targetBranches.length === 0) {
+        throw new Error(`Unable to extract target branches with regular expression "${args.targetBranchPattern}"`);
+      }
+    } else {
+      // target branch must be provided if targetRegExp is missing
+      targetBranches = [...new Set(getAsCommaSeparatedList(args.targetBranch!)!)];
+    }
     const bpBranchNames: string[] = [...new Set(args.bpBranchName ? (getAsCleanedCommaSeparatedList(args.bpBranchName) ?? []) : [])];
 
     if (bpBranchNames.length > 1 && bpBranchNames.length != targetBranches.length) {
@@ -50,6 +60,33 @@ export default class PullRequestConfigsParser extends ConfigsParser {
   
   private getDefaultFolder() {
     return "bp";
+  }
+
+  /**
+   * Parse the provided labels and return a list of target branches
+   * obtained by applying the provided pattern as regular expression extractor
+   * @param pattern reg exp pattern to extract target branch from label name
+   * @param labels list of labels to check
+   * @returns list of target branches
+   */
+  private getTargetBranchesFromLabels(pattern: string, labels: string[]): string[] {
+    this.logger.debug(`Extracting branches from [${labels}] using ${pattern}`);
+    const regExp = new RegExp(pattern);
+
+    const branches: string[] = [];
+    for (const l of labels) {
+      const result = regExp.exec(l);
+
+      if (result?.groups) {
+        const { target } = result.groups;
+        if (target){
+          branches.push(target);
+        }
+      }
+    }
+
+
+    return [...new Set(branches)];
   }
 
   /**
