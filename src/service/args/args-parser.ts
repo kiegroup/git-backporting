@@ -46,6 +46,7 @@ export default abstract class ArgsParser {
       squash: this.getOrDefault(args.squash, true),
       strategy: this.getOrDefault(args.strategy),
       strategyOption: this.getOrDefault(args.strategyOption),
+      cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
       comments: this.getOrDefault(args.comments)
     };
   }

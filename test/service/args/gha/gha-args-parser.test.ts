@@ -72,6 +72,7 @@ describe("gha args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("valid execution [override]", () => {
@@ -113,6 +114,7 @@ describe("gha args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("using config file", () => {
@@ -140,6 +142,7 @@ describe("gha args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("ignore custom options when using config file", () => {
@@ -182,6 +185,7 @@ describe("gha args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("override squash to false", () => {
@@ -235,6 +239,7 @@ describe("gha args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual("ort");
     expect(args.strategyOption).toEqual("ours");
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("additional pr comments", () => {
@@ -287,6 +292,7 @@ describe("gha args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
 

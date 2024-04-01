@@ -31,6 +31,7 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
       .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
       .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
+      .option("--cherry-pick-options <options>", "additional cherry-pick options")
       .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", getAsSemicolonSeparatedList)
       .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
   }
@@ -67,6 +68,7 @@ export default class CLIArgsParser extends ArgsParser {
         squash: opts.squash,
         strategy: opts.strategy,
         strategyOption: opts.strategyOption,
+        cherryPickOptions: opts.cherryPickOptions,
         comments: opts.comments,
       };
     }

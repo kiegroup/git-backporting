@@ -81,6 +81,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("with config file [default, short]", () => {
@@ -110,6 +111,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("valid execution [default, long]", () => {
@@ -141,6 +143,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("with config file [default, long]", () => {
@@ -170,6 +173,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("valid execution [override, short]", () => {
@@ -208,6 +212,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("valid execution [override, long]", () => {
@@ -264,6 +269,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("override using config file", () => {
@@ -293,6 +299,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("ignore custom option when config file is set", () => {
@@ -351,6 +358,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("override squash to false", () => {
@@ -383,7 +391,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(false);
   });
 
-  test("override cherry pick strategies", () => {
+  test("override cherry pick strategies and options", () => {
     addProcessArgs([
       "--target-branch",
       "target",
@@ -393,6 +401,8 @@ describe("cli args parser", () => {
       "ort",
       "--strategy-option",
       "ours",
+      "--cherry-pick-options",
+      "--allow-empty -x",
     ]);
 
     const args: Args = parser.parse();
@@ -416,6 +426,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual("ort");
     expect(args.strategyOption).toEqual("ours");
+    expect(args.cherryPickOptions).toEqual("--allow-empty -x");
   });
 
   test("additional pr comments", () => {
@@ -479,6 +490,7 @@ describe("cli args parser", () => {
     expect(args.squash).toEqual(true);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
+    expect(args.cherryPickOptions).toEqual(undefined);
   });
 
   test("invalid execution with empty target branch", () => {

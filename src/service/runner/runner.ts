@@ -147,7 +147,7 @@ export default class Runner {
     // 7. apply all changes to the new branch
     this.logger.debug("Cherry picking commits..");
     for (const sha of originalPR.commits!) {
-      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
+      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
     }
 
     if (!configs.dryRun) {
