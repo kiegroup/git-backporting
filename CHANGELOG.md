@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.7.0](https://github.com/kiegroup/git-backporting/compare/v4.6.0...v4.7.0) (2024-04-02)
+
+
+### Features
+
+* add --cherry-pick-options to add to all cherry-pick run ([#116](https://github.com/kiegroup/git-backporting/issues/116)) ([fe6be83](https://github.com/kiegroup/git-backporting/commit/fe6be83074476d91c1b038fd7f03c4868e96f113))
+* **gh75:** extract target branched from pr labels ([#112](https://github.com/kiegroup/git-backporting/issues/112)) ([53cc505](https://github.com/kiegroup/git-backporting/commit/53cc505f17630fb30daa70f75895323325cc0c7d))
+
+
+### Bug Fixes
+
+* return GitHub no-squash commits in order ([#115](https://github.com/kiegroup/git-backporting/issues/115)) ([6d9b9db](https://github.com/kiegroup/git-backporting/commit/6d9b9db590f9713e2b056bcc8e20fc3f3c70618b))
+
 ## [4.6.0](https://github.com/kiegroup/git-backporting/compare/v4.5.2...v4.6.0) (2024-03-25)
 
 
