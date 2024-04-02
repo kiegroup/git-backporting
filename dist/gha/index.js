@@ -68,6 +68,7 @@ class ArgsParser {
             squash: this.getOrDefault(args.squash, true),
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
+            cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
             comments: this.getOrDefault(args.comments)
         };
     }
@@ -208,6 +209,7 @@ class GHAArgsParser extends args_parser_1.default {
                 squash: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-squash")),
                 strategy: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy")),
                 strategyOption: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy-option")),
+                cherryPickOptions: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("cherry-pick-options")),
                 comments: (0, args_utils_1.getAsSemicolonSeparatedList)((0, core_1.getInput)("comments")),
             };
         }
@@ -327,6 +329,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
             mergeStrategy: args.strategy,
             mergeStrategyOption: args.strategyOption,
+            cherryPickOptions: args.cherryPickOptions,
             originalPullRequest: pr,
             backportPullRequests: this.generateBackportPullRequestsData(pr, args, targetBranches, bpBranchNames),
             git: {
@@ -523,9 +526,14 @@ class GitCLIService {
      * @param cwd repository in which the sha should be cherry picked to
      * @param sha commit sha
      */
-    async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs") {
+    async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions) {
         this.logger.info(`Cherry picking ${sha}`);
-        const options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, sha];
+        let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`];
+        if (cherryPickOptions !== undefined) {
+            options = options.concat(cherryPickOptions.split(" "));
+        }
+        options.push(sha);
+        this.logger.debug(`Cherry picking command git ${options}`);
         try {
             await this.git(cwd).raw(options);
         }
@@ -1429,7 +1437,7 @@ class Runner {
         // 7. apply all changes to the new branch
         this.logger.debug("Cherry picking commits..");
         for (const sha of originalPR.commits) {
-            await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption);
+            await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
         }
         if (!configs.dryRun) {
             // 8. push the new branch to origin

@@ -97,6 +97,10 @@ inputs:
     description: Cherry-pick merge strategy option
     required: false
     default: "theirs"
+  cherry-pick-options:
+    description: >
+      Additional cherry-pick options
+    required: false
   comments:
     description: >
       Semicolon separated list of additional comments to be posted to the backported pull request

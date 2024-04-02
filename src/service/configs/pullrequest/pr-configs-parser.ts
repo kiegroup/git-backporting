@@ -49,6 +49,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       folder: `${folder.startsWith("/") ? "" : process.cwd() + "/"}${args.folder ?? this.getDefaultFolder()}`,
       mergeStrategy: args.strategy,
       mergeStrategyOption: args.strategyOption,
+      cherryPickOptions: args.cherryPickOptions,
       originalPullRequest: pr,
       backportPullRequests: this.generateBackportPullRequestsData(pr, args, targetBranches, bpBranchNames),
       git: {

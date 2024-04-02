@@ -34,6 +34,7 @@ export default class GHAArgsParser extends ArgsParser {
         squash: !getAsBooleanOrDefault(getInput("no-squash")),
         strategy: getOrUndefined(getInput("strategy")),
         strategyOption: getOrUndefined(getInput("strategy-option")),
+        cherryPickOptions: getOrUndefined(getInput("cherry-pick-options")),
         comments: getAsSemicolonSeparatedList(getInput("comments")),
       };
     }

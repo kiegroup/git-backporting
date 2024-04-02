@@ -25,5 +25,6 @@ export interface Args {
   squash?: boolean, // if false use squashed/merged commit otherwise backport all commits as part of the pr
   strategy?: string, // cherry-pick merge strategy
   strategyOption?: string, // cherry-pick merge strategy option
+  cherryPickOptions?: string, // additional cherry-pick options
   comments?: string[], // additional comments to be posted
 }

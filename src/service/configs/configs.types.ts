@@ -17,6 +17,7 @@ export interface Configs {
   folder: string,
   mergeStrategy?: string, // cherry-pick merge strategy
   mergeStrategyOption?: string, // cherry-pick merge strategy option
+  cherryPickOptions?: string, // additional cherry-pick options
   originalPullRequest: GitPullRequest,
   backportPullRequests: BackportPullRequest[],
  }
