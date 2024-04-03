@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.7.1](https://github.com/kiegroup/git-backporting/compare/v4.7.0...v4.7.1) (2024-04-03)
+
+
+### Bug Fixes
+
+* gha input is target-branch-pattern, not target-reg-exp ([#120](https://github.com/kiegroup/git-backporting/issues/120)) ([e6f86f8](https://github.com/kiegroup/git-backporting/commit/e6f86f8f839bc86adf36fa0d3c8dcad6cab2f92e))
+
 ## [4.7.0](https://github.com/kiegroup/git-backporting/compare/v4.6.0...v4.7.0) (2024-04-02)
 
 
