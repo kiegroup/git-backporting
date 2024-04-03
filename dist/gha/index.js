@@ -192,7 +192,7 @@ class GHAArgsParser extends args_parser_1.default {
                 auth: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("auth")),
                 pullRequest: (0, core_1.getInput)("pull-request"),
                 targetBranch: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("target-branch")),
-                targetBranchPattern: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("target-reg-exp")),
+                targetBranchPattern: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("target-branch-pattern")),
                 folder: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("folder")),
                 gitClient: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-client")),
                 gitUser: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("git-user")),
