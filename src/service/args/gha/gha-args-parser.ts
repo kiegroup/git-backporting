@@ -17,7 +17,7 @@ export default class GHAArgsParser extends ArgsParser {
         auth: getOrUndefined(getInput("auth")),
         pullRequest: getInput("pull-request"),
         targetBranch: getOrUndefined(getInput("target-branch")),
-        targetBranchPattern: getOrUndefined(getInput("target-reg-exp")),
+        targetBranchPattern: getOrUndefined(getInput("target-branch-pattern")),
         folder: getOrUndefined(getInput("folder")),
         gitClient: getOrUndefined(getInput("git-client")),
         gitUser: getOrUndefined(getInput("git-user")),
