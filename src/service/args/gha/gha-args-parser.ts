@@ -1,7 +1,7 @@
 import ArgsParser from "@bp/service/args/args-parser";
 import { Args } from "@bp/service/args/args.types";
 import { getInput } from "@actions/core";
-import { getAsBooleanOrDefault, getAsCleanedCommaSeparatedList, getAsCommaSeparatedList, getAsSemicolonSeparatedList, getOrUndefined, readConfigFile } from "@bp/service/args/args-utils";
+import { getAsBooleanOrUndefined, getAsCleanedCommaSeparatedList, getAsCommaSeparatedList, getAsSemicolonSeparatedList, getOrUndefined, readConfigFile } from "@bp/service/args/args-utils";
 
 export default class GHAArgsParser extends ArgsParser {
 
@@ -13,7 +13,7 @@ export default class GHAArgsParser extends ArgsParser {
       args = readConfigFile(configFile);
     } else {
       args = {
-        dryRun: getAsBooleanOrDefault(getInput("dry-run")),
+        dryRun: getAsBooleanOrUndefined(getInput("dry-run")),
         auth: getOrUndefined(getInput("auth")),
         pullRequest: getInput("pull-request"),
         targetBranch: getOrUndefined(getInput("target-branch")),
@@ -28,15 +28,16 @@ export default class GHAArgsParser extends ArgsParser {
         bpBranchName: getOrUndefined(getInput("bp-branch-name")),
         reviewers: getAsCleanedCommaSeparatedList(getInput("reviewers")),
         assignees: getAsCleanedCommaSeparatedList(getInput("assignees")),
-        inheritReviewers: !getAsBooleanOrDefault(getInput("no-inherit-reviewers")),
+        inheritReviewers: !getAsBooleanOrUndefined(getInput("no-inherit-reviewers")),
         labels: getAsCommaSeparatedList(getInput("labels")),
-        inheritLabels: getAsBooleanOrDefault(getInput("inherit-labels")),
-        squash: !getAsBooleanOrDefault(getInput("no-squash")),
-        autoNoSquash: getAsBooleanOrDefault(getInput("auto-no-squash")),
+        inheritLabels: getAsBooleanOrUndefined(getInput("inherit-labels")),
+        squash: !getAsBooleanOrUndefined(getInput("no-squash")),
+        autoNoSquash: getAsBooleanOrUndefined(getInput("auto-no-squash")),
         strategy: getOrUndefined(getInput("strategy")),
         strategyOption: getOrUndefined(getInput("strategy-option")),
         cherryPickOptions: getOrUndefined(getInput("cherry-pick-options")),
         comments: getAsSemicolonSeparatedList(getInput("comments")),
+        enableErrorNotification: getAsBooleanOrUndefined(getInput("enable-err-notification")),
       };
     }
 

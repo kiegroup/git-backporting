@@ -1,7 +1,7 @@
 import { getAsCleanedCommaSeparatedList, getAsCommaSeparatedList } from "@bp/service/args/args-utils";
 import { Args } from "@bp/service/args/args.types";
 import ConfigsParser from "@bp/service/configs/configs-parser";
-import { Configs } from "@bp/service/configs/configs.types";
+import { Configs, MESSAGE_ERROR_PLACEHOLDER } from "@bp/service/configs/configs.types";
 import GitClient from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
@@ -58,12 +58,21 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       git: {
         user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
         email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
-      }
+      },
+      errorNotification: {
+        enabled: args.enableErrorNotification ?? false,
+        message: this.getDefaultErrorComment(),
+      },
     };
   }
   
   private getDefaultFolder() {
     return "bp";
+  }
+
+  private getDefaultErrorComment(): string {
+    // TODO: fetch from arg or set default with placeholder {{error}}
+    return `Backporting failed: ${MESSAGE_ERROR_PLACEHOLDER}`;
   }
 
   /**

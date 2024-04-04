@@ -158,6 +158,22 @@ export default class GitHubClient implements GitClient {
     return data.html_url;
   }
 
+  async createPullRequestComment(prUrl: string, comment: string): Promise<string> {
+    const { owner, project, id } = this.extractPullRequestData(prUrl);
+    const { data } = await this.octokit.issues.createComment({
+      owner: owner,
+      repo: project,
+      issue_number: id,
+      body: comment
+    });
+
+    if (!data) {
+      throw new Error("Pull request comment creation failed");
+    }
+
+    return data.url;
+  }
+
   // UTILS
 
   /**

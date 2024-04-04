@@ -70,7 +70,8 @@ class ArgsParser {
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
             cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
-            comments: this.getOrDefault(args.comments)
+            comments: this.getOrDefault(args.comments),
+            enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
         };
     }
 }
@@ -108,7 +109,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getAsBooleanOrDefault = exports.getAsSemicolonSeparatedList = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
+exports.getAsBooleanOrUndefined = exports.getAsSemicolonSeparatedList = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 /**
  * Parse the input configuation string as json object and
@@ -159,11 +160,11 @@ function getAsSemicolonSeparatedList(value) {
     return trimmed !== "" ? trimmed.split(";").map(v => v.trim()) : undefined;
 }
 exports.getAsSemicolonSeparatedList = getAsSemicolonSeparatedList;
-function getAsBooleanOrDefault(value) {
+function getAsBooleanOrUndefined(value) {
     const trimmed = value.trim();
     return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
 }
-exports.getAsBooleanOrDefault = getAsBooleanOrDefault;
+exports.getAsBooleanOrUndefined = getAsBooleanOrUndefined;
 
 
 /***/ }),
@@ -204,12 +205,13 @@ class CLIArgsParser extends args_parser_1.default {
             .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request")
             .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", args_utils_1.getAsCommaSeparatedList)
             .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
-            .option("--no-squash", "Backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch")
-            .option("--auto-no-squash", "If the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit.")
+            .option("--no-squash", "backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch")
+            .option("--auto-no-squash", "if the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit.")
             .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
             .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
             .option("--cherry-pick-options <options>", "additional cherry-pick options")
             .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", args_utils_1.getAsSemicolonSeparatedList)
+            .option("--enable-err-notification", "if true, enable the error notification as comment on the original pull request")
             .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
     }
     readArgs() {
@@ -247,6 +249,7 @@ class CLIArgsParser extends args_parser_1.default {
                 strategyOption: opts.strategyOption,
                 cherryPickOptions: opts.cherryPickOptions,
                 comments: opts.comments,
+                enableErrorNotification: opts.enableErrNotification,
             };
         }
         return args;
@@ -300,7 +303,8 @@ exports["default"] = ConfigsParser;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthTokenId = void 0;
+exports.AuthTokenId = exports.MESSAGE_ERROR_PLACEHOLDER = void 0;
+exports.MESSAGE_ERROR_PLACEHOLDER = "{{error}}";
 var AuthTokenId;
 (function (AuthTokenId) {
     // github specific token
@@ -327,6 +331,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const args_utils_1 = __nccwpck_require__(8048);
 const configs_parser_1 = __importDefault(__nccwpck_require__(5799));
+const configs_types_1 = __nccwpck_require__(4753);
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
     constructor() {
@@ -374,11 +379,19 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             git: {
                 user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
                 email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
-            }
+            },
+            errorNotification: {
+                enabled: args.enableErrorNotification ?? false,
+                message: this.getDefaultErrorComment(),
+            },
         };
     }
     getDefaultFolder() {
         return "bp";
+    }
+    getDefaultErrorComment() {
+        // TODO: fetch from arg or set default with placeholder {{error}}
+        return `Backporting failed: ${configs_types_1.MESSAGE_ERROR_PLACEHOLDER}`;
     }
     /**
      * Parse the provided labels and return a list of target branches
@@ -934,6 +947,19 @@ class GitHubClient {
         await Promise.all(promises);
         return data.html_url;
     }
+    async createPullRequestComment(prUrl, comment) {
+        const { owner, project, id } = this.extractPullRequestData(prUrl);
+        const { data } = await this.octokit.issues.createComment({
+            owner: owner,
+            repo: project,
+            issue_number: id,
+            body: comment
+        });
+        if (!data) {
+            throw new Error("Pull request comment creation failed");
+        }
+        return data.url;
+    }
     // UTILS
     /**
      * Extract repository owner and project from the pull request url
@@ -1093,7 +1119,7 @@ class GitLabClient {
         const projectId = this.getProjectId(namespace, repo);
         const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
         if (squash === undefined) {
-            squash = (0, git_util_1.inferSquash)(data.state == "opened", data.squash_commit_sha);
+            squash = (0, git_util_1.inferSquash)(data.state === "opened", data.squash_commit_sha);
         }
         const commits = [];
         if (!squash) {
@@ -1175,6 +1201,11 @@ class GitLabClient {
         await Promise.all(promises);
         return mr.web_url;
     }
+    // TODO: implement createPullRequestComment
+    async createPullRequestComment(prUrl, comment) {
+        throw new Error("Method not implemented.");
+    }
+    // UTILS
     /**
      * Retrieve a gitlab user given its username
      * @param username
@@ -1322,6 +1353,9 @@ class ConsoleLoggerService {
     setContext(newContext) {
         this.context = newContext;
     }
+    getContext() {
+        return this.context;
+    }
     clearContext() {
         this.context = undefined;
     }
@@ -1400,6 +1434,28 @@ exports["default"] = Logger;
 
 /***/ }),
 
+/***/ 9632:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.injectError = void 0;
+const configs_types_1 = __nccwpck_require__(4753);
+/**
+ * Inject the error message in the provided `message`.
+ * This is inject in place of the MESSAGE_ERROR_PLACEHOLDER placeholder
+ * @param message string that needs to be updated
+ * @param errMsg the error message that needs to be injected
+ */
+const injectError = (message, errMsg) => {
+    return message.replace(configs_types_1.MESSAGE_ERROR_PLACEHOLDER, errMsg);
+};
+exports.injectError = injectError;
+
+
+/***/ }),
+
 /***/ 8810:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -1415,6 +1471,7 @@ const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const git_util_1 = __nccwpck_require__(9080);
+const runner_util_1 = __nccwpck_require__(9632);
 /**
  * Main runner implementation, it implements the core logic flow
  */
@@ -1479,6 +1536,11 @@ class Runner {
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
+                if (configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+                    // notify the failure as comment in the original pull request
+                    const comment = (0, runner_util_1.injectError)(configs.errorNotification.message, error);
+                    gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
+                }
                 failures.push(error);
             }
         }

@@ -28,12 +28,13 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request")
       .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", getAsCommaSeparatedList)
       .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
-      .option("--no-squash", "Backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch")
-      .option("--auto-no-squash", "If the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit.")
+      .option("--no-squash", "backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch")
+      .option("--auto-no-squash", "if the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit.")
       .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
       .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
       .option("--cherry-pick-options <options>", "additional cherry-pick options")
       .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", getAsSemicolonSeparatedList)
+      .option("--enable-err-notification", "if true, enable the error notification as comment on the original pull request")
       .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
   }
 
@@ -72,6 +73,7 @@ export default class CLIArgsParser extends ArgsParser {
         strategyOption: opts.strategyOption,
         cherryPickOptions: opts.cherryPickOptions,
         comments: opts.comments,
+        enableErrorNotification: opts.enableErrNotification,
       };
     }
 

@@ -5,6 +5,8 @@ export default interface LoggerService {
 
   setContext(newContext: string): void;
 
+  getContext(): string | undefined;
+
   clearContext(): void;
 
   trace(message: string): void;

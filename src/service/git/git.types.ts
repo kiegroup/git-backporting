@@ -1,7 +1,7 @@
 export interface GitPullRequest {
   number?: number,
   author: string,
-  url?: string,
+  url: string,
   htmlUrl?: string,
   state?: GitRepoState,
   merged?: boolean,

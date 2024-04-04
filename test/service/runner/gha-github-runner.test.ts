@@ -30,6 +30,7 @@ const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
 
 jest.mock("@bp/service/git/git-cli");
 jest.spyOn(GitHubClient.prototype, "createPullRequest");
+jest.spyOn(GitHubClient.prototype, "createPullRequestComment");
 jest.spyOn(GitClientFactory, "getOrCreate");
 
 let parser: ArgsParser;
@@ -87,6 +88,7 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("without dry run", async () => {

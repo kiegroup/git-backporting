@@ -2,10 +2,17 @@
 
 import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
 
+export const MESSAGE_ERROR_PLACEHOLDER = "{{error}}";
+
 export interface LocalGit {
   user: string, // local git user
   email: string, // local git email
 } 
+
+export interface ErrorNotification {
+  enabled: boolean, // if the error notification is enabled
+  message: string, // notification message, placeholder {{error}} will be replaced with actual error
+}
 
 /**
  * Internal configuration object
@@ -20,6 +27,7 @@ export interface Configs {
   cherryPickOptions?: string, // additional cherry-pick options
   originalPullRequest: GitPullRequest,
   backportPullRequests: BackportPullRequest[],
+  errorNotification: ErrorNotification,
  }
 
 export enum AuthTokenId {

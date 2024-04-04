@@ -30,6 +30,7 @@ const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
 
 jest.mock("@bp/service/git/git-cli");
 jest.spyOn(GitHubClient.prototype, "createPullRequest");
+jest.spyOn(GitHubClient.prototype, "createPullRequestComment");
 jest.spyOn(GitClientFactory, "getOrCreate");
 
 let parser: ArgsParser;
@@ -94,6 +95,7 @@ describe("cli runner", () => {
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("overriding author", async () => {
@@ -287,6 +289,7 @@ describe("cli runner", () => {
       }
     );
     expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("closed and not merged pull request", async () => {
@@ -1156,6 +1159,7 @@ describe("cli runner", () => {
         comments: [],
     });
     expect(GitHubClient.prototype.createPullRequest).toThrowError();
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("auth using GITHUB_TOKEN takes precedence over GIT_TOKEN env variable", async () => {
@@ -1230,5 +1234,97 @@ describe("cli runner", () => {
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "prod");
+  });
+
+  test("with multiple target branches, one failure and error notification enabled", async () => {
+    jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((backport: BackportPullRequest) => {
+      
+      throw new Error(`Mocked error: ${backport.base}`);
+    });
+
+    addProcessArgs([
+      "-tb",
+      "v1, v2, v3",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "-f",
+      "/tmp/folder",
+      "--bp-branch-name",
+      "custom-failure-head",
+      "--enable-err-notification",
+    ]);
+    
+    await expect(() => runner.execute()).rejects.toThrowError("Failure occurred during one of the backports: [Error: Mocked error: v1 ; Error: Mocked error: v2 ; Error: Mocked error: v3]");
+
+    const cwd = "/tmp/folder";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v3");
+    
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v3");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "custom-failure-head-v1", 
+        base: "v1", 
+        title: "[v1] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "custom-failure-head-v2", 
+        base: "v2", 
+        title: "[v2] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "owner", 
+        repo: "reponame", 
+        head: "custom-failure-head-v3", 
+        base: "v3", 
+        title: "[v3] PR Title", 
+        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        reviewers: ["gh-user", "that-s-a-user"],
+        assignees: [],
+        labels: [],
+        comments: [],
+    });
+    expect(GitHubClient.prototype.createPullRequest).toThrowError();
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v1");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v2");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v3");
   });
 });

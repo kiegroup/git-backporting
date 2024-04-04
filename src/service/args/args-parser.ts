@@ -48,7 +48,8 @@ export default abstract class ArgsParser {
       strategy: this.getOrDefault(args.strategy),
       strategyOption: this.getOrDefault(args.strategyOption),
       cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
-      comments: this.getOrDefault(args.comments)
+      comments: this.getOrDefault(args.comments),
+      enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
     };
   }
 }

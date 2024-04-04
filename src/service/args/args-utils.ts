@@ -50,7 +50,7 @@ export function getAsSemicolonSeparatedList(value: string): string[] | undefined
   return trimmed !== "" ? trimmed.split(";").map(v => v.trim()) : undefined; 
 }
 
-export function getAsBooleanOrDefault(value: string): boolean | undefined {
+export function getAsBooleanOrUndefined(value: string): boolean | undefined {
   const trimmed = value.trim();
   return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
 }

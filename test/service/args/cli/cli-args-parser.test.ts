@@ -79,9 +79,11 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.autoNoSquash).toEqual(false);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
     expect(args.cherryPickOptions).toEqual(undefined);
+    expect(args.enableErrorNotification).toEqual(false);
   });
 
   test("with config file [default, short]", () => {
@@ -109,9 +111,11 @@ describe("cli args parser", () => {
     expect(args.labels).toEqual([]);
     expect(args.inheritLabels).toEqual(false);
     expect(args.squash).toEqual(true);
+    expect(args.autoNoSquash).toEqual(false);
     expect(args.strategy).toEqual(undefined);
     expect(args.strategyOption).toEqual(undefined);
     expect(args.cherryPickOptions).toEqual(undefined);
+    expect(args.enableErrorNotification).toEqual(false);
   });
 
   test("valid execution [default, long]", () => {
@@ -520,5 +524,18 @@ describe("cli args parser", () => {
     ]);
 
     expect(() => parser.parse()).toThrowError("Missing option: pull request must be provided");
+  });
+
+  test("enable error notification flag", () => {
+    addProcessArgs([
+      "-tb",
+      "target, old",
+      "-pr",
+      "https://localhost/whatever/pulls/1",
+      "--enable-err-notification",
+    ]);
+
+    const args: Args = parser.parse();
+    expect(args.enableErrorNotification).toEqual(true);
   });
 });

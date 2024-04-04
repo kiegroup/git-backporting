@@ -162,6 +162,13 @@ export default class GitLabClient implements GitClient {
     return mr.web_url;
   }
 
+  // TODO: implement createPullRequestComment
+  async createPullRequestComment(prUrl: string, comment: string): Promise<string> {
+    throw new Error("Method not implemented.");
+  }
+
+  // UTILS
+
   /**
    * Retrieve a gitlab user given its username
    * @param username 

@@ -28,4 +28,5 @@ export interface Args {
   strategyOption?: string, // cherry-pick merge strategy option
   cherryPickOptions?: string, // additional cherry-pick options
   comments?: string[], // additional comments to be posted
+  enableErrorNotification?: boolean, // enable the error notification on original pull request
 }

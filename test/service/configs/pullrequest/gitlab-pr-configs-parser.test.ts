@@ -144,6 +144,10 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       comments: [],
     });
+    expect(configs.errorNotification).toEqual({
+      "enabled": false,
+      "message": "Backporting failed: {{error}}"
+    });
   });
 
 
@@ -880,6 +884,28 @@ describe("gitlab merge request config parser", () => {
       assignees: ["user3", "user4"],
       labels: [],
       comments: ["First comment", "Second comment"],
+    });
+  });
+
+  test("enable error notification message", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      enableErrorNotification: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, undefined);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []); 
+
+    expect(configs.errorNotification).toEqual({
+      "enabled": true,
+      "message": "Backporting failed: {{error}}",
     });
   });
 });
