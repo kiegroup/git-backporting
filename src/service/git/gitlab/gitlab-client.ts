@@ -1,5 +1,6 @@
 import LoggerService from "@bp/service/logger/logger-service";
 import GitClient from "@bp/service/git/git-client";
+import { inferSquash } from "@bp/service/git/git-util";
 import { GitPullRequest, BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { CommitSchema, MergeRequestSchema, UserSchema } from "@gitbeaker/rest";
@@ -45,9 +46,13 @@ export default class GitLabClient implements GitClient {
   // READ
 
   // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
-  async getPullRequest(namespace: string, repo: string, mrNumber: number, squash = true): Promise<GitPullRequest> {
+  async getPullRequest(namespace: string, repo: string, mrNumber: number, squash: boolean | undefined): Promise<GitPullRequest> {
     const projectId = this.getProjectId(namespace, repo);
     const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
+
+    if (squash === undefined) {
+      squash = inferSquash(data.state === "opened", data.squash_commit_sha);
+    }
 
     const commits: string[] = [];
     if (!squash) {
@@ -65,7 +70,7 @@ export default class GitLabClient implements GitClient {
     return this.mapper.mapPullRequest(data as MergeRequestSchema, commits);
   }
 
-  getPullRequestFromUrl(mrUrl: string, squash = true): Promise<GitPullRequest> {
+  getPullRequestFromUrl(mrUrl: string, squash: boolean | undefined): Promise<GitPullRequest> {
     const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
     return this.getPullRequest(namespace, project, id, squash);
   }

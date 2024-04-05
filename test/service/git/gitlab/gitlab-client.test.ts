@@ -31,7 +31,7 @@ describe("github service", () => {
   });
   
   test("get merged pull request", async () => {
-    const res: GitPullRequest = await gitClient.getPullRequest("superuser", "backporting-example", 1);
+    const res: GitPullRequest = await gitClient.getPullRequest("superuser", "backporting-example", 1, true);
     
     // check content
     expect(res.sourceRepo).toEqual({
@@ -56,7 +56,7 @@ describe("github service", () => {
   });
 
   test("get open pull request", async () => {
-    const res: GitPullRequest = await gitClient.getPullRequest("superuser", "backporting-example", 2);
+    const res: GitPullRequest = await gitClient.getPullRequest("superuser", "backporting-example", 2, true);
     expect(res.sourceRepo).toEqual({
       owner: "superuser",
       project: "backporting-example",
@@ -325,7 +325,7 @@ describe("github service", () => {
   });
 
   test("get pull request for nested namespaces", async () => {
-    const res: GitPullRequest = await gitClient.getPullRequestFromUrl("https://my.gitlab.host.com/mysuperorg/6/mysuperproduct/mysuperunit/backporting-example/-/merge_requests/4");
+    const res: GitPullRequest = await gitClient.getPullRequestFromUrl("https://my.gitlab.host.com/mysuperorg/6/mysuperproduct/mysuperunit/backporting-example/-/merge_requests/4", true);
     
     // check content
     expect(res.sourceRepo).toEqual({

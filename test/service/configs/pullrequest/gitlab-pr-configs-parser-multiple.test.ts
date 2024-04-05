@@ -51,6 +51,7 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       inheritLabels: false,
       comments: [],
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -123,6 +124,7 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       inheritLabels: false,
       comments: [],
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -195,7 +197,8 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       inheritLabels: false,
       comments: [],
-      bpBranchName: "custom-branch"
+      bpBranchName: "custom-branch",
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -268,7 +271,8 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       inheritLabels: false,
       comments: [],
-      bpBranchName: "custom1, custom2, custom3"
+      bpBranchName: "custom1, custom2, custom3",
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);

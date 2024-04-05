@@ -300,7 +300,7 @@ describe("cli runner", () => {
     await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged");
   });
 
-  test("open pull request", async () => {
+  test("open pull request simple", async () => {
     addProcessArgs([
       "-tb",
       "target",
@@ -342,6 +342,55 @@ describe("cli runner", () => {
         assignees: [],
         labels: [],
         comments: [],
+      }
+    );
+    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+  });
+
+  test("open pull request with --auto-no-squash", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/4444",
+      "--auto-no-squash",
+    ]);
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/4444/head:pr/4444");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+	owner: "owner",
+	repo: "reponame",
+	head: "bp-target-0404fb9-11da4e3",
+	base: "target",
+	title: "[target] PR Title",
+	body: "**Backport:** https://github.com/owner/reponame/pull/4444\r\n\r\nPlease review and merge",
+	reviewers: ["gh-user"],
+	assignees: [],
+	labels: [],
+	comments: [],
       }
     );
     expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);

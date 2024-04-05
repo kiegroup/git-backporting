@@ -66,6 +66,7 @@ class ArgsParser {
             labels: this.getOrDefault(args.labels, []),
             inheritLabels: this.getOrDefault(args.inheritLabels, false),
             squash: this.getOrDefault(args.squash, true),
+            autoNoSquash: this.getOrDefault(args.autoNoSquash, false),
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
             cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
@@ -203,7 +204,8 @@ class CLIArgsParser extends args_parser_1.default {
             .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request")
             .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", args_utils_1.getAsCommaSeparatedList)
             .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
-            .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
+            .option("--no-squash", "Backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch")
+            .option("--auto-no-squash", "If the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit.")
             .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
             .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
             .option("--cherry-pick-options <options>", "additional cherry-pick options")
@@ -240,6 +242,7 @@ class CLIArgsParser extends args_parser_1.default {
                 labels: opts.labels,
                 inheritLabels: opts.inheritLabels,
                 squash: opts.squash,
+                autoNoSquash: opts.autoNoSquash,
                 strategy: opts.strategy,
                 strategyOption: opts.strategyOption,
                 cherryPickOptions: opts.cherryPickOptions,
@@ -332,6 +335,9 @@ class PullRequestConfigsParser extends configs_parser_1.default {
     }
     async parse(args) {
         let pr;
+        if (args.autoNoSquash) {
+            args.squash = undefined;
+        }
         try {
             pr = await this.gitClient.getPullRequestFromUrl(args.pullRequest, args.squash);
         }
@@ -661,12 +667,16 @@ GitClientFactory.logger = logger_service_factory_1.default.getLogger();
 /***/ }),
 
 /***/ 9080:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getEnv = exports.getGitTokenFromEnv = exports.inferGitApiUrl = exports.inferGitClient = void 0;
+exports.getEnv = exports.getGitTokenFromEnv = exports.inferSquash = exports.inferGitApiUrl = exports.inferGitClient = void 0;
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const git_types_1 = __nccwpck_require__(750);
 const configs_types_1 = __nccwpck_require__(4753);
 const PUBLIC_GITHUB_URL = "https://github.com";
@@ -706,6 +716,30 @@ const inferGitApiUrl = (prUrl, apiVersion = "v4") => {
     return `${baseUrl}/api/${apiVersion}`;
 };
 exports.inferGitApiUrl = inferGitApiUrl;
+/**
+ * Infer the value of the squash option
+ * @param open true if the pull/merge request is still open
+ * @param squash_commit undefined if the pull/merge request was merged, the sha of the squashed commit if it was squashed
+ * @returns true if a single commit must be cherry-picked, false if all merged commits must be cherry-picked
+ */
+const inferSquash = (open, squash_commit) => {
+    const logger = logger_service_factory_1.default.getLogger();
+    if (open) {
+        logger.debug("cherry-pick all commits because they have not been merged (or squashed) in the base branch yet");
+        return false;
+    }
+    else {
+        if (squash_commit !== undefined) {
+            logger.debug(`cherry-pick the squashed commit ${squash_commit}`);
+            return true;
+        }
+        else {
+            logger.debug("cherry-pick the merged commit(s)");
+            return false;
+        }
+    }
+};
+exports.inferSquash = inferSquash;
 /**
  * Retrieve the git token from env variable, the default is taken from GIT_TOKEN env.
  * All specific git env variable have precedence and override the default one.
@@ -781,6 +815,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const git_util_1 = __nccwpck_require__(9080);
 const git_types_1 = __nccwpck_require__(750);
 const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
@@ -803,13 +838,28 @@ class GitHubClient {
     getDefaultGitEmail() {
         return "noreply@github.com";
     }
-    async getPullRequest(owner, repo, prNumber, squash = true) {
+    async getPullRequest(owner, repo, prNumber, squash) {
         this.logger.debug(`Fetching pull request ${owner}/${repo}/${prNumber}`);
         const { data } = await this.octokit.rest.pulls.get({
             owner: owner,
             repo: repo,
             pull_number: prNumber,
         });
+        if (squash === undefined) {
+            let commit_sha = undefined;
+            const open = data.state == "open";
+            if (!open) {
+                const commit = await this.octokit.rest.git.getCommit({
+                    owner: owner,
+                    repo: repo,
+                    commit_sha: data.merge_commit_sha,
+                });
+                if (commit.data.parents.length === 1) {
+                    commit_sha = data.merge_commit_sha;
+                }
+            }
+            squash = (0, git_util_1.inferSquash)(open, commit_sha);
+        }
         const commits = [];
         if (!squash) {
             // fetch all commits
@@ -827,7 +877,7 @@ class GitHubClient {
         }
         return this.mapper.mapPullRequest(data, commits);
     }
-    async getPullRequestFromUrl(prUrl, squash = true) {
+    async getPullRequestFromUrl(prUrl, squash) {
         const { owner, project, id } = this.extractPullRequestData(prUrl);
         return this.getPullRequest(owner, project, id, squash);
     }
@@ -1006,6 +1056,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const git_util_1 = __nccwpck_require__(9080);
 const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const gitlab_mapper_1 = __importDefault(__nccwpck_require__(2675));
@@ -1038,9 +1089,12 @@ class GitLabClient {
     }
     // READ
     // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
-    async getPullRequest(namespace, repo, mrNumber, squash = true) {
+    async getPullRequest(namespace, repo, mrNumber, squash) {
         const projectId = this.getProjectId(namespace, repo);
         const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
+        if (squash === undefined) {
+            squash = (0, git_util_1.inferSquash)(data.state == "opened", data.squash_commit_sha);
+        }
         const commits = [];
         if (!squash) {
             // fetch all commits
@@ -1055,7 +1109,7 @@ class GitLabClient {
         }
         return this.mapper.mapPullRequest(data, commits);
     }
-    getPullRequestFromUrl(mrUrl, squash = true) {
+    getPullRequestFromUrl(mrUrl, squash) {
         const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
         return this.getPullRequest(namespace, project, id, squash);
     }

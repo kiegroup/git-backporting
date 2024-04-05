@@ -28,7 +28,8 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--no-inherit-reviewers", "if provided and reviewers option is empty then inherit them from original pull request")
       .option("--labels <labels>", "comma separated list of labels to be assigned to the backported pull request", getAsCommaSeparatedList)
       .option("--inherit-labels", "if true the backported pull request will inherit labels from the original one")
-      .option("--no-squash", "if provided the tool will backport all commits as part of the pull request")
+      .option("--no-squash", "Backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch")
+      .option("--auto-no-squash", "If the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit.")
       .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
       .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
       .option("--cherry-pick-options <options>", "additional cherry-pick options")
@@ -66,6 +67,7 @@ export default class CLIArgsParser extends ArgsParser {
         labels: opts.labels,
         inheritLabels: opts.inheritLabels,
         squash: opts.squash,
+        autoNoSquash: opts.autoNoSquash,
         strategy: opts.strategy,
         strategyOption: opts.strategyOption,
         cherryPickOptions: opts.cherryPickOptions,

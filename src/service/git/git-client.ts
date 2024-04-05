@@ -25,7 +25,7 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
    * @param squash if true keep just one single commit, otherwise get the full list
    * @returns {Promise<PullRequest>}
    */
-  getPullRequest(owner: string, repo: string, prNumber: number, squash: boolean): Promise<GitPullRequest>;
+  getPullRequest(owner: string, repo: string, prNumber: number, squash: boolean | undefined): Promise<GitPullRequest>;
 
   /**
    * Get a pull request object from the underneath git service
@@ -33,7 +33,7 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
    * @param squash if true keep just one single commit, otherwise get the full list
    * @returns {Promise<PullRequest>}
    */
-   getPullRequestFromUrl(prUrl: string, squash: boolean): Promise<GitPullRequest>;
+   getPullRequestFromUrl(prUrl: string, squash: boolean | undefined): Promise<GitPullRequest>;
 
   // WRITE
 

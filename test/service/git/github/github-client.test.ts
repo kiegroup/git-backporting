@@ -22,7 +22,7 @@ describe("github service", () => {
   });
 
   test("get pull request: success", async () => {
-    const res: GitPullRequest = await gitClient.getPullRequest(TARGET_OWNER, REPO, MERGED_PR_FIXTURE.number);
+    const res: GitPullRequest = await gitClient.getPullRequest(TARGET_OWNER, REPO, MERGED_PR_FIXTURE.number, true);
     expect(res.sourceRepo).toEqual({
       owner: "fork",
       project: "reponame",
