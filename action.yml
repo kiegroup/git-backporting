@@ -109,7 +109,7 @@ inputs:
     description: >
       Semicolon separated list of additional comments to be posted to the backported pull request
     required: false
-  no-squash:
+  enable-err-notification:
     description: >
       If true, enable the error notification as comment on the original pull request
     required: false
