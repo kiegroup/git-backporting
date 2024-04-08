@@ -38,6 +38,11 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
   // WRITE
 
   /**
+   * Add a comment about a failed backport.
+   */
+   commentError(prUrl: string, message: string): Promise<void>;
+
+  /**
    * Create a new pull request on the underneath git service
    * @param backport backport pull request data
    * @returns {Promise<string>} the pull request url

@@ -91,7 +91,11 @@ export default class Runner {
           gitCli: git,
         });
       } catch(error) {
-        this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
+	const error = `Something went wrong backporting to ${pr.base}: ${error}`;
+	if (!args.dryRun) {
+	  gitApi.commentError(configs.originalPullRequest.url, error)
+	}
+        this.logger.error(error);
         failures.push(error as string);
       }
     }

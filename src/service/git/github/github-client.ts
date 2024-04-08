@@ -141,6 +141,16 @@ export default class GitHubClient implements GitClient {
     return data.html_url;
   }
 
+  async commentError(prUrl: string, message: string): Promise<void> {
+    const { owner, project, id } = this.extractPullRequestData(prUrl);
+    await this.octokit.rest.issues.createComment({
+      owner: owner,
+      repo: repo,
+      issue_number: id,
+      body: message,
+    });
+  }
+
   // UTILS
 
   /**
