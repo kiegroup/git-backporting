@@ -85,10 +85,14 @@ inputs:
     default: "false"
   no-squash:
     description: >
-      If set to true the tool will backport all commits as part of the pull request 
-      instead of the suqashed one
+      Backport all commits found in the pull request.
+      The default behavior is to only backport the first commit that was merged in the base branch.
     required: false
-    default: "false"
+  auto-no-squash:
+    description: >
+      If the pull request was merged or is open, backport all commits.
+      If the pull request commits were squashed, backport the squashed commit.
+    required: false
   strategy:
     description: Cherry-pick merge strategy
     required: false

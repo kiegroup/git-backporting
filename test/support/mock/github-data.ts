@@ -1832,6 +1832,14 @@ export const MULT_COMMITS_PR_FIXTURE = {
   "changed_files": 2
 };
 
+export const GITHUB_GET_COMMIT = {
+  "parents": [
+    {
+      "sha": "SHA"
+    }
+  ]
+};
+
 export const MULT_COMMITS_PR_COMMITS = [
   {
     "sha": "0404fb922ab75c3a8aecad5c97d9af388df04695",

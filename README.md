@@ -70,7 +70,13 @@ It works in this way: given the provided `pull/merge request` it infers the serv
 
 After that it clones the corresponding git repository, check out in the provided `target branch` and create a new branch from that (name automatically generated if not provided as option).
 
-By default the tool will try to cherry-pick the single squashed/merged commit into the newly created branch (please consider using `--no-squash` option if you want to cherry-pick all commits belonging to the provided pull request).
+By default the tool will try to cherry-pick the single squashed/merged commit into the newly created branch. The `--no-squash` and `--auto-no-squash` options control this behavior according the following table. 
+
+| No squash | Auto no squash |Behavior|
+|---|---|---|
+| unset/false | unset/false | cherry-pick a single commit, squashed or merged |
+| set/true | unset/false | cherry-pick all commits found in the the original pull/merge request|
+| (ignored) | set/true | cherry-pick all commits if the original pull/merge request was merged, a single commit if it was squashed |
 
 Based on the original pull request, creates a new one containing the backporting to the target branch. Note that most of these information can be overridden with appropriate CLI options or GHA inputs.
 
@@ -121,7 +127,8 @@ This tool comes with some inputs that allow users to override the default behavi
 | Backport Branch Names       | --bp-branch-name        | N            | Comma separated lists of the backporting pull request branch names, if they exceeds 250 chars they will be truncated                                                           | bp-{target-branch}-{sha1}...{shaN}       |
 | Labels       | --labels        | N            | Provide custom labels to be added to the backporting pull request                                                           | []       |
 | Inherit labels       | --inherit-labels        | N            | If enabled inherit lables from the original pull request                                                           | false       |
-| No squash       | --no-squash        | N            | If provided the backporting will try to backport all pull request commits without squashing                                                           | false       |
+| No squash       | --no-squash        | N            | Backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch. | |
+| Auto no squash  | --auto-no-squash   | N            | If the pull request was merged or is open, backport all commits. If the pull request commits were squashed, backport the squashed commit. | |
 | Strategy       | --strategy        | N            | Cherry pick merging strategy, see [git-merge](https://git-scm.com/docs/git-merge#_merge_strategies) doc for all possible values                                                           | "recursive"       |
 | Strategy Option       | --strategy-option        | N            | Cherry pick merging strategy option, see [git-merge](https://git-scm.com/docs/git-merge#_merge_strategies) doc for all possible values                                                           | "theirs"       |
 | Cherry-pick Options       | --cherry-pick-options        | N            | Additional cherry-pick options, see [git-cherry-pick](https://git-scm.com/docs/git-cherry-pick) doc for all possible values                                                           | "theirs"       |

@@ -1,4 +1,4 @@
-import { inferGitApiUrl, inferGitClient } from "@bp/service/git/git-util";
+import { inferGitApiUrl, inferGitClient, inferSquash } from "@bp/service/git/git-util";
 import { GitClientType } from "@bp/service/git/git.types";
 
 describe("check git utilities", () => {
@@ -53,5 +53,11 @@ describe("check git utilities", () => {
 
   test("check infer codeberg client", ()=> {
     expect(inferGitClient("https://codeberg.org/lampajr/backporting-example/pulls/1")).toStrictEqual(GitClientType.CODEBERG);
+  });
+
+  test("check inferSquash", ()=> {
+    expect(inferSquash(true, undefined)).toStrictEqual(false);
+    expect(inferSquash(false, "SHA")).toStrictEqual(true);
+    expect(inferSquash(false, undefined)).toStrictEqual(false);
   });
 });

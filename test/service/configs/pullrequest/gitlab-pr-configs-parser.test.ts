@@ -88,6 +88,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -158,6 +159,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -187,6 +189,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -243,6 +246,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      squash: true,
     };
 
     await expect(() => configParser.parseAndValidate(args)).rejects.toThrow("Provided pull request is closed and not merged");
@@ -262,6 +266,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -333,6 +338,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: ["user1", "user2"],
       assignees: ["user3", "user4"],
       inheritReviewers: true, // not taken into account
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -404,6 +410,7 @@ describe("gitlab merge request config parser", () => {
       reviewers: [],
       assignees: ["user3", "user4"],
       inheritReviewers: false,
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -477,6 +484,7 @@ describe("gitlab merge request config parser", () => {
       inheritReviewers: false,
       labels: ["custom-label", "backport-prod"], // also include the one inherited
       inheritLabels: true,
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -742,6 +750,7 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       inheritLabels: false,
       comments: ["First comment", "Second comment"],
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);
@@ -816,6 +825,7 @@ describe("gitlab merge request config parser", () => {
       labels: [],
       inheritLabels: false,
       comments: ["First comment", "Second comment"],
+      squash: true,
     };
 
     const configs: Configs = await configParser.parseAndValidate(args);

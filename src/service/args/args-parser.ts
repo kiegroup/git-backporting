@@ -44,6 +44,7 @@ export default abstract class ArgsParser {
       labels: this.getOrDefault(args.labels, []),
       inheritLabels: this.getOrDefault(args.inheritLabels, false),
       squash: this.getOrDefault(args.squash, true),
+      autoNoSquash: this.getOrDefault(args.autoNoSquash, false),
       strategy: this.getOrDefault(args.strategy),
       strategyOption: this.getOrDefault(args.strategyOption),
       cherryPickOptions: this.getOrDefault(args.cherryPickOptions),

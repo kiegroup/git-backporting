@@ -57,7 +57,7 @@ describe("github pull request config parser", () => {
     const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
@@ -129,7 +129,7 @@ describe("github pull request config parser", () => {
     const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
@@ -202,7 +202,7 @@ describe("github pull request config parser", () => {
     const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 
@@ -275,7 +275,7 @@ describe("github pull request config parser", () => {
     const configs: Configs = await configParser.parseAndValidate(args);
 
     expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
     expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
 

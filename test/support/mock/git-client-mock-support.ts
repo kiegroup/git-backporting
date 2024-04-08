@@ -1,6 +1,6 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
-import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER } from "./github-data";
+import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER, GITHUB_GET_COMMIT } from "./github-data";
 import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER, MERGED_SQUASHED_MR_COMMITS } from "./gitlab-data";
 
 // high number, for each test we are not expecting 
@@ -158,6 +158,17 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
     });
   
   mock.rest.pulls
+    .listCommits({
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: OPEN_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: MULT_COMMITS_PR_COMMITS
+    });
+
+  mock.rest.pulls
     .create()
     .reply({
       repeat: REPEAT,
@@ -198,6 +209,17 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       repeat: REPEAT,
       status: 201,
       data: {}
+    });
+
+  mock.rest.git
+    .getCommit({
+      owner: TARGET_OWNER,
+      repo: REPO,
+      commit_sha: "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc",
+    })
+    .reply({
+      status: 200,
+      data: GITHUB_GET_COMMIT,
     });
 
   // invalid requests

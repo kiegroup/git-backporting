@@ -1,4 +1,5 @@
 import GitClient from "@bp/service/git/git-client";
+import { inferSquash } from "@bp/service/git/git-util";
 import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
 import GitHubMapper from "@bp/service/git/github/github-mapper";
 import OctokitFactory from "@bp/service/git/github/octokit-factory";
@@ -37,13 +38,29 @@ export default class GitHubClient implements GitClient {
     return "noreply@github.com";
   }
 
-  async getPullRequest(owner: string, repo: string, prNumber: number, squash = true): Promise<GitPullRequest> {
+  async getPullRequest(owner: string, repo: string, prNumber: number, squash: boolean | undefined): Promise<GitPullRequest> {
     this.logger.debug(`Fetching pull request ${owner}/${repo}/${prNumber}`);
     const { data } = await this.octokit.rest.pulls.get({
       owner: owner,
       repo: repo,
       pull_number: prNumber,
     });
+
+    if (squash === undefined) {
+      let commit_sha: string | undefined = undefined;
+      const open: boolean = data.state == "open";
+      if (!open) {
+	const commit = await this.octokit.rest.git.getCommit({
+          owner: owner,
+          repo: repo,
+          commit_sha: (data.merge_commit_sha as string),
+	});
+        if (commit.data.parents.length === 1) {
+          commit_sha = (data.merge_commit_sha as string);
+        }
+      }
+      squash = inferSquash(open, commit_sha);
+    }
 
     const commits: string[] = [];
     if (!squash) {
@@ -64,7 +81,7 @@ export default class GitHubClient implements GitClient {
     return this.mapper.mapPullRequest(data as PullRequest, commits);
   }
 
-  async getPullRequestFromUrl(prUrl: string, squash = true): Promise<GitPullRequest> {
+  async getPullRequestFromUrl(prUrl: string, squash: boolean | undefined): Promise<GitPullRequest> {
     const { owner, project, id } = this.extractPullRequestData(prUrl);
     return this.getPullRequest(owner, project, id, squash);
   }
