@@ -913,17 +913,24 @@ class GitHubClient {
         return data.html_url;
     }
     async createPullRequestComment(prUrl, comment) {
-        const { owner, project, id } = this.extractPullRequestData(prUrl);
-        const { data } = await this.octokit.issues.createComment({
-            owner: owner,
-            repo: project,
-            issue_number: id,
-            body: comment
-        });
-        if (!data) {
-            throw new Error("Pull request comment creation failed");
+        let commentUrl = undefined;
+        try {
+            const { owner, project, id } = this.extractPullRequestData(prUrl);
+            const { data } = await this.octokit.issues.createComment({
+                owner: owner,
+                repo: project,
+                issue_number: id,
+                body: comment
+            });
+            if (!data) {
+                throw new Error("Pull request comment creation failed");
+            }
+            commentUrl = data.url;
         }
-        return data.url;
+        catch (error) {
+            this.logger.error(`Error creating comment on pull request ${prUrl}: ${error}`);
+        }
+        return commentUrl;
     }
     // UTILS
     /**
@@ -1166,9 +1173,23 @@ class GitLabClient {
         await Promise.all(promises);
         return mr.web_url;
     }
-    // TODO: implement createPullRequestComment
-    async createPullRequestComment(prUrl, comment) {
-        throw new Error("Method not implemented.");
+    // https://docs.gitlab.com/ee/api/notes.html#create-new-issue-note
+    async createPullRequestComment(mrUrl, comment) {
+        const commentUrl = undefined;
+        try {
+            const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
+            const projectId = this.getProjectId(namespace, project);
+            const { data } = await this.client.post(`/projects/${projectId}/issues/${id}/notes`, {
+                body: comment,
+            });
+            if (!data) {
+                throw new Error("Merge request comment creation failed");
+            }
+        }
+        catch (error) {
+            this.logger.error(`Error creating comment on merge request ${mrUrl}: ${error}`);
+        }
+        return commentUrl;
     }
     // UTILS
     /**

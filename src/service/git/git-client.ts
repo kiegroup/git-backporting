@@ -49,6 +49,6 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
    * @param prUrl pull request's URL
    * @param comment comment body
    */
-  createPullRequestComment(prUrl: string, comment: string): Promise<string>;
+  createPullRequestComment(prUrl: string, comment: string): Promise<string | undefined>;
 
 }

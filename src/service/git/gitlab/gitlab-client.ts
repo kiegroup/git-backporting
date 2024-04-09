@@ -162,9 +162,25 @@ export default class GitLabClient implements GitClient {
     return mr.web_url;
   }
 
-  // TODO: implement createPullRequestComment
-  async createPullRequestComment(prUrl: string, comment: string): Promise<string> {
-    throw new Error("Method not implemented.");
+  // https://docs.gitlab.com/ee/api/notes.html#create-new-issue-note
+  async createPullRequestComment(mrUrl: string, comment: string): Promise<string | undefined> {
+    const commentUrl: string | undefined = undefined;
+    try{
+      const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
+      const projectId = this.getProjectId(namespace, project);
+
+      const { data } = await this.client.post(`/projects/${projectId}/issues/${id}/notes`, {
+        body: comment,
+      });
+
+      if (!data) {
+        throw new Error("Merge request comment creation failed");
+      }
+    } catch(error) {
+      this.logger.error(`Error creating comment on merge request ${mrUrl}: ${error}`);
+    }
+    
+    return commentUrl;
   }
 
   // UTILS
