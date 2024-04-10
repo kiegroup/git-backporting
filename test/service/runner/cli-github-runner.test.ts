@@ -1327,4 +1327,51 @@ describe("cli runner", () => {
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v2");
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v3");
   });
+
+  test("with some failures and dry run enabled", async () => {
+    jest.spyOn(GitCLIService.prototype, "cherryPick").mockImplementation((cwd: string, sha: string) => {
+      throw new Error(`Forced error: ${sha}`);
+    });
+
+    addProcessArgs([
+      "-tb",
+      "v1, v2, v3",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "-f",
+      "/tmp/folder",
+      "--bp-branch-name",
+      "custom-failure-head",
+      "--enable-err-notification",
+      "--dry-run",
+    ]);
+
+    await expect(() => runner.execute()).rejects.toThrowError("Failure occurred during one of the backports: [Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc ; Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc ; Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc]");
+
+    const cwd = "/tmp/folder";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v3");
+
+    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toThrowError();
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
+
+    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+  });
 });

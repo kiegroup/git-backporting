@@ -1522,7 +1522,7 @@ class Runner {
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
-                if (configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+                if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
                     // notify the failure as comment in the original pull request
                     const comment = (0, runner_util_1.injectError)(configs.errorNotification.message, error);
                     gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
