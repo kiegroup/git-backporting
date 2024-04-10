@@ -16,6 +16,10 @@ export default class ConsoleLoggerService implements LoggerService {
     this.context = newContext;
   }
 
+  getContext(): string | undefined {
+    return this.context;
+  }
+
   clearContext() {
     this.context = undefined;
   }

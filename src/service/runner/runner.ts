@@ -9,6 +9,7 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { inferGitClient, inferGitApiUrl, getGitTokenFromEnv } from "@bp/service/git/git-util";
+import { injectError, injectTargetBranch } from "./runner-util";
 
 interface Git {
   gitClientType: GitClientType;
@@ -92,6 +93,12 @@ export default class Runner {
         });
       } catch(error) {
         this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
+        if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+          // notify the failure as comment in the original pull request
+          let comment = injectError(configs.errorNotification.message, error as string);
+          comment = injectTargetBranch(comment, pr.base);
+          await gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
+        }
         failures.push(error as string);
       }
     }
@@ -133,13 +140,12 @@ export default class Runner {
 
     // 5. create new branch from target one and checkout
     this.logger.debug("Creating local branch..");
-
     await git.gitCli.createLocalBranch(configs.folder, backportPR.head);
 
     // 6. fetch pull request remote if source owner != target owner or pull request still open
     if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner || 
         configs.originalPullRequest.state === "open") {
-          this.logger.debug("Fetching pull request remote..");
+      this.logger.debug("Fetching pull request remote..");
       const prefix = git.gitClientType === GitClientType.GITLAB ? "merge-requests" : "pull" ; // default is for gitlab
       await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
     }

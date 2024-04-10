@@ -133,6 +133,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Strategy Option       | --strategy-option        | N            | Cherry pick merging strategy option, see [git-merge](https://git-scm.com/docs/git-merge#_merge_strategies) doc for all possible values                                                           | "theirs"       |
 | Cherry-pick Options       | --cherry-pick-options        | N            | Additional cherry-pick options, see [git-cherry-pick](https://git-scm.com/docs/git-cherry-pick) doc for all possible values                                                           | "theirs"       |
 | Additional comments       | --comments        | N            | Semicolon separated list of additional comments to be posted to the backported pull request                                                           | []       |
+| Enable error notification       | --enable-err-notification        | N            | If true, enable the error notification as comment on the original pull request                                                           | false       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and (`target branch` or `target branch pattern`) are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).

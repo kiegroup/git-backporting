@@ -43,6 +43,7 @@ jest.mock("axios", () => {
 
 jest.mock("@bp/service/git/git-cli");
 jest.spyOn(GitLabClient.prototype, "createPullRequest");
+jest.spyOn(GitLabClient.prototype, "createPullRequestComment");
 jest.spyOn(GitClientFactory, "getOrCreate");
 
 let parser: ArgsParser;
@@ -98,6 +99,7 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(0);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("without dry run", async () => {

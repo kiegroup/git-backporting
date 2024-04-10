@@ -44,6 +44,7 @@ jest.mock("axios", () => {
 
 jest.mock("@bp/service/git/git-cli");
 jest.spyOn(GitLabClient.prototype, "createPullRequest");
+jest.spyOn(GitLabClient.prototype, "createPullRequestComment");
 jest.spyOn(GitClientFactory, "getOrCreate");
 
 
@@ -105,6 +106,7 @@ describe("cli runner", () => {
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(0);
     expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("dry run with relative folder", async () => {
@@ -199,6 +201,7 @@ describe("cli runner", () => {
     ]);
 
     await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged");
+    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
   test("merged pull request", async () => {
@@ -246,6 +249,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
+    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
 

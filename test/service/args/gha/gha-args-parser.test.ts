@@ -295,7 +295,6 @@ describe("gha args parser", () => {
     expect(args.cherryPickOptions).toEqual(undefined);
   });
 
-
   test("invalid execution with empty target branch", () => {
     spyGetInput({
       "target-branch": "  ",
@@ -319,5 +318,16 @@ describe("gha args parser", () => {
     });
 
     expect(() => parser.parse()).toThrowError("Missing option: pull request must be provided");
+  });
+
+  test("enable error notification flag", () => {
+    spyGetInput({
+      "target-branch": "target,old",
+      "pull-request": "https://localhost/whatever/pulls/1",
+      "enable-err-notification": "true"
+    });
+
+    const args: Args = parser.parse();
+    expect(args.enableErrorNotification).toEqual(true);
   });
 });

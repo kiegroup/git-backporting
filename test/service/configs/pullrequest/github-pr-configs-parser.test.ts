@@ -139,6 +139,10 @@ describe("github pull request config parser", () => {
       labels: [],
       comments: [],
     });
+    expect(configs.errorNotification).toEqual({
+      enabled: false,
+      message: "The backport to `{{target-branch}}` failed. Check the latest run for more details."
+    });
   });
 
   test("override folder", async () => {
@@ -937,6 +941,28 @@ describe("github pull request config parser", () => {
       assignees: ["user3", "user4"],
       labels: [],
       comments: ["First comment", "Second comment"],
+    });
+  });
+
+  test("enable error notification message", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      enableErrorNotification: true,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+
+    expect(configs.errorNotification).toEqual({
+      "enabled": true,
+      "message": "The backport to `{{target-branch}}` failed. Check the latest run for more details."
     });
   });
 });

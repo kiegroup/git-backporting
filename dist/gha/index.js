@@ -70,7 +70,8 @@ class ArgsParser {
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
             cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
-            comments: this.getOrDefault(args.comments)
+            comments: this.getOrDefault(args.comments),
+            enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
         };
     }
 }
@@ -108,7 +109,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getAsBooleanOrDefault = exports.getAsSemicolonSeparatedList = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
+exports.getAsBooleanOrUndefined = exports.getAsSemicolonSeparatedList = exports.getAsCommaSeparatedList = exports.getAsCleanedCommaSeparatedList = exports.getOrUndefined = exports.readConfigFile = exports.parseArgs = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 /**
  * Parse the input configuation string as json object and
@@ -159,11 +160,11 @@ function getAsSemicolonSeparatedList(value) {
     return trimmed !== "" ? trimmed.split(";").map(v => v.trim()) : undefined;
 }
 exports.getAsSemicolonSeparatedList = getAsSemicolonSeparatedList;
-function getAsBooleanOrDefault(value) {
+function getAsBooleanOrUndefined(value) {
     const trimmed = value.trim();
     return trimmed !== "" ? trimmed.toLowerCase() === "true" : undefined;
 }
-exports.getAsBooleanOrDefault = getAsBooleanOrDefault;
+exports.getAsBooleanOrUndefined = getAsBooleanOrUndefined;
 
 
 /***/ }),
@@ -189,7 +190,7 @@ class GHAArgsParser extends args_parser_1.default {
         }
         else {
             args = {
-                dryRun: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("dry-run")),
+                dryRun: (0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("dry-run")),
                 auth: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("auth")),
                 pullRequest: (0, core_1.getInput)("pull-request"),
                 targetBranch: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("target-branch")),
@@ -204,15 +205,16 @@ class GHAArgsParser extends args_parser_1.default {
                 bpBranchName: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("bp-branch-name")),
                 reviewers: (0, args_utils_1.getAsCleanedCommaSeparatedList)((0, core_1.getInput)("reviewers")),
                 assignees: (0, args_utils_1.getAsCleanedCommaSeparatedList)((0, core_1.getInput)("assignees")),
-                inheritReviewers: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-inherit-reviewers")),
+                inheritReviewers: !(0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("no-inherit-reviewers")),
                 labels: (0, args_utils_1.getAsCommaSeparatedList)((0, core_1.getInput)("labels")),
-                inheritLabels: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("inherit-labels")),
-                squash: !(0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("no-squash")),
-                autoNoSquash: (0, args_utils_1.getAsBooleanOrDefault)((0, core_1.getInput)("auto-no-squash")),
+                inheritLabels: (0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("inherit-labels")),
+                squash: !(0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("no-squash")),
+                autoNoSquash: (0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("auto-no-squash")),
                 strategy: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy")),
                 strategyOption: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("strategy-option")),
                 cherryPickOptions: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("cherry-pick-options")),
                 comments: (0, args_utils_1.getAsSemicolonSeparatedList)((0, core_1.getInput)("comments")),
+                enableErrorNotification: (0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("enable-err-notification")),
             };
         }
         return args;
@@ -266,7 +268,9 @@ exports["default"] = ConfigsParser;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthTokenId = void 0;
+exports.AuthTokenId = exports.MESSAGE_TARGET_BRANCH_PLACEHOLDER = exports.MESSAGE_ERROR_PLACEHOLDER = void 0;
+exports.MESSAGE_ERROR_PLACEHOLDER = "{{error}}";
+exports.MESSAGE_TARGET_BRANCH_PLACEHOLDER = "{{target-branch}}";
 var AuthTokenId;
 (function (AuthTokenId) {
     // github specific token
@@ -293,6 +297,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const args_utils_1 = __nccwpck_require__(8048);
 const configs_parser_1 = __importDefault(__nccwpck_require__(5799));
+const configs_types_1 = __nccwpck_require__(4753);
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
     constructor() {
@@ -340,11 +345,19 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             git: {
                 user: args.gitUser ?? this.gitClient.getDefaultGitUser(),
                 email: args.gitEmail ?? this.gitClient.getDefaultGitEmail(),
-            }
+            },
+            errorNotification: {
+                enabled: args.enableErrorNotification ?? false,
+                message: this.getDefaultErrorComment(),
+            },
         };
     }
     getDefaultFolder() {
         return "bp";
+    }
+    getDefaultErrorComment() {
+        // TODO: fetch from arg or set default with placeholder {{error}}
+        return `The backport to \`${configs_types_1.MESSAGE_TARGET_BRANCH_PLACEHOLDER}\` failed. Check the latest run for more details.`;
     }
     /**
      * Parse the provided labels and return a list of target branches
@@ -900,6 +913,26 @@ class GitHubClient {
         await Promise.all(promises);
         return data.html_url;
     }
+    async createPullRequestComment(prUrl, comment) {
+        let commentUrl = undefined;
+        try {
+            const { owner, project, id } = this.extractPullRequestData(prUrl);
+            const { data } = await this.octokit.issues.createComment({
+                owner: owner,
+                repo: project,
+                issue_number: id,
+                body: comment
+            });
+            if (!data) {
+                throw new Error("Pull request comment creation failed");
+            }
+            commentUrl = data.url;
+        }
+        catch (error) {
+            this.logger.error(`Error creating comment on pull request ${prUrl}: ${error}`);
+        }
+        return commentUrl;
+    }
     // UTILS
     /**
      * Extract repository owner and project from the pull request url
@@ -1059,7 +1092,7 @@ class GitLabClient {
         const projectId = this.getProjectId(namespace, repo);
         const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
         if (squash === undefined) {
-            squash = (0, git_util_1.inferSquash)(data.state == "opened", data.squash_commit_sha);
+            squash = (0, git_util_1.inferSquash)(data.state === "opened", data.squash_commit_sha);
         }
         const commits = [];
         if (!squash) {
@@ -1141,6 +1174,25 @@ class GitLabClient {
         await Promise.all(promises);
         return mr.web_url;
     }
+    // https://docs.gitlab.com/ee/api/notes.html#create-new-issue-note
+    async createPullRequestComment(mrUrl, comment) {
+        const commentUrl = undefined;
+        try {
+            const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
+            const projectId = this.getProjectId(namespace, project);
+            const { data } = await this.client.post(`/projects/${projectId}/issues/${id}/notes`, {
+                body: comment,
+            });
+            if (!data) {
+                throw new Error("Merge request comment creation failed");
+            }
+        }
+        catch (error) {
+            this.logger.error(`Error creating comment on merge request ${mrUrl}: ${error}`);
+        }
+        return commentUrl;
+    }
+    // UTILS
     /**
      * Retrieve a gitlab user given its username
      * @param username
@@ -1288,6 +1340,9 @@ class ConsoleLoggerService {
     setContext(newContext) {
         this.context = newContext;
     }
+    getContext() {
+        return this.context;
+    }
     clearContext() {
         this.context = undefined;
     }
@@ -1366,6 +1421,39 @@ exports["default"] = Logger;
 
 /***/ }),
 
+/***/ 9632:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.injectTargetBranch = exports.injectError = void 0;
+const configs_types_1 = __nccwpck_require__(4753);
+/**
+ * Inject the error message in the provided `message`.
+ * This is injected in place of the MESSAGE_ERROR_PLACEHOLDER placeholder
+ * @param message string that needs to be updated
+ * @param errMsg the error message that needs to be injected
+ */
+const injectError = (message, errMsg) => {
+    return message.replace(configs_types_1.MESSAGE_ERROR_PLACEHOLDER, errMsg);
+};
+exports.injectError = injectError;
+/**
+ * Inject the target branch into the provided `message`.
+ * This is injected in place of the MESSAGE_TARGET_BRANCH_PLACEHOLDER placeholder
+ * @param message string that needs to be updated
+ * @param targetBranch the target branch to inject
+ * @returns
+ */
+const injectTargetBranch = (message, targetBranch) => {
+    return message.replace(configs_types_1.MESSAGE_TARGET_BRANCH_PLACEHOLDER, targetBranch);
+};
+exports.injectTargetBranch = injectTargetBranch;
+
+
+/***/ }),
+
 /***/ 8810:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -1381,6 +1469,7 @@ const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const git_util_1 = __nccwpck_require__(9080);
+const runner_util_1 = __nccwpck_require__(9632);
 /**
  * Main runner implementation, it implements the core logic flow
  */
@@ -1445,6 +1534,12 @@ class Runner {
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
+                if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+                    // notify the failure as comment in the original pull request
+                    let comment = (0, runner_util_1.injectError)(configs.errorNotification.message, error);
+                    comment = (0, runner_util_1.injectTargetBranch)(comment, pr.base);
+                    await gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
+                }
                 failures.push(error);
             }
         }

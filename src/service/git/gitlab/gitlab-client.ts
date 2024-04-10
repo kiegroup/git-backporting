@@ -162,6 +162,29 @@ export default class GitLabClient implements GitClient {
     return mr.web_url;
   }
 
+  // https://docs.gitlab.com/ee/api/notes.html#create-new-issue-note
+  async createPullRequestComment(mrUrl: string, comment: string): Promise<string | undefined> {
+    const commentUrl: string | undefined = undefined;
+    try{
+      const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
+      const projectId = this.getProjectId(namespace, project);
+
+      const { data } = await this.client.post(`/projects/${projectId}/issues/${id}/notes`, {
+        body: comment,
+      });
+
+      if (!data) {
+        throw new Error("Merge request comment creation failed");
+      }
+    } catch(error) {
+      this.logger.error(`Error creating comment on merge request ${mrUrl}: ${error}`);
+    }
+    
+    return commentUrl;
+  }
+
+  // UTILS
+
   /**
    * Retrieve a gitlab user given its username
    * @param username 
