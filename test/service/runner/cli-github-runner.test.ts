@@ -1238,7 +1238,6 @@ describe("cli runner", () => {
 
   test("with multiple target branches, one failure and error notification enabled", async () => {
     jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((backport: BackportPullRequest) => {
-      
       throw new Error(`Mocked error: ${backport.base}`);
     });
 
@@ -1323,9 +1322,9 @@ describe("cli runner", () => {
     });
     expect(GitHubClient.prototype.createPullRequest).toThrowError();
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v1");
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v2");
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "Backporting failed: Error: Mocked error: v3");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
   });
 
   test("with some failures and dry run enabled", async () => {

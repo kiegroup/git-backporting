@@ -3,6 +3,7 @@
 import { BackportPullRequest, GitPullRequest } from "@bp/service/git/git.types";
 
 export const MESSAGE_ERROR_PLACEHOLDER = "{{error}}";
+export const MESSAGE_TARGET_BRANCH_PLACEHOLDER = "{{target-branch}}";
 
 export interface LocalGit {
   user: string, // local git user

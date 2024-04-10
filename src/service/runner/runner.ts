@@ -9,7 +9,7 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { inferGitClient, inferGitApiUrl, getGitTokenFromEnv } from "@bp/service/git/git-util";
-import { injectError } from "./runner-util";
+import { injectError, injectTargetBranch } from "./runner-util";
 
 interface Git {
   gitClientType: GitClientType;
@@ -95,8 +95,9 @@ export default class Runner {
         this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
         if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
           // notify the failure as comment in the original pull request
-          const comment = injectError(configs.errorNotification.message, error as string);
-          gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
+          let comment = injectError(configs.errorNotification.message, error as string);
+          comment = injectTargetBranch(comment, pr.base);
+          await gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
         }
         failures.push(error as string);
       }

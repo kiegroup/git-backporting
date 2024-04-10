@@ -268,8 +268,9 @@ exports["default"] = ConfigsParser;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthTokenId = exports.MESSAGE_ERROR_PLACEHOLDER = void 0;
+exports.AuthTokenId = exports.MESSAGE_TARGET_BRANCH_PLACEHOLDER = exports.MESSAGE_ERROR_PLACEHOLDER = void 0;
 exports.MESSAGE_ERROR_PLACEHOLDER = "{{error}}";
+exports.MESSAGE_TARGET_BRANCH_PLACEHOLDER = "{{target-branch}}";
 var AuthTokenId;
 (function (AuthTokenId) {
     // github specific token
@@ -356,7 +357,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
     }
     getDefaultErrorComment() {
         // TODO: fetch from arg or set default with placeholder {{error}}
-        return `Backporting failed: ${configs_types_1.MESSAGE_ERROR_PLACEHOLDER}`;
+        return `The backport to \`${configs_types_1.MESSAGE_TARGET_BRANCH_PLACEHOLDER}\` failed. Check the latest run for more details.`;
     }
     /**
      * Parse the provided labels and return a list of target branches
@@ -1426,11 +1427,11 @@ exports["default"] = Logger;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.injectError = void 0;
+exports.injectTargetBranch = exports.injectError = void 0;
 const configs_types_1 = __nccwpck_require__(4753);
 /**
  * Inject the error message in the provided `message`.
- * This is inject in place of the MESSAGE_ERROR_PLACEHOLDER placeholder
+ * This is injected in place of the MESSAGE_ERROR_PLACEHOLDER placeholder
  * @param message string that needs to be updated
  * @param errMsg the error message that needs to be injected
  */
@@ -1438,6 +1439,17 @@ const injectError = (message, errMsg) => {
     return message.replace(configs_types_1.MESSAGE_ERROR_PLACEHOLDER, errMsg);
 };
 exports.injectError = injectError;
+/**
+ * Inject the target branch into the provided `message`.
+ * This is injected in place of the MESSAGE_TARGET_BRANCH_PLACEHOLDER placeholder
+ * @param message string that needs to be updated
+ * @param targetBranch the target branch to inject
+ * @returns
+ */
+const injectTargetBranch = (message, targetBranch) => {
+    return message.replace(configs_types_1.MESSAGE_TARGET_BRANCH_PLACEHOLDER, targetBranch);
+};
+exports.injectTargetBranch = injectTargetBranch;
 
 
 /***/ }),
@@ -1524,8 +1536,9 @@ class Runner {
                 this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
                 if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
                     // notify the failure as comment in the original pull request
-                    const comment = (0, runner_util_1.injectError)(configs.errorNotification.message, error);
-                    gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
+                    let comment = (0, runner_util_1.injectError)(configs.errorNotification.message, error);
+                    comment = (0, runner_util_1.injectTargetBranch)(comment, pr.base);
+                    await gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
                 }
                 failures.push(error);
             }

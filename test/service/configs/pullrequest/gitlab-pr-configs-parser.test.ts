@@ -146,7 +146,7 @@ describe("gitlab merge request config parser", () => {
     });
     expect(configs.errorNotification).toEqual({
       "enabled": false,
-      "message": "Backporting failed: {{error}}"
+      "message": "The backport to `{{target-branch}}` failed. Check the latest run for more details."
     });
   });
 
@@ -905,7 +905,7 @@ describe("gitlab merge request config parser", () => {
 
     expect(configs.errorNotification).toEqual({
       "enabled": true,
-      "message": "Backporting failed: {{error}}",
+      "message": "The backport to `{{target-branch}}` failed. Check the latest run for more details.",
     });
   });
 });
