@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.8.0](https://github.com/kiegroup/git-backporting/compare/v4.7.1...v4.8.0) (2024-04-11)
+
+
+### Features
+
+* auto-detect the value of the no-squash option ([#118](https://github.com/kiegroup/git-backporting/issues/118)) ([6042bcc](https://github.com/kiegroup/git-backporting/commit/6042bcc40ba83593a23dfe4d92cf50655a05b1cd))
+* implement error notification as pr comment ([#124](https://github.com/kiegroup/git-backporting/issues/124)) ([2bb7f73](https://github.com/kiegroup/git-backporting/commit/2bb7f731127e099d1f196e6785e992589f7c4940))
+
 ## [4.7.1](https://github.com/kiegroup/git-backporting/compare/v4.7.0...v4.7.1) (2024-04-03)
 
 
