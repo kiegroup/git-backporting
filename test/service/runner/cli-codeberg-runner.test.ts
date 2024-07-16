@@ -4,16 +4,16 @@ import GitCLIService from "@bp/service/git/git-cli";
 import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
-import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
+import { mockCodebergClient } from "../../support/mock/git-client-mock-support";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
 import { AuthTokenId } from "@bp/service/configs/configs.types";
 
-const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT_PATHNAME = "./cli-github-runner-pr-merged-with-overrides.json";
+const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT_PATHNAME = "./cli-codeberg-runner-pr-merged-with-overrides.json";
 const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
   "dryRun": false,
   "auth": "my-auth-token",
-  "pullRequest": "https://github.com/owner/reponame/pull/2368",
+  "pullRequest": "https://codeberg.org/owner/reponame/pulls/2368",
   "targetBranch": "target",
   "gitUser": "Me",
   "gitEmail": "me@email.com",
@@ -54,7 +54,7 @@ beforeEach(() => {
   resetEnvTokens();
 
   // mock octokit
-  mockGitHubClient();
+  mockCodebergClient();
 
   // create CLI arguments parser
   parser = new CLIArgsParser();
@@ -71,7 +71,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368"
+      "https://codeberg.org/owner/reponame/pulls/2368"
     ]);
     
     await runner.execute();
@@ -79,10 +79,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -104,7 +104,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368"
+      "https://codeberg.org/owner/reponame/pulls/2368"
     ]);
     
     await runner.execute();
@@ -112,7 +112,7 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -133,7 +133,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "folder"
     ]);
@@ -143,10 +143,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -170,7 +170,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "/tmp/folder"
     ]);
@@ -180,10 +180,10 @@ describe("cli runner", () => {
     const cwd = "/tmp/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -203,7 +203,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368"
+      "https://codeberg.org/owner/reponame/pulls/2368"
     ]);
     
     await runner.execute();
@@ -211,10 +211,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -235,7 +235,7 @@ describe("cli runner", () => {
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -250,7 +250,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632"
+      "https://codeberg.org/owner/reponame/pulls/8632"
     ]);
     
     await runner.execute();
@@ -258,10 +258,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -281,7 +281,7 @@ describe("cli runner", () => {
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/8632\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -297,7 +297,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/6666"
+      "https://codeberg.org/owner/reponame/pulls/6666"
     ]);
 
     await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged");
@@ -308,7 +308,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/4444"
+      "https://codeberg.org/owner/reponame/pulls/4444"
     ]);
 
     await runner.execute();
@@ -316,10 +316,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9174896");
@@ -340,7 +340,7 @@ describe("cli runner", () => {
         head: "bp-target-9174896", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/4444\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/4444\r\n\r\nPlease review and merge",
         reviewers: ["gh-user"],
         assignees: [],
         labels: [],
@@ -355,7 +355,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/4444",
+      "https://codeberg.org/owner/reponame/pulls/4444",
       "--auto-no-squash",
     ]);
 
@@ -364,10 +364,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
@@ -376,8 +376,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/4444/head:pr/4444");
 
     expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
@@ -389,7 +389,7 @@ describe("cli runner", () => {
 	head: "bp-target-0404fb9-11da4e3",
 	base: "target",
 	title: "[target] PR Title",
-	body: "**Backport:** https://github.com/owner/reponame/pull/4444\r\n\r\nPlease review and merge",
+	body: "**Backport:** https://codeberg.org/owner/reponame/pulls/4444\r\n\r\nPlease review and merge",
 	reviewers: ["gh-user"],
 	assignees: [],
 	labels: [],
@@ -404,7 +404,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "--title",
       "New Title",
       "--body",
@@ -424,10 +424,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
@@ -463,7 +463,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "--title",
       "New Title",
       "--body",
@@ -482,10 +482,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
@@ -521,7 +521,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "--labels",
       "cherry-pick :cherries:, backport prod",
       "--inherit-labels",
@@ -532,10 +532,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -556,7 +556,7 @@ describe("cli runner", () => {
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: ["cherry-pick :cherries:", "backport prod"],
@@ -571,7 +571,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "--labels",
       "first-label, second-label ",
     ]);
@@ -581,10 +581,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -605,7 +605,7 @@ describe("cli runner", () => {
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: ["first-label", "second-label"],
@@ -626,10 +626,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, "my-auth-token", "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, "my-auth-token", "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
@@ -660,13 +660,13 @@ describe("cli runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
   });
 
-  // to check: https://github.com/kiegroup/git-backporting/issues/52
-  test("using github api url instead of html one", async () => {
+  // to check: https://codeberg.org/kiegroup/git-backporting/issues/52
+  test("using codeberg api url instead of html one", async () => {
     addProcessArgs([
       "-tb",
       "target",
       "-pr",
-      "https://api.github.com/repos/owner/reponame/pulls/2368"
+      "https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368"
     ]);
     
     await runner.execute();
@@ -674,10 +674,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -698,7 +698,7 @@ describe("cli runner", () => {
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -713,7 +713,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632",
+      "https://codeberg.org/owner/reponame/pulls/8632",
       "--no-squash",
     ]);
     
@@ -722,10 +722,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
@@ -733,8 +733,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
@@ -746,7 +746,7 @@ describe("cli runner", () => {
         head: "bp-target-0404fb9-11da4e3", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/8632\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -764,7 +764,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "--bp-branch-name",
       tooLongBranchName,
     ]);
@@ -776,10 +776,10 @@ describe("cli runner", () => {
     const truncatedBranch = tooLongBranchName.slice(0, 250);
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, truncatedBranch);
@@ -800,7 +800,7 @@ describe("cli runner", () => {
         head: truncatedBranch, 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -815,7 +815,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632",
+      "https://codeberg.org/owner/reponame/pulls/8632",
       "--no-squash",
       "--strategy",
       "ort",
@@ -828,10 +828,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
@@ -839,8 +839,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", "ort", "find-renames", undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", "ort", "find-renames", undefined);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
@@ -852,7 +852,7 @@ describe("cli runner", () => {
         head: "bp-target-0404fb9-11da4e3", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/8632\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -867,7 +867,7 @@ describe("cli runner", () => {
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632",
+      "https://codeberg.org/owner/reponame/pulls/8632",
       "--comments",
       "first comment; second comment",
       "--body",
@@ -879,10 +879,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
@@ -902,7 +902,7 @@ describe("cli runner", () => {
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nNew body",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/8632\r\n\r\nNew body",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -917,7 +917,7 @@ describe("cli runner", () => {
       "-tb",
       "v1, v2, v3",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "/tmp/folder"
     ]);
@@ -927,12 +927,12 @@ describe("cli runner", () => {
     const cwd = "/tmp/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v1-28f63db");
@@ -959,7 +959,7 @@ describe("cli runner", () => {
         head: "bp-v1-28f63db", 
         base: "v1", 
         title: "[v1] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -971,7 +971,7 @@ describe("cli runner", () => {
         head: "bp-v2-28f63db", 
         base: "v2", 
         title: "[v2] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -983,7 +983,7 @@ describe("cli runner", () => {
         head: "bp-v3-28f63db", 
         base: "v3", 
         title: "[v3] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -997,7 +997,7 @@ describe("cli runner", () => {
       "-tb",
       "v1, v2, v3",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "/tmp/folder",
       "--bp-branch-name",
@@ -1009,12 +1009,12 @@ describe("cli runner", () => {
     const cwd = "/tmp/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom1");
@@ -1041,7 +1041,7 @@ describe("cli runner", () => {
         head: "custom1", 
         base: "v1", 
         title: "[v1] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1053,7 +1053,7 @@ describe("cli runner", () => {
         head: "custom2", 
         base: "v2", 
         title: "[v2] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1065,7 +1065,7 @@ describe("cli runner", () => {
         head: "custom3", 
         base: "v3", 
         title: "[v3] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1084,7 +1084,7 @@ describe("cli runner", () => {
       "-tb",
       "v1, v2, v3",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "/tmp/folder",
       "--bp-branch-name",
@@ -1096,12 +1096,12 @@ describe("cli runner", () => {
     const cwd = "/tmp/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
@@ -1128,7 +1128,7 @@ describe("cli runner", () => {
         head: "custom-failure-head-v1", 
         base: "v1", 
         title: "[v1] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1140,7 +1140,7 @@ describe("cli runner", () => {
         head: "custom-failure-head-v2", 
         base: "v2", 
         title: "[v2] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1152,7 +1152,7 @@ describe("cli runner", () => {
         head: "custom-failure-head-v3", 
         base: "v3", 
         title: "[v3] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1162,31 +1162,31 @@ describe("cli runner", () => {
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
   });
 
-  test("auth using GITHUB_TOKEN takes precedence over GIT_TOKEN env variable", async () => {
+  test("auth using CODEBERG_TOKEN takes precedence over GIT_TOKEN env variable", async () => {
     process.env[AuthTokenId.GIT_TOKEN] = "mygittoken";
-    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
     addProcessArgs([
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632"
+      "https://codeberg.org/owner/reponame/pulls/8632"
     ]);
     
     await runner.execute();
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, "mygithubtoken", "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, "mycodebergtoken", "https://codeberg.org/api/v1");
 
     // Not interested in all subsequent calls, already tested in other test cases
   });
 
-  test("auth arg takes precedence over GITHUB_TOKEN", async () => {
-    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
+  test("auth arg takes precedence over CODEBERG_TOKEN", async () => {
+    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
     addProcessArgs([
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632",
+      "https://codeberg.org/owner/reponame/pulls/8632",
       "-a",
       "mytoken"
     ]);
@@ -1194,25 +1194,25 @@ describe("cli runner", () => {
     await runner.execute();
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, "mytoken", "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, "mytoken", "https://codeberg.org/api/v1");
 
     // Not interested in all subsequent calls, already tested in other test cases
   });
 
   test("ignore env variables related to other git platforms", async () => {
     process.env[AuthTokenId.GITLAB_TOKEN] = "mygitlabtoken";
-    process.env[AuthTokenId.CODEBERG_TOKEN] = "mycodebergtoken";
+    process.env[AuthTokenId.GITHUB_TOKEN] = "mygithubtoken";
     addProcessArgs([
       "-tb",
       "target",
       "-pr",
-      "https://github.com/owner/reponame/pull/8632"
+      "https://codeberg.org/owner/reponame/pulls/8632"
     ]);
     
     await runner.execute();
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     // Not interested in all subsequent calls, already tested in other test cases
   });
@@ -1222,7 +1222,7 @@ describe("cli runner", () => {
       "--target-branch-pattern",
       "^backport (?<target>([^ ]+))$",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368"
+      "https://codeberg.org/owner/reponame/pulls/2368"
     ]);
     
     await runner.execute();
@@ -1230,10 +1230,10 @@ describe("cli runner", () => {
     const cwd = process.cwd() + "/bp";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "prod");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "prod");
   });
 
   test("with multiple target branches, one failure and error notification enabled", async () => {
@@ -1245,7 +1245,7 @@ describe("cli runner", () => {
       "-tb",
       "v1, v2, v3",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "/tmp/folder",
       "--bp-branch-name",
@@ -1258,12 +1258,12 @@ describe("cli runner", () => {
     const cwd = "/tmp/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
@@ -1290,7 +1290,7 @@ describe("cli runner", () => {
         head: "custom-failure-head-v1", 
         base: "v1", 
         title: "[v1] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1302,7 +1302,7 @@ describe("cli runner", () => {
         head: "custom-failure-head-v2", 
         base: "v2", 
         title: "[v2] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1314,7 +1314,7 @@ describe("cli runner", () => {
         head: "custom-failure-head-v3", 
         base: "v3", 
         title: "[v3] PR Title", 
-        body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+        body: "**Backport:** https://codeberg.org/owner/reponame/pulls/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
         labels: [],
@@ -1322,9 +1322,9 @@ describe("cli runner", () => {
     });
     expect(GitHubClient.prototype.createPullRequest).toThrowError();
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
   });
 
   test("with some failures and dry run enabled", async () => {
@@ -1336,7 +1336,7 @@ describe("cli runner", () => {
       "-tb",
       "v1, v2, v3",
       "-pr",
-      "https://github.com/owner/reponame/pull/2368",
+      "https://codeberg.org/owner/reponame/pulls/2368",
       "-f",
       "/tmp/folder",
       "--bp-branch-name",
@@ -1350,12 +1350,12 @@ describe("cli runner", () => {
     const cwd = "/tmp/folder";
 
     expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITHUB, undefined, "https://api.github.com");
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://github.com/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
