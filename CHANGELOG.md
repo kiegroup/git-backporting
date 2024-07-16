@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.1](https://github.com/kiegroup/git-backporting/compare/v4.8.0...v4.8.1) (2024-07-16)
+
+
+### Bug Fixes
+
+* **gh130:** apply commits in the correct order on github ([#131](https://github.com/kiegroup/git-backporting/issues/131)) ([cb3473d](https://github.com/kiegroup/git-backporting/commit/cb3473d7c9de66cb7bec188f08538e134cdc4bc0))
+
 ## [4.8.0](https://github.com/kiegroup/git-backporting/compare/v4.7.1...v4.8.0) (2024-04-11)
 
 
