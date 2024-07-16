@@ -2,6 +2,7 @@ import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
 import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER, GITHUB_GET_COMMIT } from "./github-data";
 import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER, MERGED_SQUASHED_MR_COMMITS } from "./gitlab-data";
+import { CB_TARGET_OWNER, CB_REPO, CB_MERGED_PR_FIXTURE, CB_OPEN_PR_FIXTURE, CB_NOT_MERGED_PR_FIXTURE, CB_NOT_FOUND_PR_NUMBER, CB_MULT_COMMITS_PR_FIXTURE, CB_MULT_COMMITS_PR_COMMITS, CB_NEW_PR_URL, CB_NEW_PR_NUMBER, CODEBERG_GET_COMMIT } from "./codeberg-data";
 
 // high number, for each test we are not expecting 
 // to send more than 3 reqs per api endpoint
@@ -228,6 +229,154 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       owner: TARGET_OWNER,
       repo: REPO,
       pull_number: NOT_FOUND_PR_NUMBER
+    })
+    .reply({
+      repeat: REPEAT,
+      status: 404,
+      data: {
+        message: "Not found"
+      }
+    });
+
+  return mock;
+};
+
+// CODEBERG - OCTOKIT
+
+export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moctokit => {
+  logger.debug("Setting up moctokit..");
+  
+  const mock = new Moctokit(apiUrl);
+
+  // setup the mock requests here
+
+  // valid requests
+  mock.rest.pulls
+    .get({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_MERGED_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: CB_MERGED_PR_FIXTURE
+    });
+
+  mock.rest.pulls
+    .get({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_MULT_COMMITS_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: CB_MULT_COMMITS_PR_FIXTURE
+    });
+  
+  mock.rest.pulls
+    .get({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_OPEN_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: CB_OPEN_PR_FIXTURE
+    });
+  
+  mock.rest.pulls
+    .get({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_NOT_MERGED_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: CB_NOT_MERGED_PR_FIXTURE
+    });
+  
+  mock.rest.pulls
+    .listCommits({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_MULT_COMMITS_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: CB_MULT_COMMITS_PR_COMMITS
+    });
+  
+  mock.rest.pulls
+    .listCommits({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_OPEN_PR_FIXTURE.number
+    })
+    .reply({
+      status: 200,
+      data: CB_MULT_COMMITS_PR_COMMITS
+    });
+
+  mock.rest.pulls
+    .create()
+    .reply({
+      repeat: REPEAT,
+      status: 201,
+      data: {
+        number: CB_NEW_PR_NUMBER,
+        html_url: CB_NEW_PR_URL,
+      }
+    });
+
+  mock.rest.pulls
+    .requestReviewers()
+    .reply({
+      repeat: REPEAT,
+      status: 201,
+      data: CB_MERGED_PR_FIXTURE
+    });
+
+  mock.rest.issues
+    .addAssignees()
+    .reply({
+      repeat: REPEAT,
+      status: 201,
+      data: {}
+    });
+
+  mock.rest.issues
+    .addLabels()
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: {}
+    });
+
+  mock.rest.issues
+    .createComment()
+    .reply({
+      repeat: REPEAT,
+      status: 201,
+      data: {}
+    });
+
+  mock.rest.git
+    .getCommit({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      commit_sha: "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc",
+    })
+    .reply({
+      status: 200,
+      data: CODEBERG_GET_COMMIT,
+    });
+
+  // invalid requests
+  mock.rest.pulls
+    .get({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_NOT_FOUND_PR_NUMBER
     })
     .reply({
       repeat: REPEAT,
