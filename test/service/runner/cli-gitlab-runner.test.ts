@@ -582,8 +582,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
 
     expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "974519f65c9e0ed65277cd71026657a09fca05e7", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenNthCalledWith(1, cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenNthCalledWith(2, cwd, "974519f65c9e0ed65277cd71026657a09fca05e7", undefined, undefined, undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
     expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336-974519f");

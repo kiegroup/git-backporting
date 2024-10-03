@@ -152,14 +152,6 @@ export default class Runner {
 
     // 7. apply all changes to the new branch
     this.logger.debug("Cherry picking commits..");
-    // Commits might be ordered in different ways based on the git service, e.g., considering top to bottom
-    // GITHUB   --> oldest to newest
-    // CODEBERG --> newest to oldest
-    // GITLAB   --> newest to oldest
-    if (git.gitClientType === GitClientType.CODEBERG || git.gitClientType === GitClientType.GITLAB) {
-      // reverse the order as we always need to process from older to newest
-      originalPR.commits.reverse();
-    }
     for (const sha of originalPR.commits) {
       await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
     }
