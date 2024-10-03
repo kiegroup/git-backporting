@@ -73,6 +73,11 @@ export default class GitHubClient implements GitClient {
         });
 
         commits.push(...data.map(c => c.sha));
+        if (this.isForCodeberg) {
+          // For some reason, even though Codeberg advertises API compatibility
+          // with GitHub, it returns commits in reversed order.
+          commits.reverse();
+        }
       } catch(error) {
         throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
       }

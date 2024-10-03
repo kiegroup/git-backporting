@@ -370,7 +370,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/4444/head:pr/4444");
@@ -380,13 +380,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
 	owner: "owner",
 	repo: "reponame",
-	head: "bp-target-0404fb9-11da4e3",
+	head: "bp-target-11da4e3-0404fb9",
 	base: "target",
 	title: "[target] PR Title",
 	body: "**Backport:** https://codeberg.org/owner/reponame/pulls/4444\r\n\r\nPlease review and merge",
@@ -728,7 +728,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
 
@@ -737,13 +737,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-0404fb9-11da4e3", 
+        head: "bp-target-11da4e3-0404fb9", 
         base: "target", 
         title: "[target] PR Title", 
         body: "**Backport:** https://codeberg.org/owner/reponame/pulls/8632\r\n\r\nPlease review and merge",
@@ -834,7 +834,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
     expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
     
     expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
 
@@ -843,13 +843,13 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined);
 
     expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-0404fb9-11da4e3");
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
         owner: "owner", 
         repo: "reponame", 
-        head: "bp-target-0404fb9-11da4e3", 
+        head: "bp-target-11da4e3-0404fb9", 
         base: "target", 
         title: "[target] PR Title", 
         body: "**Backport:** https://codeberg.org/owner/reponame/pulls/8632\r\n\r\nPlease review and merge",
