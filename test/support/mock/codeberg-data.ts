@@ -87,7 +87,9 @@ export const CB_MERGED_PR_FIXTURE = {
       "received_events_url": "https://codeberg.org/api/v1/users/gh-user/received_events",
       "type": "User",
       "site_admin": false
-    }
+    },
+    // Sometimes Codeberg returns null as part of requested_reviewers.
+    null,
   ],
   "requested_teams": [
 
