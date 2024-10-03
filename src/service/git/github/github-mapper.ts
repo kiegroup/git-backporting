@@ -24,8 +24,8 @@ export default class GitHubMapper implements GitResponseMapper<PullRequest, "ope
       state: this.mapGitState(pr.state), // TODO fix using custom mapper
       merged: pr.merged ?? false,
       mergedBy: pr.merged_by?.login,
-      reviewers: pr.requested_reviewers?.filter(r => "login" in r).map((r => (r as User)?.login)) ?? [],
-      assignees: pr.assignees?.filter(r => "login" in r).map(r => r.login) ?? [],
+      reviewers: pr.requested_reviewers?.filter(r => r && "login" in r).map((r => (r as User)?.login)) ?? [],
+      assignees: pr.assignees?.filter(r => r && "login" in r).map(r => r.login) ?? [],
       labels: pr.labels?.map(l => l.name) ?? [],
       sourceRepo: await this.mapSourceRepo(pr),
       targetRepo: await this.mapTargetRepo(pr),
