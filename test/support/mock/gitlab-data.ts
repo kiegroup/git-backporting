@@ -755,6 +755,29 @@ export const OPEN_PR_COMMITS = [
    }
 ];
 
+export const MERGED_NOT_SQUASHED_MR_COMMITS = [
+   {
+      "id":"e4dd336a4a20f394df6665994df382fb1d193a11",
+      "short_id":"e4dd336a",
+      "created_at":"2023-06-29T09:59:10.000Z",
+      "parent_ids":[
+         
+      ],
+      "title":"Add new file",
+      "message":"Add new file",
+      "author_name":"Super User",
+      "author_email":"superuser@email.com",
+      "authored_date":"2023-06-29T09:59:10.000Z",
+      "committer_name":"Super User",
+      "committer_email":"superuser@email.com",
+      "committed_date":"2023-06-29T09:59:10.000Z",
+      "trailers":{
+         
+      },
+      "web_url":"https://gitlab.com/superuser/backporting-example/-/commit/e4dd336a4a20f394df6665994df382fb1d193a11"
+   },
+];
+
 export const SUPERUSER = {
    "id":14041,
    "username":"superuser",
@@ -898,3 +921,138 @@ export const NESTED_NAMESPACE_MR = {
       "can_merge":true
    }
  };
+
+export const MERGED_NOT_SQUASHED_MR = {
+  "id":807106,
+  "iid":1,
+  "project_id":76316,
+  "title":"Update test.txt",
+  "description":"This is the body",
+  "state":"merged",
+  "created_at":"2023-06-28T14:32:40.943Z",
+  "updated_at":"2023-06-28T14:37:12.108Z",
+  "merged_by":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "merge_user":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "merged_at":"2023-06-28T14:37:11.667Z",
+  "closed_by":null,
+  "closed_at":null,
+  "target_branch":"main",
+  "source_branch":"feature",
+  "user_notes_count":0,
+  "upvotes":0,
+  "downvotes":0,
+  "author":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "assignees":[
+     {
+        "id":14041,
+        "username":"superuser",
+        "name":"Super User",
+        "state":"active",
+        "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+        "web_url":"https://my.gitlab.host.com/superuser"
+     }
+  ],
+  "assignee":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "reviewers":[
+     {
+        "id":1404188,
+        "username":"superuser1",
+        "name":"Super User",
+        "state":"active",
+        "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+        "web_url":"https://my.gitlab.host.com/superuser"
+     },
+     {
+        "id":1404199,
+        "username":"superuser2",
+        "name":"Super User",
+        "state":"active",
+        "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+        "web_url":"https://my.gitlab.host.com/superuser"
+     }
+  ],
+  "source_project_id":76316,
+  "target_project_id":76316,
+  "labels":[
+     "backport-prod"
+  ],
+  "draft":false,
+  "work_in_progress":false,
+  "milestone":null,
+  "merge_when_pipeline_succeeds":false,
+  "merge_status":"can_be_merged",
+  "detailed_merge_status":"not_open",
+  "sha":"9e15674ebd48e05c6e428a1fa31dbb60a778d644",
+  "merge_commit_sha":"4d369c3e9a8d1d5b7e56c892a8ab2a7666583ac3",
+  "squash_commit_sha":null,
+  "discussion_locked":null,
+  "should_remove_source_branch":true,
+  "force_remove_source_branch":true,
+  "reference":"!5",
+  "references":{
+     "short":"!5",
+     "relative":"!5",
+     "full":"superuser/backporting-example!5"
+  },
+  "web_url":"https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/5",
+  "time_stats":{
+     "time_estimate":0,
+     "total_time_spent":0,
+     "human_time_estimate":null,
+     "human_total_time_spent":null
+  },
+  "squash":false,
+  "squash_on_merge":false,
+  "task_completion_status":{
+     "count":0,
+     "completed_count":0
+  },
+  "has_conflicts":false,
+  "blocking_discussions_resolved":true,
+  "approvals_before_merge":null,
+  "subscribed":true,
+  "changes_count":"1",
+  "latest_build_started_at":null,
+  "latest_build_finished_at":null,
+  "first_deployed_to_production_at":null,
+  "pipeline":null,
+  "head_pipeline":null,
+  "diff_refs":{
+     "base_sha":"2c553a0c4c133a51806badce5fa4842b7253cb3b",
+     "head_sha":"9e15674ebd48e05c6e428a1fa31dbb60a778d644",
+     "start_sha":"2c553a0c4c133a51806badce5fa4842b7253cb3b"
+  },
+  "merge_error":null,
+  "first_contribution":false,
+  "user":{
+     "can_merge":true
+  }
+};

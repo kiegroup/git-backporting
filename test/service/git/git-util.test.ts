@@ -59,5 +59,6 @@ describe("check git utilities", () => {
     expect(inferSquash(true, undefined)).toStrictEqual(false);
     expect(inferSquash(false, "SHA")).toStrictEqual(true);
     expect(inferSquash(false, undefined)).toStrictEqual(false);
+    expect(inferSquash(false, null)).toStrictEqual(false);
   });
 });

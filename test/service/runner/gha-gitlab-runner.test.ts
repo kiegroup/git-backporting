@@ -519,4 +519,46 @@ describe("gha runner", () => {
       }
     );
   });
+
+  test("merged MR with auto-no-squash", async () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/5",
+      "auto-no-squash": "true",
+    });
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+
+    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336");
+
+    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
+
+    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
+    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336");
+
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+        owner: "superuser", 
+        repo: "backporting-example", 
+        head: "bp-target-e4dd336",
+        base: "target", 
+        title: "[target] Update test.txt", 
+        body: expect.stringContaining("**Backport:** https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/5"),
+        reviewers: ["superuser"],
+        assignees: [],
+        labels: [],
+        comments: [],
+      }
+    );
+  });
 });

@@ -733,7 +733,7 @@ exports.inferGitApiUrl = inferGitApiUrl;
 /**
  * Infer the value of the squash option
  * @param open true if the pull/merge request is still open
- * @param squash_commit undefined if the pull/merge request was merged, the sha of the squashed commit if it was squashed
+ * @param squash_commit undefined or null if the pull/merge request was merged, the sha of the squashed commit if it was squashed
  * @returns true if a single commit must be cherry-picked, false if all merged commits must be cherry-picked
  */
 const inferSquash = (open, squash_commit) => {
@@ -743,7 +743,7 @@ const inferSquash = (open, squash_commit) => {
         return false;
     }
     else {
-        if (squash_commit !== undefined) {
+        if (squash_commit) {
             logger.debug(`cherry-pick the squashed commit ${squash_commit}`);
             return true;
         }
