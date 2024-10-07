@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.8.2](https://github.com/kiegroup/git-backporting/compare/v4.8.1...v4.8.2) (2024-10-07)
+
+
+### Bug Fixes
+
+* cherry-pick order on GitLab by reversing commmit list only once ([#137](https://github.com/kiegroup/git-backporting/issues/137)) ([e2d73d0](https://github.com/kiegroup/git-backporting/commit/e2d73d050c8387c0858877ac3c56c565bacaf4f9))
+* handle Codeberg returning null entry in requested_reviewers ([#136](https://github.com/kiegroup/git-backporting/issues/136)) ([1e8358b](https://github.com/kiegroup/git-backporting/commit/1e8358bb2c461c56cf86e82bec4d71284866b13b))
+
 ## [4.8.1](https://github.com/kiegroup/git-backporting/compare/v4.8.0...v4.8.1) (2024-07-16)
 
 
