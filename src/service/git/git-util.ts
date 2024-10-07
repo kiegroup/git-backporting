@@ -45,17 +45,17 @@ export const inferGitApiUrl = (prUrl: string, apiVersion = "v4"): string => {
 /**
  * Infer the value of the squash option
  * @param open true if the pull/merge request is still open
- * @param squash_commit undefined if the pull/merge request was merged, the sha of the squashed commit if it was squashed
+ * @param squash_commit undefined or null if the pull/merge request was merged, the sha of the squashed commit if it was squashed
  * @returns true if a single commit must be cherry-picked, false if all merged commits must be cherry-picked
  */
-export const inferSquash = (open: boolean, squash_commit: string | undefined): boolean => {
+export const inferSquash = (open: boolean, squash_commit: string | undefined | null): boolean => {
   const logger = LoggerServiceFactory.getLogger();
 
   if (open) {
     logger.debug("cherry-pick all commits because they have not been merged (or squashed) in the base branch yet");
     return false;
   } else {
-    if (squash_commit !== undefined) {
+    if (squash_commit) {
       logger.debug(`cherry-pick the squashed commit ${squash_commit}`);
       return true;
     } else {
