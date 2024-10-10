@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.3](https://github.com/kiegroup/git-backporting/compare/v4.8.2...v4.8.3) (2024-10-10)
+
+
+### Bug Fixes
+
+* auto-no-squash inference for GitLab ([#140](https://github.com/kiegroup/git-backporting/issues/140)) ([b4d0481](https://github.com/kiegroup/git-backporting/commit/b4d0481c5649115367f1ae0724d12d55b6b86e10))
+
 ## [4.8.2](https://github.com/kiegroup/git-backporting/compare/v4.8.1...v4.8.2) (2024-10-07)
 
 
