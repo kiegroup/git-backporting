@@ -541,6 +541,13 @@ class GitCLIService {
             return;
         }
         this.logger.info(`Folder ${to} already exist. Won't clone`);
+        // ensure the working tree is properly reset - no stale changes 
+        // from previous (failed) backport
+        const ongoingCherryPick = await this.anyConflict(to);
+        if (ongoingCherryPick) {
+            this.logger.warn("Found previously failed cherry-pick, aborting it");
+            await this.git(to).raw(["cherry-pick", "--abort"]);
+        }
         // checkout to the proper branch
         this.logger.info(`Checking out branch ${branch}`);
         await this.git(to).checkout(branch);
@@ -597,6 +604,20 @@ class GitCLIService {
             }
             throw error;
         }
+    }
+    /**
+     * Check whether there are some conflicts in the current working directory
+     * which means there is an ongoing cherry-pick that did not complete successfully
+     * @param cwd repository in which the check should be performed
+     * @return true if there is some conflict, false otherwise
+     */
+    async anyConflict(cwd) {
+        const status = await this.git(cwd).status();
+        if (status.conflicted.length > 0) {
+            this.logger.debug(`Found conflicts in branch ${status.current}`);
+            return true;
+        }
+        return false;
     }
     /**
      * Push a branch to a remote
