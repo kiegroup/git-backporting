@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.4](https://github.com/kiegroup/git-backporting/compare/v4.8.3...v4.8.4) (2024-11-02)
+
+
+### Bug Fixes
+
+* abort conflicting cherry-pick before starting new one ([#146](https://github.com/kiegroup/git-backporting/issues/146)) ([3deee59](https://github.com/kiegroup/git-backporting/commit/3deee59d4c3b726ae131b5974af4618dd5e7d1d2))
+
 ## [4.8.3](https://github.com/kiegroup/git-backporting/compare/v4.8.2...v4.8.3) (2024-10-10)
 
 
