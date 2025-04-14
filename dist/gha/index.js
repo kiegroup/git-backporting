@@ -1116,7 +1116,9 @@ class GitLabClient {
     // example: <host>/api/v4/projects/<namespace>%2Fbackporting-example/merge_requests/1
     async getPullRequest(namespace, repo, mrNumber, squash) {
         const projectId = this.getProjectId(namespace, repo);
-        const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${mrNumber}`);
+        const url = `/projects/${projectId}/merge_requests/${mrNumber}`;
+        this.logger.debug(`Fetching pull request ${url}`);
+        const { data } = await this.client.get(`${url}`);
         if (squash === undefined) {
             squash = (0, git_util_1.inferSquash)(data.state === "opened", data.squash_commit_sha);
         }
@@ -1206,7 +1208,7 @@ class GitLabClient {
         try {
             const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
             const projectId = this.getProjectId(namespace, project);
-            const { data } = await this.client.post(`/projects/${projectId}/issues/${id}/notes`, {
+            const { data } = await this.client.post(`/projects/${projectId}/merge_requests/${id}/notes`, {
                 body: comment,
             });
             if (!data) {
