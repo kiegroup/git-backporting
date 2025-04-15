@@ -1,5 +1,11 @@
 # Changelog
 
+## <small>4.8.5 (2025-04-15)</small>
+
+* build(deps): audit fix (#150) ([3a9d367](https://github.com/kiegroup/git-backporting/commit/3a9d367)), closes [#150](https://github.com/kiegroup/git-backporting/issues/150)
+* build(deps): upgrade release-it to v18 (#153) ([c9a7375](https://github.com/kiegroup/git-backporting/commit/c9a7375)), closes [#153](https://github.com/kiegroup/git-backporting/issues/153)
+* fix(#151): fix gitlab post comments url (#152) ([d74a787](https://github.com/kiegroup/git-backporting/commit/d74a787)), closes [#152](https://github.com/kiegroup/git-backporting/issues/152)
+
 ## [4.8.4](https://github.com/kiegroup/git-backporting/compare/v4.8.3...v4.8.4) (2024-11-02)
 
 
