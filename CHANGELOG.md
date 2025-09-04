@@ -1,5 +1,13 @@
 # Changelog
 
+## <small>4.8.6 (2025-09-04)</small>
+
+* ci: bump node version to 20 for ci workflows (#161) ([c5ce1d4](https://github.com/kiegroup/git-backporting/commit/c5ce1d4)), closes [#161](https://github.com/kiegroup/git-backporting/issues/161)
+* build: audit fix (#159) ([8f0df7b](https://github.com/kiegroup/git-backporting/commit/8f0df7b)), closes [#159](https://github.com/kiegroup/git-backporting/issues/159)
+* build(deps): bump form-data from 4.0.0 to 4.0.4 (#158) ([83a65d8](https://github.com/kiegroup/git-backporting/commit/83a65d8)), closes [#158](https://github.com/kiegroup/git-backporting/issues/158)
+* build(deps): bump tmp and @inquirer/editor (#160) ([8c412dc](https://github.com/kiegroup/git-backporting/commit/8c412dc)), closes [#160](https://github.com/kiegroup/git-backporting/issues/160)
+* build(deps): bump undici, @release-it/conventional-changelog and release-it (#157) ([8625efa](https://github.com/kiegroup/git-backporting/commit/8625efa)), closes [#157](https://github.com/kiegroup/git-backporting/issues/157)
+
 ## <small>4.8.5 (2025-04-15)</small>
 
 * build(deps): audit fix (#150) ([3a9d367](https://github.com/kiegroup/git-backporting/commit/3a9d367)), closes [#150](https://github.com/kiegroup/git-backporting/issues/150)
