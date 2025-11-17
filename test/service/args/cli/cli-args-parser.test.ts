@@ -505,7 +505,7 @@ describe("cli args parser", () => {
       "https://localhost/whatever/pulls/1"
     ]);
 
-    expect(() => parser.parse()).toThrowError("Missing option: target branch(es) or target regular expression must be provided");
+    expect(() => parser.parse()).toThrow("Missing option: target branch(es) or target regular expression must be provided");
   });
 
   test("invalid execution with missing mandatory target branch", () => {
@@ -514,7 +514,7 @@ describe("cli args parser", () => {
       "https://localhost/whatever/pulls/1"
     ]);
 
-    expect(() => parser.parse()).toThrowError("Missing option: target branch(es) or target regular expression must be provided");
+    expect(() => parser.parse()).toThrow("Missing option: target branch(es) or target regular expression must be provided");
   });
 
   test("invalid execution with missing mandatory pull request", () => {
@@ -523,7 +523,7 @@ describe("cli args parser", () => {
       "target",
     ]);
 
-    expect(() => parser.parse()).toThrowError("Missing option: pull request must be provided");
+    expect(() => parser.parse()).toThrow("Missing option: pull request must be provided");
   });
 
   test("enable error notification flag", () => {

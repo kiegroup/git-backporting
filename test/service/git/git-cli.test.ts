@@ -88,11 +88,11 @@ describe("git cli service", () => {
   });
 
   test("fetch", async () => {
-    await expect(git.fetch(cwd, currentBranch)).resolves.not.toThrowError();
+    await expect(git.fetch(cwd, currentBranch)).resolves.not.toThrow();
   });
 
   test("local branch", async () => {
-    await expect(git.createLocalBranch(cwd, "new-local-branch")).resolves.not.toThrowError();
+    await expect(git.createLocalBranch(cwd, "new-local-branch")).resolves.not.toThrow();
 
     // use rev-parse to double check the current branch is the new one
     const output = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd }).stdout.toString().trim();

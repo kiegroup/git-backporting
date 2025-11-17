@@ -88,10 +88,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -185,10 +185,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 4444, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 4444, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]);
 
     expect(configs.dryRun).toEqual(true);
     expect(configs.auth).toEqual("whatever");
@@ -260,10 +260,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -333,10 +333,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.auth).toEqual("");
@@ -374,10 +374,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -446,10 +446,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -520,10 +520,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -583,10 +583,10 @@ describe("github pull request config parser", () => {
     const args: Args = argsParser.parse();
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -645,10 +645,10 @@ describe("github pull request config parser", () => {
     const args: Args = argsParser.parse();
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, true);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, true);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -715,10 +715,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 8632, false);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 8632, false);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), ["0404fb922ab75c3a8aecad5c97d9af388df04695", "11da4e38aa3e577ffde6d546f1c52e53b04d3151"]);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -793,10 +793,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -890,10 +890,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.git).toEqual({
@@ -955,10 +955,10 @@ describe("github pull request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.getPullRequest).toBeCalledWith("owner", "reponame", 2368, undefined);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitHubMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.getPullRequest).toHaveBeenCalledWith("owner", "reponame", 2368, undefined);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.errorNotification).toEqual({
       "enabled": true,

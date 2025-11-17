@@ -44,7 +44,7 @@ describe("check git utilities", () => {
   });
 
   test("not recognized git client type", ()=> {
-    expect(() => inferGitClient("https://not.recognized/superuser/backporting-example/-/merge_requests/4")).toThrowError("Remote git service not recognized from pr url: https://not.recognized/superuser/backporting-example/-/merge_requests/4");
+    expect(() => inferGitClient("https://not.recognized/superuser/backporting-example/-/merge_requests/4")).toThrow("Remote git service not recognized from pr url: https://not.recognized/superuser/backporting-example/-/merge_requests/4");
   });
 
   test("check infer github client using github api", ()=> {
