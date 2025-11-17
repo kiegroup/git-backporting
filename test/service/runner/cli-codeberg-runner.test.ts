@@ -1075,8 +1075,7 @@ describe("cli runner", () => {
   });
 
   test("with multiple target branches and one failure", async () => {
-    jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((_backport: BackportPullRequest) => {
-      
+    const createPullRequestSpy = jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((_backport: BackportPullRequest) => {
       throw new Error("Mocked error");
     });
 
@@ -1160,6 +1159,8 @@ describe("cli runner", () => {
     });
     expect(GitHubClient.prototype.createPullRequest).toThrowError();
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+
+    createPullRequestSpy.mockReset();
   });
 
   test("auth using CODEBERG_TOKEN takes precedence over GIT_TOKEN env variable", async () => {
@@ -1237,7 +1238,7 @@ describe("cli runner", () => {
   });
 
   test("with multiple target branches, one failure and error notification enabled", async () => {
-    jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((backport: BackportPullRequest) => {
+    const createPullRequestSpy = jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((backport: BackportPullRequest) => {
       throw new Error(`Mocked error: ${backport.base}`);
     });
 
@@ -1325,10 +1326,12 @@ describe("cli runner", () => {
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
+
+    createPullRequestSpy.mockReset();
   });
 
   test("with some failures and dry run enabled", async () => {
-    jest.spyOn(GitCLIService.prototype, "cherryPick").mockImplementation((cwd: string, sha: string) => {
+    const cherryPickSpy = jest.spyOn(GitCLIService.prototype, "cherryPick").mockImplementation((cwd: string, sha: string) => {
       throw new Error(`Forced error: ${sha}`);
     });
 
@@ -1372,5 +1375,7 @@ describe("cli runner", () => {
 
     expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+
+    cherryPickSpy.mockReset();
   });
 });

@@ -9,7 +9,8 @@ const jestConfig: Config.InitialOptions = {
     "^@bp/(.*)$": "<rootDir>/src/$1",
   },
   clearMocks: true,
-  resetMocks: true,
+  restoreMocks: false,
+  resetMocks: false,
   modulePathIgnorePatterns: ["<rootDir>/build/", "<rootDir>/dist/"],
   coveragePathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/test/", "<rootDir>/build/", "<rootDir>/dist/"]
 };
