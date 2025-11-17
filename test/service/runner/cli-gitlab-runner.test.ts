@@ -89,24 +89,24 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-9e15674");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "merge-requests/2/head:pr/2");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(0);
-    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
   });
 
   test("dry run with relative folder", async () => {
@@ -124,26 +124,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-9e15674");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "merge-requests/2/head:pr/2");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.addRemote).toBeCalledTimes(0);
-    expect(GitCLIService.prototype.addRemote).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(0);
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
   });
 
   test("without dry run", async () => {
@@ -158,26 +158,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9e15674");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-9e15674");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "merge-requests/2/head:pr/2");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-9e15674");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-9e15674");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-9e15674", 
@@ -201,7 +201,7 @@ describe("cli runner", () => {
     ]);
 
     await expect(() => runner.execute()).rejects.toThrow("Provided pull request is closed and not merged");
-    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
   });
 
   test("merged pull request", async () => {
@@ -216,27 +216,27 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-ebb1eca");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-ebb1eca", 
@@ -249,7 +249,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitLabClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitLabClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
   });
 
 
@@ -277,26 +277,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "merge-requests/2/head:pr/2");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp_branch_name", 
@@ -334,26 +334,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "merge-requests/2/head:pr/2");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "9e15674ebd48e05c6e428a1fa31dbb60a778d644", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp_branch_name", 
@@ -383,27 +383,27 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-ebb1eca");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-ebb1eca", 
@@ -432,27 +432,27 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-ebb1eca");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-ebb1eca");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-ebb1eca");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-ebb1eca", 
@@ -477,27 +477,27 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, "my-token", "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, "my-token", "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "prod");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "prod");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-prod-ebb1eca");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-prod-ebb1eca");
     
     // 0 occurrences as the mr is already merged and the owner is the same for
     // both source and target repositories
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "ebb1eca696c42fd067658bd9b5267709f78ef38e", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-prod-ebb1eca");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-prod-ebb1eca");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-prod-ebb1eca", 
@@ -525,23 +525,23 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-e4dd336");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-e4dd336");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-e4dd336",
@@ -569,27 +569,27 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336-974519f");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-e4dd336-974519f");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "merge-requests/2/head:pr/2");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "merge-requests/2/head:pr/2");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
     expect(GitCLIService.prototype.cherryPick).toHaveBeenNthCalledWith(1, cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
     expect(GitCLIService.prototype.cherryPick).toHaveBeenNthCalledWith(2, cwd, "974519f65c9e0ed65277cd71026657a09fca05e7", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336-974519f");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-e4dd336-974519f");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-e4dd336-974519f",
@@ -617,23 +617,23 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://my.gitlab.host.com/superuser/backporting-example.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-e4dd336");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-e4dd336");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "e4dd336a4a20f394df6665994df382fb1d193a11", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-e4dd336");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-e4dd336");
 
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
         head: "bp-target-e4dd336",
@@ -660,8 +660,8 @@ describe("cli runner", () => {
     
     await runner.execute();
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, "mygitlabtoken", "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, "mygitlabtoken", "https://my.gitlab.host.com/api/v4");
   
     // Not interested in all subsequent calls, already tested in other test cases
   });
@@ -679,8 +679,8 @@ describe("cli runner", () => {
     
     await runner.execute();
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, "mytoken", "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, "mytoken", "https://my.gitlab.host.com/api/v4");
   
     // Not interested in all subsequent calls, already tested in other test cases
   });
@@ -697,8 +697,8 @@ describe("cli runner", () => {
     
     await runner.execute();
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.GITLAB, undefined, "https://my.gitlab.host.com/api/v4");
   
     // Not interested in all subsequent calls, already tested in other test cases
   });

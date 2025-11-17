@@ -49,10 +49,10 @@ describe("github service", () => {
     expect(res.commits).toEqual(["ebb1eca696c42fd067658bd9b5267709f78ef38e"]);
     
     // check axios invocation
-    expect(axiosInstanceSpy.get).toBeCalledTimes(3); // merge request and 2 repos
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/1");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/76316");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/76316");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(3); // merge request and 2 repos
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/1");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/76316");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/76316");
   });
 
   test("get open pull request", async () => {
@@ -72,10 +72,10 @@ describe("github service", () => {
     expect(res.commits).toEqual(["9e15674ebd48e05c6e428a1fa31dbb60a778d644"]);
 
     // check axios invocation
-    expect(axiosInstanceSpy.get).toBeCalledTimes(3); // merge request and 2 repos
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/2");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/76316");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/76316");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(3); // merge request and 2 repos
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/2");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/76316");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/76316");
   });
 
   test("create backport pull request without reviewers and assignees", async () => {
@@ -96,8 +96,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(1);
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -105,8 +105,8 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(0); // no reviewers nor assignees
-    expect(axiosInstanceSpy.put).toBeCalledTimes(0); // no reviewers nor assignees
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(0); // no reviewers nor assignees
+    expect(axiosInstanceSpy.put).toHaveBeenCalledTimes(0); // no reviewers nor assignees
   });
 
   test("create backport pull request with reviewers", async () => {
@@ -127,8 +127,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(1);
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -136,11 +136,11 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(2); // just reviewers, one invalid
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=superuser");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=invalid");
-    expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just reviewers
-    expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + NEW_GITLAB_MR_ID, {
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(2); // just reviewers, one invalid
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=superuser");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=invalid");
+    expect(axiosInstanceSpy.put).toHaveBeenCalledTimes(1); // just reviewers
+    expect(axiosInstanceSpy.put).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + NEW_GITLAB_MR_ID, {
       reviewer_ids: [14041],
     });
   });
@@ -163,8 +163,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(1);
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -172,11 +172,11 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(2); // just assignees, one invalid
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=superuser");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=invalid");
-    expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just assignees
-    expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + NEW_GITLAB_MR_ID, {
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(2); // just assignees, one invalid
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=superuser");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=invalid");
+    expect(axiosInstanceSpy.put).toHaveBeenCalledTimes(1); // just assignees
+    expect(axiosInstanceSpy.put).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + NEW_GITLAB_MR_ID, {
       assignee_ids: [14041],
     });
   });
@@ -199,8 +199,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + SECOND_NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(1);
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch-2",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -208,11 +208,11 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(2); // just reviewers, one invalid
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=superuser");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=invalid");
-    expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just reviewers
-    expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(2); // just reviewers, one invalid
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=superuser");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=invalid");
+    expect(axiosInstanceSpy.put).toHaveBeenCalledTimes(1); // just reviewers
+    expect(axiosInstanceSpy.put).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
       reviewer_ids: [14041],
     });
   });
@@ -235,8 +235,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + SECOND_NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(1);
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch-2",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -244,11 +244,11 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(2); // just assignees, one invalid
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=superuser");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/users?username=invalid");
-    expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just assignees
-    expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(2); // just assignees, one invalid
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=superuser");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/users?username=invalid");
+    expect(axiosInstanceSpy.put).toHaveBeenCalledTimes(1); // just assignees
+    expect(axiosInstanceSpy.put).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
       assignee_ids: [14041],
     });
   });
@@ -271,8 +271,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + SECOND_NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(1);
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(1);
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch-2",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -280,9 +280,9 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(0);
-    expect(axiosInstanceSpy.put).toBeCalledTimes(1); // just labels
-    expect(axiosInstanceSpy.put).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(0);
+    expect(axiosInstanceSpy.put).toHaveBeenCalledTimes(1); // just labels
+    expect(axiosInstanceSpy.put).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID, {
       labels: "label1,label2",
     });
   });
@@ -305,8 +305,8 @@ describe("github service", () => {
     expect(url).toStrictEqual("https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/" + SECOND_NEW_GITLAB_MR_ID);
 
     // check axios invocation
-    expect(axiosInstanceSpy.post).toBeCalledTimes(3); // also comments
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
+    expect(axiosInstanceSpy.post).toHaveBeenCalledTimes(3); // also comments
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests", expect.objectContaining({
       source_branch: "bp-branch-2",
       target_branch: "old/branch",
       title: "Backport Title",
@@ -314,12 +314,12 @@ describe("github service", () => {
       reviewer_ids: [],
       assignee_ids: [],
     }));
-    expect(axiosInstanceSpy.get).toBeCalledTimes(0);
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(0);
     
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID + "/notes", {
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID + "/notes", {
       body: "this is first comment",
     });
-    expect(axiosInstanceSpy.post).toBeCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID + "/notes", {
+    expect(axiosInstanceSpy.post).toHaveBeenCalledWith("/projects/superuser%2Fbackporting-example/merge_requests/" + SECOND_NEW_GITLAB_MR_ID + "/notes", {
       body: "this is second comment",
     });
   });
@@ -343,9 +343,9 @@ describe("github service", () => {
     expect(res.commits).toEqual(["ebb1eca696c42fd067658bd9b5267709f78ef38e"]);
     
     // check axios invocation
-    expect(axiosInstanceSpy.get).toBeCalledTimes(3); // merge request and 2 repos
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/mysuperorg%2F6%2Fmysuperproduct%2Fmysuperunit%2Fbackporting-example/merge_requests/4");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/1645");
-    expect(axiosInstanceSpy.get).toBeCalledWith("/projects/1645");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledTimes(3); // merge request and 2 repos
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/mysuperorg%2F6%2Fmysuperproduct%2Fmysuperunit%2Fbackporting-example/merge_requests/4");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/1645");
+    expect(axiosInstanceSpy.get).toHaveBeenCalledWith("/projects/1645");
   });
 });

@@ -56,10 +56,10 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.auth).toEqual("");
@@ -129,10 +129,10 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.auth).toEqual("");
@@ -203,10 +203,10 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.auth).toEqual("");
@@ -277,10 +277,10 @@ describe("gitlab merge request config parser", () => {
 
     const configs: Configs = await configParser.parseAndValidate(args);
 
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledTimes(1);
-    expect(GitLabClient.prototype.getPullRequest).toBeCalledWith("superuser", "backporting-example", 1, true);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledTimes(1);
-    expect(GitLabMapper.prototype.mapPullRequest).toBeCalledWith(expect.anything(), []);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabClient.prototype.getPullRequest).toHaveBeenCalledWith("superuser", "backporting-example", 1, true);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitLabMapper.prototype.mapPullRequest).toHaveBeenCalledWith(expect.anything(), []);
 
     expect(configs.dryRun).toEqual(false);
     expect(configs.auth).toEqual("");

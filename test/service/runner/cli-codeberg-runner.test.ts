@@ -78,24 +78,24 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
   });
 
   test("overriding author", async () => {
@@ -111,20 +111,20 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
   });
 
   test("with relative folder", async () => {
@@ -142,26 +142,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.addRemote).toBeCalledTimes(0);
-    expect(GitCLIService.prototype.addRemote).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(0);
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
   });
 
   test("with absolute folder", async () => {
@@ -179,23 +179,23 @@ describe("cli runner", () => {
 
     const cwd = "/tmp/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
   });
 
   test("without dry run", async () => {
@@ -210,26 +210,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db", 
@@ -242,7 +242,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("same owner", async () => {
@@ -257,25 +257,25 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db", 
@@ -288,8 +288,8 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
   });
 
   test("closed and not merged pull request", async () => {
@@ -315,26 +315,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-9174896");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-9174896");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/4444/head:pr/4444");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/4444/head:pr/4444");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-9174896");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-9174896");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-9174896", 
@@ -347,7 +347,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("open pull request with --auto-no-squash", async () => {
@@ -363,27 +363,27 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/4444/head:pr/4444");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/4444/head:pr/4444");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
     expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
 	owner: "owner",
 	repo: "reponame",
 	head: "bp-target-11da4e3-0404fb9",
@@ -396,7 +396,7 @@ describe("cli runner", () => {
 	comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("override backporting pr data", async () => {
@@ -423,26 +423,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp_branch_name", 
@@ -455,7 +455,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("set empty reviewers", async () => {
@@ -481,26 +481,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp_branch_name", 
@@ -513,7 +513,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("set custom labels with inheritance", async () => {
@@ -531,26 +531,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db", 
@@ -563,7 +563,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("set custom labels without inheritance", async () => {
@@ -580,26 +580,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db", 
@@ -612,7 +612,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("using config file with overrides", async () => {
@@ -625,26 +625,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, "my-auth-token", "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, "my-auth-token", "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp_branch_name");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp_branch_name", 
@@ -657,7 +657,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   // to check: https://codeberg.org/kiegroup/git-backporting/issues/52
@@ -673,26 +673,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db", 
@@ -705,7 +705,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("multiple commits pr", async () => {
@@ -721,26 +721,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-11da4e3-0404fb9");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
     expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-11da4e3-0404fb9", 
@@ -753,7 +753,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("too long bp branch name", async () => {
@@ -775,26 +775,26 @@ describe("cli runner", () => {
 
     const truncatedBranch = tooLongBranchName.slice(0, 250);
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, truncatedBranch);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, truncatedBranch);
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, truncatedBranch);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, truncatedBranch);
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: truncatedBranch, 
@@ -807,7 +807,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("multiple commits pr with different strategy", async () => {
@@ -827,26 +827,26 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-11da4e3-0404fb9");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
     expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", "ort", "find-renames", undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-11da4e3-0404fb9");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-11da4e3-0404fb9");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-11da4e3-0404fb9", 
@@ -859,7 +859,7 @@ describe("cli runner", () => {
         comments: [],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("additional pr comments", async () => {
@@ -878,25 +878,25 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "target");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-target-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(1);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-target-28f63db", 
@@ -909,7 +909,7 @@ describe("cli runner", () => {
         comments: ["first comment", "second comment"],
       }
     );
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(1);
   });
 
   test("with multiple target branches", async () => {
@@ -926,34 +926,34 @@ describe("cli runner", () => {
 
     const cwd = "/tmp/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v1-28f63db");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v2-28f63db");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "bp-v3-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-v1-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-v2-28f63db");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-v3-28f63db");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-v1-28f63db");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-v2-28f63db");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "bp-v3-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-v1-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-v2-28f63db");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-v3-28f63db");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-v1-28f63db", 
@@ -965,7 +965,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-v2-28f63db", 
@@ -977,7 +977,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "bp-v3-28f63db", 
@@ -989,7 +989,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(3);
   });
 
   test("with multiple target branches and multiple bp names", async () => {
@@ -1008,34 +1008,34 @@ describe("cli runner", () => {
 
     const cwd = "/tmp/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom1");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom2");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom3");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom1");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom2");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom3");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom1");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom2");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom3");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom1");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom2");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom3");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom1", 
@@ -1047,7 +1047,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom2", 
@@ -1059,7 +1059,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom3", 
@@ -1071,7 +1071,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toReturnTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toHaveReturnedTimes(3);
   });
 
   test("with multiple target branches and one failure", async () => {
@@ -1090,38 +1090,38 @@ describe("cli runner", () => {
       "custom-failure-head",
     ]);
     
-    await expect(() => runner.execute()).rejects.toThrowError("Failure occurred during one of the backports: [Error: Mocked error ; Error: Mocked error ; Error: Mocked error]");
+    await expect(() => runner.execute()).rejects.toThrow("Failure occurred during one of the backports: [Error: Mocked error ; Error: Mocked error ; Error: Mocked error]");
 
     const cwd = "/tmp/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v2");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v3");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v3");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v1");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v2");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v3");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v3");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom-failure-head-v1", 
@@ -1133,7 +1133,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom-failure-head-v2", 
@@ -1145,7 +1145,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom-failure-head-v3", 
@@ -1157,8 +1157,8 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toThrowError();
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toThrow();
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
 
     createPullRequestSpy.mockReset();
   });
@@ -1175,8 +1175,8 @@ describe("cli runner", () => {
     
     await runner.execute();
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, "mycodebergtoken", "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, "mycodebergtoken", "https://codeberg.org/api/v1");
 
     // Not interested in all subsequent calls, already tested in other test cases
   });
@@ -1194,8 +1194,8 @@ describe("cli runner", () => {
     
     await runner.execute();
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, "mytoken", "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, "mytoken", "https://codeberg.org/api/v1");
 
     // Not interested in all subsequent calls, already tested in other test cases
   });
@@ -1212,8 +1212,8 @@ describe("cli runner", () => {
     
     await runner.execute();
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
     // Not interested in all subsequent calls, already tested in other test cases
   });
@@ -1230,11 +1230,11 @@ describe("cli runner", () => {
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(1);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "prod");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "prod");
   });
 
   test("with multiple target branches, one failure and error notification enabled", async () => {
@@ -1254,38 +1254,38 @@ describe("cli runner", () => {
       "--enable-err-notification",
     ]);
     
-    await expect(() => runner.execute()).rejects.toThrowError("Failure occurred during one of the backports: [Error: Mocked error: v1 ; Error: Mocked error: v2 ; Error: Mocked error: v3]");
+    await expect(() => runner.execute()).rejects.toThrow("Failure occurred during one of the backports: [Error: Mocked error: v1 ; Error: Mocked error: v2 ; Error: Mocked error: v3]");
 
     const cwd = "/tmp/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v2");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v3");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v3");
     
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toBeCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v1");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v2");
-    expect(GitCLIService.prototype.push).toBeCalledWith(cwd, "custom-failure-head-v3");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v3");
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom-failure-head-v1", 
@@ -1297,7 +1297,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom-failure-head-v2", 
@@ -1309,7 +1309,7 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledWith({
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
         head: "custom-failure-head-v3", 
@@ -1321,11 +1321,11 @@ describe("cli runner", () => {
         labels: [],
         comments: [],
     });
-    expect(GitHubClient.prototype.createPullRequest).toThrowError();
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequest).toThrow();
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(3);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
 
     createPullRequestSpy.mockReset();
   });
@@ -1348,33 +1348,33 @@ describe("cli runner", () => {
       "--dry-run",
     ]);
 
-    await expect(() => runner.execute()).rejects.toThrowError("Failure occurred during one of the backports: [Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc ; Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc ; Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc]");
+    await expect(() => runner.execute()).rejects.toThrow("Failure occurred during one of the backports: [Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc ; Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc ; Error: Forced error: 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc]");
 
     const cwd = "/tmp/folder";
 
-    expect(GitClientFactory.getOrCreate).toBeCalledTimes(1);
-    expect(GitClientFactory.getOrCreate).toBeCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
 
-    expect(GitCLIService.prototype.clone).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
-    expect(GitCLIService.prototype.clone).toBeCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v2");
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v3");
 
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v1");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v2");
-    expect(GitCLIService.prototype.createLocalBranch).toBeCalledWith(cwd, "custom-failure-head-v3");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v1");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v2");
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head-v3");
 
-    expect(GitCLIService.prototype.fetch).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.fetch).toBeCalledWith(cwd, "pull/2368/head:pr/2368");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
-    expect(GitCLIService.prototype.cherryPick).toBeCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toThrowError();
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
+    expect(GitCLIService.prototype.cherryPick).toThrow();
 
-    expect(GitCLIService.prototype.push).toBeCalledTimes(0);
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
 
-    expect(GitHubClient.prototype.createPullRequest).toBeCalledTimes(0);
-    expect(GitHubClient.prototype.createPullRequestComment).toBeCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
 
     cherryPickSpy.mockReset();
   });
