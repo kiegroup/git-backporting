@@ -35,7 +35,7 @@ jobs:
       - run: npm ci
       - name: Compute next version
         run: |
-          next_version=$(npx release-it --release-version --no-git.requireCleanWorkingDir)
+          next_version=$(npm run release -- --release-version --no-git.requireCleanWorkingDi)
           echo "NEXT_VERSION=${next_version}" >> $GITHUB_ENV
       - name: Prepare the release changes
         run: npm run release:prepare -- --ci --no-git.commit ${{ github.event.inputs.options }}
