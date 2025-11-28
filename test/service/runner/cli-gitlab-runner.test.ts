@@ -702,4 +702,15 @@ describe("cli runner", () => {
   
     // Not interested in all subsequent calls, already tested in other test cases
   });
+
+  test("throw error if missing squash commit", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/6"
+    ]);
+
+    await expect(() => runner.execute()).rejects.toThrow("Trying to backport a single squashed/merged commit that does not exist! Aborting...");
+  });
 });

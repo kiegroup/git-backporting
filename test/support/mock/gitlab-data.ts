@@ -1056,3 +1056,138 @@ export const MERGED_NOT_SQUASHED_MR = {
      "can_merge":true
   }
 };
+
+export const UNDEFINED_COMMITS_MR = {
+  "id":807106,
+  "iid":6,
+  "project_id":76316,
+  "title":"Update test.txt",
+  "description":"This is the body",
+  "state":"merged",
+  "created_at":"2023-06-28T14:32:40.943Z",
+  "updated_at":"2023-06-28T14:37:12.108Z",
+  "merged_by":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "merge_user":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "merged_at":"2023-06-28T14:37:11.667Z",
+  "closed_by":null,
+  "closed_at":null,
+  "target_branch":"main",
+  "source_branch":"feature",
+  "user_notes_count":0,
+  "upvotes":0,
+  "downvotes":0,
+  "author":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "assignees":[
+     {
+        "id":14041,
+        "username":"superuser",
+        "name":"Super User",
+        "state":"active",
+        "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+        "web_url":"https://my.gitlab.host.com/superuser"
+     }
+  ],
+  "assignee":{
+     "id":14041,
+     "username":"superuser",
+     "name":"Super User",
+     "state":"active",
+     "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+     "web_url":"https://my.gitlab.host.com/superuser"
+  },
+  "reviewers":[
+     {
+        "id":1404188,
+        "username":"superuser1",
+        "name":"Super User",
+        "state":"active",
+        "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+        "web_url":"https://my.gitlab.host.com/superuser"
+     },
+     {
+        "id":1404199,
+        "username":"superuser2",
+        "name":"Super User",
+        "state":"active",
+        "avatar_url":"https://my.gitlab.host.com/uploads/-/system/user/avatar/14041/avatar.png",
+        "web_url":"https://my.gitlab.host.com/superuser"
+     }
+  ],
+  "source_project_id":76316,
+  "target_project_id":76316,
+  "labels":[
+     "backport-prod"
+  ],
+  "draft":false,
+  "work_in_progress":false,
+  "milestone":null,
+  "merge_when_pipeline_succeeds":false,
+  "merge_status":"can_be_merged",
+  "detailed_merge_status":"not_open",
+  "sha":"9e15674ebd48e05c6e428a1fa31dbb60a778d644",
+  "merge_commit_sha":undefined,
+  "squash_commit_sha":undefined,
+  "discussion_locked":null,
+  "should_remove_source_branch":true,
+  "force_remove_source_branch":true,
+  "reference":"!2",
+  "references":{
+     "short":"!2",
+     "relative":"!2",
+     "full":"superuser/backporting-example!6"
+  },
+  "web_url":"https://my.gitlab.host.com/superuser/backporting-example/-/merge_requests/6",
+  "time_stats":{
+     "time_estimate":0,
+     "total_time_spent":0,
+     "human_time_estimate":null,
+     "human_total_time_spent":null
+  },
+  "squash":true,
+  "squash_on_merge":true,
+  "task_completion_status":{
+     "count":0,
+     "completed_count":0
+  },
+  "has_conflicts":false,
+  "blocking_discussions_resolved":true,
+  "approvals_before_merge":null,
+  "subscribed":true,
+  "changes_count":"1",
+  "latest_build_started_at":null,
+  "latest_build_finished_at":null,
+  "first_deployed_to_production_at":null,
+  "pipeline":null,
+  "head_pipeline":null,
+  "diff_refs":{
+     "base_sha":"2c553a0c4c133a51806badce5fa4842b7253cb3b",
+     "head_sha":"9e15674ebd48e05c6e428a1fa31dbb60a778d644",
+     "start_sha":"2c553a0c4c133a51806badce5fa4842b7253cb3b"
+  },
+  "merge_error":null,
+  "first_contribution":false,
+  "user":{
+     "can_merge":true
+  }
+};
