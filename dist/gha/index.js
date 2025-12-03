@@ -408,7 +408,10 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             let backportBranch = bpBranchNames.length > 1 ? bpBranchNames[idx] : bpBranchNames[0];
             if (backportBranch === undefined || backportBranch.trim() === "") {
                 // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
-                const concatenatedCommits = originalPullRequest.commits.map(c => c.slice(0, 7)).join("-");
+                const concatenatedCommits = originalPullRequest.commits.filter(c => c).map(c => c.slice(0, 7)).join("-");
+                if (concatenatedCommits === "") {
+                    throw new Error("Missing commits, stopping the backporting!");
+                }
                 backportBranch = `bp-${tb}-${concatenatedCommits}`;
             }
             else if (bpBranchNames.length == 1 && targetBranches.length > 1) {
@@ -1018,7 +1021,11 @@ class GitHubMapper {
     }
     getSha(pr) {
         // if pr is open use latest commit sha otherwise use merge_commit_sha
-        return pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha];
+        const sha = pr.state === "open" ? pr.head.sha : pr.merge_commit_sha;
+        if (!sha) {
+            throw new Error("Trying to backport a single squashed/merged commit that does not exist! Aborting...");
+        }
+        return [sha];
     }
     async mapSourceRepo(pr) {
         return Promise.resolve({
@@ -1314,9 +1321,13 @@ class GitLabMapper {
         };
     }
     getSha(mr) {
-        // if mr is merged, use merge_commit_sha otherwise use sha
+        // if mr is merged, use merge_commit_sha (or squash_commit_sha) otherwise use sha
         // what is the difference between sha and diff_refs.head_sha?
-        return this.isMerged(mr) ? [mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha] : [mr.sha];
+        const sha = this.isMerged(mr) ? (mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha) : mr.sha;
+        if (!sha) {
+            throw new Error("Trying to backport a single squashed/merged commit that does not exist! Aborting...");
+        }
+        return [sha];
     }
     async mapSourceRepo(mr) {
         const project = await this.getProject(mr.source_project_id);

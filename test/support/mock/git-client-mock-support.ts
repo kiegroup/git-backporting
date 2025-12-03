@@ -1,7 +1,7 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
 import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER, GITHUB_GET_COMMIT } from "./github-data";
-import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER, MERGED_SQUASHED_MR_COMMITS, MERGED_NOT_SQUASHED_MR, MERGED_NOT_SQUASHED_MR_COMMITS } from "./gitlab-data";
+import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER, MERGED_SQUASHED_MR_COMMITS, MERGED_NOT_SQUASHED_MR, MERGED_NOT_SQUASHED_MR_COMMITS, UNDEFINED_COMMITS_MR } from "./gitlab-data";
 import { CB_TARGET_OWNER, CB_REPO, CB_MERGED_PR_FIXTURE, CB_OPEN_PR_FIXTURE, CB_NOT_MERGED_PR_FIXTURE, CB_NOT_FOUND_PR_NUMBER, CB_MULT_COMMITS_PR_FIXTURE, CB_MULT_COMMITS_PR_COMMITS, CB_NEW_PR_URL, CB_NEW_PR_NUMBER, CODEBERG_GET_COMMIT } from "./codeberg-data";
 
 // high number, for each test we are not expecting 
@@ -27,6 +27,8 @@ export const getAxiosMocked = (url: string) => {
     data = NESTED_NAMESPACE_MR;
   } else if (url.endsWith("merge_requests/5")) {
     data = MERGED_NOT_SQUASHED_MR;
+  } else if (url.endsWith("merge_requests/6")) {
+    data = UNDEFINED_COMMITS_MR;
   } else if (url.endsWith("projects/76316")) {
     data = PROJECT_EXAMPLE;
   } else if (url.endsWith("projects/1645")) {

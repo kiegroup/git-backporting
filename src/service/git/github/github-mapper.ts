@@ -37,7 +37,12 @@ export default class GitHubMapper implements GitResponseMapper<PullRequest, "ope
 
   private getSha(pr: PullRequest) {
     // if pr is open use latest commit sha otherwise use merge_commit_sha
-    return pr.state === "open" ? [pr.head.sha] : [pr.merge_commit_sha as string];
+    const sha = pr.state === "open" ? pr.head.sha : pr.merge_commit_sha as string;
+    if (!sha) {
+      throw new Error("Trying to backport a single squashed/merged commit that does not exist! Aborting...");
+    }
+
+    return [sha];
   }
 
   async mapSourceRepo(pr: PullRequest): Promise<GitRepository> {
