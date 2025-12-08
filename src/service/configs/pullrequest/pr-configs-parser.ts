@@ -139,7 +139,10 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       let backportBranch = bpBranchNames.length > 1 ? bpBranchNames[idx] : bpBranchNames[0];
       if (backportBranch === undefined || backportBranch.trim() === "") {
         // for each commit takes the first 7 chars that are enough to uniquely identify them in most of the projects
-        const concatenatedCommits: string = originalPullRequest.commits!.map(c => c.slice(0, 7)).join("-");
+        const concatenatedCommits: string = originalPullRequest.commits!.filter(c => c).map(c => c.slice(0, 7)).join("-");
+        if (concatenatedCommits === "") {
+          throw new Error("Missing commits, stopping the backporting!");
+        }
         backportBranch = `bp-${tb}-${concatenatedCommits}`;
       } else if (bpBranchNames.length == 1 && targetBranches.length > 1) {
         // multiple targets and single custom backport branch name we need to differentiate branch names

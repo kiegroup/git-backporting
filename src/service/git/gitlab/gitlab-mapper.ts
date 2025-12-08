@@ -25,6 +25,7 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
   }
   
   async mapPullRequest(mr: MergeRequestSchema, commits?: string[]): Promise<GitPullRequest> {
+
     return {
       number: mr.iid,
       author: mr.author.username,
@@ -47,9 +48,14 @@ export default class GitLabMapper implements GitResponseMapper<MergeRequestSchem
   }
   
   private getSha(mr: MergeRequestSchema) {
-    // if mr is merged, use merge_commit_sha otherwise use sha
+    // if mr is merged, use merge_commit_sha (or squash_commit_sha) otherwise use sha
     // what is the difference between sha and diff_refs.head_sha?
-    return this.isMerged(mr) ? [mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha as string] : [mr.sha];
+    const sha = this.isMerged(mr) ? (mr.squash_commit_sha ? mr.squash_commit_sha : mr.merge_commit_sha as string) : mr.sha;
+    if (!sha) {
+      throw new Error("Trying to backport a single squashed/merged commit that does not exist! Aborting...");
+    }
+
+    return [sha];
   }
 
   async mapSourceRepo(mr: MergeRequestSchema): Promise<GitRepository> {
