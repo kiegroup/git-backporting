@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.7](///compare/v4.8.6...v4.8.7) (2025-12-11)
+
+### Bug Fixes
+
+* override conventional-changelog-conventionalcommits ([#178](https://github.com/kiegroup/git-backporting/issues/178)) ([42d5ca8](https://github.com/kiegroup/git-backporting/commit/42d5ca8288b2af94b1d47f7fe5cb153ae2480822))
+* throw error when trying to backport single undefined commit ([#177](https://github.com/kiegroup/git-backporting/issues/177)) ([39b6b15](https://github.com/kiegroup/git-backporting/commit/39b6b1515be29d0fc5b48f2a85342217e3c22ce8))
+
 ## <small>4.8.6 (2025-09-04)</small>
 
 * ci: bump node version to 20 for ci workflows (#161) ([c5ce1d4](https://github.com/kiegroup/git-backporting/commit/c5ce1d4)), closes [#161](https://github.com/kiegroup/git-backporting/issues/161)
