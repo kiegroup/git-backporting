@@ -7,10 +7,6 @@
 * override conventional-changelog-conventionalcommits ([#178](undefined/undefined/undefined/issues/178)) 42d5ca8
 * throw error when trying to backport single undefined commit ([#177](undefined/undefined/undefined/issues/177)) 39b6b15
 
-### Reverts
-
-* Revert "build(deps): downgrade @release-it/conventional-changelog to 10.0.1 (#170)" (#172) 23049ae, closes #170 #172
-
 ## <small>4.8.6 (2025-09-04)</small>
 
 * ci: bump node version to 20 for ci workflows (#161) ([c5ce1d4](https://github.com/kiegroup/git-backporting/commit/c5ce1d4)), closes [#161](https://github.com/kiegroup/git-backporting/issues/161)
