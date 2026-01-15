@@ -5,7 +5,7 @@ import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs
 import GitCLIService from "@bp/service/git/git-cli";
 import GitClient from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
-import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
+import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { inferGitClient, inferGitApiUrl, getGitTokenFromEnv } from "@bp/service/git/git-util";
@@ -13,8 +13,8 @@ import { injectError, injectTargetBranch } from "./runner-util";
 
 interface Git {
   gitClientType: GitClientType;
-  gitClientApi: GitClient;
-  gitCli: GitCLIService;
+  gitClientApi: Pick<GitClient, ("createPullRequest" | "createPullRequestComment")>;
+  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "cherryPick" | "push")>;
 }
 
 /**
@@ -84,23 +84,18 @@ export default class Runner {
     const failures: string[] = [];
     // we need sequential backporting as they will operate on the same folder
     // avoid cloning the same repo multiple times
-    for(const pr of backportPRs) {
+    for (const pr of backportPRs) {
+      this.logger.setContext(pr.base);
       try {
         await this.executeBackport(configs, pr, {
           gitClientType: gitClientType,
           gitClientApi: gitApi,
           gitCli: git,
         });
-      } catch(error) {
-        this.logger.error(`Something went wrong backporting to ${pr.base}: ${error}`);
-        if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
-          // notify the failure as comment in the original pull request
-          let comment = injectError(configs.errorNotification.message, error as string);
-          comment = injectTargetBranch(comment, pr.base);
-          await gitApi.createPullRequestComment(configs.originalPullRequest.url, comment);
-        }
+      } catch (error) {
         failures.push(error as string);
       }
+      this.logger.clearContext();
     }
 
     if (failures.length > 0) {
@@ -130,45 +125,147 @@ export default class Runner {
   }
 
   async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void> {
-    this.logger.setContext(backportPR.base);
-
-    const originalPR: GitPullRequest = configs.originalPullRequest;
-
-    // 4. clone the repository
-    this.logger.debug("Cloning repo..");
-    await git.gitCli.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, backportPR.base);
-
-    // 5. create new branch from target one and checkout
-    this.logger.debug("Creating local branch..");
-    await git.gitCli.createLocalBranch(configs.folder, backportPR.head);
-
-    // 6. fetch pull request remote if source owner != target owner or pull request still open
-    if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner || 
-        configs.originalPullRequest.state === "open") {
-      this.logger.debug("Fetching pull request remote..");
-      const prefix = git.gitClientType === GitClientType.GITLAB ? "merge-requests" : "pull" ; // default is for gitlab
-      await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+    let i = 0;
+    for (const step of backportSteps(this.logger, configs, backportPR, git)) {
+      try {
+        await step();
+      } catch (error) {
+        this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
+        if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+          // notify the failure as comment in the original pull request
+          let comment = injectError(configs.errorNotification.message, error as string);
+          comment = injectTargetBranch(comment, backportPR.base);
+          try {
+            let script = "\n\nReconstruction of the attempted steps (beware that escaping may be missing):\n```sh\n";
+            script += await backportScript(configs, backportPR, git, i);
+            script += "```";
+            comment += script;
+          } catch (scriptError) {
+            this.logger.error(`Something went wrong reconstructing the script: ${scriptError}`);
+          }
+          await git.gitClientApi.createPullRequestComment(configs.originalPullRequest.url, comment);
+        }
+        throw error;
+      }
+      i++;
     }
-
-    // 7. apply all changes to the new branch
-    this.logger.debug("Cherry picking commits..");
-    for (const sha of originalPR.commits) {
-      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
-    }
-
-    if (!configs.dryRun) {
-      // 8. push the new branch to origin
-      await git.gitCli.push(configs.folder, backportPR.head);
-
-      // 9. create pull request new branch -> target branch (using octokit)
-      const prUrl = await git.gitClientApi.createPullRequest(backportPR);
-      this.logger.info(`Pull request created: ${prUrl}`);
-
-    } else {
-      this.logger.warn("Pull request creation and remote push skipped");
-      this.logger.info(`${JSON.stringify(backportPR, null, 2)}`);
-    }
-
-    this.logger.clearContext();
   }
+}
+
+
+function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, configs: Configs, backportPR: BackportPullRequest, git: Git): Generator<() => Promise<void>, void, unknown> {
+  // every failible operation should be in one dedicated closure
+
+  // 4. clone the repository
+  yield async () => {
+    logger.debug("Cloning repo..");
+    await git.gitCli.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, backportPR.base);
+  };
+
+  // 5. create new branch from target one and checkout
+  yield async () => {
+    logger.debug("Creating local branch..");
+    await git.gitCli.createLocalBranch(configs.folder, backportPR.head);
+  };
+
+  // 6. fetch pull request remote if source owner != target owner or pull request still open
+  if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
+    configs.originalPullRequest.state === "open") {
+    yield async () => {
+      logger.debug("Fetching pull request remote..");
+      const prefix = git.gitClientType === GitClientType.GITLAB ? "merge-requests" : "pull"; // default is for gitlab
+      await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+    };
+  }
+
+  // 7. apply all changes to the new branch
+  yield async () => {
+    logger.debug("Cherry picking commits..");
+  };
+  for (const sha of configs.originalPullRequest.commits) {
+    yield async () => {
+      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
+    };
+  }
+
+  if (!configs.dryRun) {
+    // 8. push the new branch to origin
+    yield async () => {
+      await git.gitCli.push(configs.folder, backportPR.head);
+    };
+
+    // 9. create pull request new branch -> target branch (using octokit)
+    yield async () => {
+      const prUrl = await git.gitClientApi.createPullRequest(backportPR);
+      logger.info(`Pull request created: ${prUrl}`);
+    };
+  } else {
+    yield async () => {
+      logger.warn("Pull request creation and remote push skipped");
+      logger.info(`${JSON.stringify(backportPR, null, 2)}`);
+    };
+  }
+}
+
+// backportScript reconstruct the git commands that were run to attempt the backport.
+async function backportScript(configs: Configs, backportPR: BackportPullRequest, git: Git, failed: number): Promise<string> {
+  let s = "";
+  const fakeLogger = {
+    debug: function(_message: string): void { /*discard*/ },
+    info: function(_message: string): void { /*discard*/ },
+    warn: function(_message: string): void { /*discard*/ },
+  };
+  const fakeGitCli: Git["gitCli"] = {
+    async clone(_from: string, _to: string, _branch: string): Promise<void> {
+      /* consider that the user already has the repo cloned (or knows how to clone) */
+      s += `git fetch origin ${backportPR.base}`;
+    },
+    async createLocalBranch(_cwd: string, newBranch: string): Promise<void> {
+      s += `git switch -c ${newBranch} origin/${backportPR.base}`;
+    },
+    async fetch(_cwd: string, branch: string, remote = "origin"): Promise<void> {
+      s += `git fetch ${remote} ${branch}`;
+    },
+    async cherryPick(_cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined): Promise<void> {
+      s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} `;
+      if (cherryPickOptions !== undefined) {
+        s += cherryPickOptions + " ";
+      }
+      s += sha;
+    },
+    async push(_cwd: string, branch: string, remote = "origin", force = false): Promise<void> {
+      s += `git push ${remote} ${branch}`;
+      if (force) {
+        s += " --force";
+      }
+    }
+  };
+  let i = 0;
+  let steps = "";
+  for (const step of backportSteps(fakeLogger, configs, backportPR, {
+    gitClientType: git.gitClientType,
+    gitClientApi: {
+      async createPullRequest(_backport: BackportPullRequest): Promise<string> {
+        s += `# ${git.gitClientType}.createPullRequest`;
+        return "";
+      },
+      async createPullRequestComment(_prUrl: string, _comment: string): Promise<string | undefined> {
+        s += `# ${git.gitClientType}.createPullRequestComment`;
+        return "";
+      }
+    },
+    gitCli: fakeGitCli,
+  })) {
+    if (i == failed) {
+      s += "# the step below failed\n";
+    }
+    await step();
+    if (s.length > 0 || i == failed) {
+      steps += s + "\n";
+      s = "";
+    }
+    i++;
+  }
+
+  return steps;
 }

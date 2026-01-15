@@ -1323,9 +1323,42 @@ describe("cli runner", () => {
     });
     expect(GitHubClient.prototype.createPullRequest).toThrow();
     expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(3);
-    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v1` failed. Check the latest run for more details.");
-    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v2` failed. Check the latest run for more details.");
-    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", "The backport to `v3` failed. Check the latest run for more details.");
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", `The backport to ${"`v1`"} failed. Check the latest run for more details.
+
+Reconstruction of the attempted steps (beware that escaping may be missing):
+${"```sh"}
+git fetch origin v1
+git switch -c custom-failure-head-v1 origin/v1
+git fetch origin pull/2368/head:pr/2368
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git push origin custom-failure-head-v1
+# the step below failed
+# codeberg.createPullRequest
+${"```"}`);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", `The backport to ${"`v2`"} failed. Check the latest run for more details.
+
+Reconstruction of the attempted steps (beware that escaping may be missing):
+${"```sh"}
+git fetch origin v2
+git switch -c custom-failure-head-v2 origin/v2
+git fetch origin pull/2368/head:pr/2368
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git push origin custom-failure-head-v2
+# the step below failed
+# codeberg.createPullRequest
+${"```"}`);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://codeberg.org/api/v1/repos/owner/reponame/pulls/2368", `The backport to ${"`v3`"} failed. Check the latest run for more details.
+
+Reconstruction of the attempted steps (beware that escaping may be missing):
+${"```sh"}
+git fetch origin v3
+git switch -c custom-failure-head-v3 origin/v3
+git fetch origin pull/2368/head:pr/2368
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git push origin custom-failure-head-v3
+# the step below failed
+# codeberg.createPullRequest
+${"```"}`);
 
     createPullRequestSpy.mockReset();
   });
