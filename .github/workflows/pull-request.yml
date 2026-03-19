@@ -18,7 +18,7 @@ jobs:
     name: ${{ matrix.os }} - node ${{ matrix.node-version }}
     strategy:
       matrix:
-        node-version: [24]
+        node-version: ['24.13.0']
         os: [ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
