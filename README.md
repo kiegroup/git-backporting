@@ -61,7 +61,7 @@ This is the easiest invocation where you let the tool set / compute most of the 
 
 ### Requirements
 
-* Node 16 or higher, more details on Node can be found [here](https://nodejs.org/en).
+* Node 18 or higher, more details on Node can be found [here](https://nodejs.org/en).
 * Git, see [how to install](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) if you need help.
 
 ### How it works?
