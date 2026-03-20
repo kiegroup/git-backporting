@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.9.0](///compare/v4.8.7...v4.9.0) (2026-03-19)
+
+### Features
+
+* **#181:** reconstruct script in failure comment ([#182](undefined/undefined/undefined/issues/182)) 430523a, closes #181 #181
+
 ## [4.8.7](///compare/v4.8.6...v4.8.7) (2025-12-11)
 
 ### Bug Fixes
