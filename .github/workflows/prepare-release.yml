@@ -19,7 +19,7 @@ jobs:
     name: Prepare release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Setup Node
@@ -47,4 +47,4 @@ jobs:
             Creating changes for the next release.
           branch: release/v${{ env.NEXT_VERSION }}
           commit-message: "chore: release v${{ env.NEXT_VERSION }}"
-          reviewers: lampajr
+          reviewers: mareknovotny,lampajr
