@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.9.1](///compare/v4.9.0...v4.9.1) (2026-03-25)
+
+### Bug Fixes
+
+* removed legacy node 18 from matrix run 56c0deb
+* use node 22 and override undici version to 6.24.1 0c16eed
+* wrong resolved registry in package-lock.json 54ea4cd
+
 ## [4.9.0](///compare/v4.8.7...v4.9.0) (2026-03-19)
 
 ### Features
