@@ -1,8 +1,8 @@
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Moctokit } from "@kie/mock-github";
-import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER, GITHUB_GET_COMMIT } from "./github-data";
+import { TARGET_OWNER, REPO, MERGED_PR_FIXTURE, OPEN_PR_FIXTURE, NOT_MERGED_PR_FIXTURE, NOT_FOUND_PR_NUMBER, MULT_COMMITS_PR_FIXTURE, MULT_COMMITS_PR_COMMITS, NEW_PR_URL, NEW_PR_NUMBER, GITHUB_GET_COMMIT, REBASE_MERGED_PR_FIXTURE, GITHUB_GET_COMMIT_REBASE } from "./github-data";
 import { CLOSED_NOT_MERGED_MR, MERGED_SQUASHED_MR, NESTED_NAMESPACE_MR, OPEN_MR, OPEN_PR_COMMITS, PROJECT_EXAMPLE, NESTED_PROJECT_EXAMPLE, SUPERUSER, MERGED_SQUASHED_MR_COMMITS, MERGED_NOT_SQUASHED_MR, MERGED_NOT_SQUASHED_MR_COMMITS, UNDEFINED_COMMITS_MR } from "./gitlab-data";
-import { CB_TARGET_OWNER, CB_REPO, CB_MERGED_PR_FIXTURE, CB_OPEN_PR_FIXTURE, CB_NOT_MERGED_PR_FIXTURE, CB_NOT_FOUND_PR_NUMBER, CB_MULT_COMMITS_PR_FIXTURE, CB_MULT_COMMITS_PR_COMMITS, CB_NEW_PR_URL, CB_NEW_PR_NUMBER, CODEBERG_GET_COMMIT } from "./codeberg-data";
+import { CB_TARGET_OWNER, CB_REPO, CB_MERGED_PR_FIXTURE, CB_OPEN_PR_FIXTURE, CB_NOT_MERGED_PR_FIXTURE, CB_NOT_FOUND_PR_NUMBER, CB_MULT_COMMITS_PR_FIXTURE, CB_MULT_COMMITS_PR_COMMITS, CB_NEW_PR_URL, CB_NEW_PR_NUMBER, CODEBERG_GET_COMMIT, CB_FORGEJO_OWNER, CB_FORGEJO_REPO, CB_FORGEJO_PR_NUMBER, CB_FORGEJO_MERGE_COMMIT_SHA, CB_FORGEJO_REBASE_MERGED_PR_FIXTURE, CB_FORGEJO_GET_MERGE_COMMIT, CB_FORGEJO_PR_COMMITS } from "./codeberg-data";
 
 // high number, for each test we are not expecting 
 // to send more than 3 reqs per api endpoint
@@ -148,7 +148,7 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       status: 200,
       data: OPEN_PR_FIXTURE
     });
-  
+
   mock.rest.pulls
     .get({
       owner: TARGET_OWNER,
@@ -159,7 +159,19 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       status: 200,
       data: NOT_MERGED_PR_FIXTURE
     });
-  
+
+  mock.rest.pulls
+    .get({
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: REBASE_MERGED_PR_FIXTURE.number
+    })
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: REBASE_MERGED_PR_FIXTURE
+    });
+
   mock.rest.pulls
     .listCommits(listCommitsParams({
       owner: TARGET_OWNER,
@@ -167,10 +179,37 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       pull_number: MULT_COMMITS_PR_FIXTURE.number,
       }))
     .reply({
+      repeat: REPEAT,
       status: 200,
       data: MULT_COMMITS_PR_COMMITS
     });
-  
+
+  // squash-merged PR: needed to disambiguate squash from rebase during inference
+  mock.rest.pulls
+    .listCommits(listCommitsParams({
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: MERGED_PR_FIXTURE.number
+    }))
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: MULT_COMMITS_PR_COMMITS
+    });
+
+  // rebase-merged PR
+  mock.rest.pulls
+    .listCommits(listCommitsParams({
+      owner: TARGET_OWNER,
+      repo: REPO,
+      pull_number: REBASE_MERGED_PR_FIXTURE.number
+    }))
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: MULT_COMMITS_PR_COMMITS
+    });
+
   mock.rest.pulls
     .listCommits(listCommitsParams({
       owner: TARGET_OWNER,
@@ -232,8 +271,21 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       commit_sha: "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc",
     })
     .reply({
+      repeat: REPEAT,
       status: 200,
       data: GITHUB_GET_COMMIT,
+    });
+
+  mock.rest.git
+    .getCommit({
+      owner: TARGET_OWNER,
+      repo: REPO,
+      commit_sha: REBASE_MERGED_PR_FIXTURE.merge_commit_sha,
+    })
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: GITHUB_GET_COMMIT_REBASE,
     });
 
   // invalid requests
@@ -315,6 +367,20 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
       pull_number: CB_MULT_COMMITS_PR_FIXTURE.number,
       }))
     .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: CB_MULT_COMMITS_PR_COMMITS
+    });
+
+  // squash-merged PR: needed to disambiguate squash from rebase during inference
+  mock.rest.pulls
+    .listCommits(listCommitsParams({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_MERGED_PR_FIXTURE.number
+    }))
+    .reply({
+      repeat: REPEAT,
       status: 200,
       data: CB_MULT_COMMITS_PR_COMMITS
     });
@@ -399,8 +465,46 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
       commit_sha: "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc",
     })
     .reply({
+      repeat: REPEAT,
       status: 200,
       data: CODEBERG_GET_COMMIT,
+    });
+
+  // Forgejo/Gitea rebase-merged PR (RepoCommit-shaped git.getCommit, no commits count)
+  mock.rest.pulls
+    .get({
+      owner: CB_FORGEJO_OWNER,
+      repo: CB_FORGEJO_REPO,
+      pull_number: CB_FORGEJO_PR_NUMBER
+    })
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: CB_FORGEJO_REBASE_MERGED_PR_FIXTURE
+    });
+
+  mock.rest.pulls
+    .listCommits(listCommitsParams({
+      owner: CB_FORGEJO_OWNER,
+      repo: CB_FORGEJO_REPO,
+      pull_number: CB_FORGEJO_PR_NUMBER
+    }))
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: CB_FORGEJO_PR_COMMITS
+    });
+
+  mock.rest.git
+    .getCommit({
+      owner: CB_FORGEJO_OWNER,
+      repo: CB_FORGEJO_REPO,
+      commit_sha: CB_FORGEJO_MERGE_COMMIT_SHA,
+    })
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: CB_FORGEJO_GET_MERGE_COMMIT,
     });
 
   // invalid requests

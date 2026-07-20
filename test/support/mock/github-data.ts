@@ -1833,9 +1833,32 @@ export const MULT_COMMITS_PR_FIXTURE = {
 };
 
 export const GITHUB_GET_COMMIT = {
+  "message": "Squashed commit (#2368)",
   "parents": [
     {
       "sha": "SHA"
+    }
+  ]
+};
+
+// PR merged with "rebase and merge": the merge commit is the tip of the replayed
+// commit chain, so it has a single parent AND its message matches the PR's last commit.
+// The "commits" count is intentionally omitted (GitHub returns it, Gitea/Forgejo do not)
+// to prove the detection does not depend on it.
+export const REBASE_MERGED_PR_NUMBER = 7777;
+
+export const REBASE_MERGED_PR_FIXTURE = {
+  ...MULT_COMMITS_PR_FIXTURE,
+  "number": REBASE_MERGED_PR_NUMBER,
+  "merge_commit_sha": "11da4e38aa3e577ffde6d546f1c52e53b04d3151",
+  "commits": undefined,
+};
+
+export const GITHUB_GET_COMMIT_REBASE = {
+  "message": "Update file2.txt",
+  "parents": [
+    {
+      "sha": "0404fb922ab75c3a8aecad5c97d9af388df04695"
     }
   ]
 };

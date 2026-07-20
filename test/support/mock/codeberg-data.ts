@@ -1835,6 +1835,7 @@ export const CB_MULT_COMMITS_PR_FIXTURE = {
 };
 
 export const CODEBERG_GET_COMMIT = {
+  "message": "Squashed commit (#2368)",
   "parents": [
     {
       "sha": "SHA"
@@ -2001,4 +2002,76 @@ export const CB_MULT_COMMITS_PR_COMMITS = [
       }
     ]
   }
+];
+
+// -----------------------------------------------------------------------------
+// Anonymized reproduction of a Forgejo/Gitea "rebase and merge" pull request.
+// It captures two Forgejo/Gitea specifics that GitHub does not share:
+//   1. the PR payload has NO "commits" count field
+//   2. git.getCommit returns a "RepoCommit" whose message is nested under `commit`
+//      (GitHub returns it flat at the top level as `message`)
+// The merge commit is the tip of the rebased chain, so it has a single parent and
+// its message equals the PR's last commit - i.e. it is NOT a squash.
+// -----------------------------------------------------------------------------
+export const CB_FORGEJO_OWNER = "acme";
+export const CB_FORGEJO_REPO = "project";
+export const CB_FORGEJO_PR_NUMBER = 4321;
+export const CB_FORGEJO_MERGE_COMMIT_SHA = "d24517657404d7565699c87fd580eca92d2bb2c4";
+
+export const CB_FORGEJO_REBASE_MERGED_PR_FIXTURE = {
+  "number": CB_FORGEJO_PR_NUMBER,
+  "state": "closed",
+  "title": "Add bounds checks to buffer handling",
+  "body": "A series of fixes adding missing size checks across the module.",
+  "url": "https://forgejo.example.org/api/v1/repos/acme/project/pulls/4321",
+  "html_url": "https://forgejo.example.org/acme/project/pulls/4321",
+  "merged": true,
+  "merge_commit_sha": CB_FORGEJO_MERGE_COMMIT_SHA,
+  // NOTE: intentionally no "commits" count field - Forgejo/Gitea do not return it
+  "user": { "login": "octodev" },
+  "merged_by": { "login": "octodev" },
+  "requested_reviewers": [{ "login": "reviewer-one" }],
+  "assignees": null,
+  "labels": [{ "name": "module" }, { "name": "backport/release/1.0" }],
+  "head": {
+    "label": "add-bounds-checks",
+    "ref": "add-bounds-checks",
+    "sha": CB_FORGEJO_MERGE_COMMIT_SHA,
+    "repo": {
+      "full_name": "octodev/project",
+      "clone_url": "https://forgejo.example.org/octodev/project.git"
+    }
+  },
+  "base": {
+    "label": "main",
+    "ref": "main",
+    "sha": "a67a496679b9bd59384fc07d1705eb14a689c27a",
+    "repo": {
+      "full_name": "acme/project",
+      "clone_url": "https://forgejo.example.org/acme/project.git"
+    }
+  }
+};
+
+// git.getCommit response for the merge commit, in Forgejo/Gitea "RepoCommit" shape
+// (message nested under `commit`, single parent).
+export const CB_FORGEJO_GET_MERGE_COMMIT = {
+  "sha": CB_FORGEJO_MERGE_COMMIT_SHA,
+  "commit": {
+    "message": "module/foxtrot: add bounds check for input buffer\n"
+  },
+  "parents": [
+    { "sha": "4927a0616b71e4abad92df39721ea5b5e2564e4e" }
+  ]
+};
+
+// pulls.listCommits response - RepoCommit shape, returned newest-first as Forgejo does.
+export const CB_FORGEJO_PR_COMMITS = [
+  { "sha": "d24517657404d7565699c87fd580eca92d2bb2c4", "commit": { "message": "module/foxtrot: add bounds check for input buffer\n" }, "parents": [{ "sha": "4927a0616b71e4abad92df39721ea5b5e2564e4e" }] },
+  { "sha": "4927a0616b71e4abad92df39721ea5b5e2564e4e", "commit": { "message": "module/echo: add bounds check for input buffer\n" }, "parents": [{ "sha": "53ba2bca30716bf3533116757ef36a85cba0520f" }] },
+  { "sha": "53ba2bca30716bf3533116757ef36a85cba0520f", "commit": { "message": "module/delta: add bounds check for input buffer\n" }, "parents": [{ "sha": "fad9bcf0f8d015ae805f2828f5af93ae2b29c2eb" }] },
+  { "sha": "fad9bcf0f8d015ae805f2828f5af93ae2b29c2eb", "commit": { "message": "module/charlie: add bounds check for input buffer\n" }, "parents": [{ "sha": "74a869c5daddda312b9d7e83c5e08888aaa3eb8d" }] },
+  { "sha": "74a869c5daddda312b9d7e83c5e08888aaa3eb8d", "commit": { "message": "module/bravo: add bounds check for input buffer\n" }, "parents": [{ "sha": "13825cb48276343b243e5b43134a0486a11acd51" }] },
+  { "sha": "13825cb48276343b243e5b43134a0486a11acd51", "commit": { "message": "module/alpha: add bounds check for slice buffer\n" }, "parents": [{ "sha": "8dc8e091de0c3b27d9eed248557324696f8625a5" }] },
+  { "sha": "8dc8e091de0c3b27d9eed248557324696f8625a5", "commit": { "message": "module/alpha: add bounds check for input buffer\n" }, "parents": [{ "sha": "a67a496679b9bd59384fc07d1705eb14a689c27a" }] }
 ];

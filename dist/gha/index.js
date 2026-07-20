@@ -870,46 +870,85 @@ class GitHubClient {
             repo: repo,
             pull_number: prNumber,
         });
+        const open = data.state == "open";
+        // commits belonging to the pull request, lazily fetched (and cached) since they
+        // may be needed both to infer the squash flag and to actually cherry-pick them
+        let prCommits = undefined;
         if (squash === undefined) {
             let commit_sha = undefined;
-            const open = data.state == "open";
             if (!open) {
                 const commit = await this.octokit.rest.git.getCommit({
                     owner: owner,
                     repo: repo,
                     commit_sha: data.merge_commit_sha,
                 });
+                // A merge commit with a single parent is produced by BOTH a "squash and merge"
+                // and a "rebase and merge", so the parent count alone cannot tell them apart.
+                // A rebase replays every commit of the pull request preserving
+                // its message, hence the merge commit (the tip of the replayed chain) shares its
+                // message with one of the pull request commits. A squash instead collapses all
+                // commits into a single new commit with a synthesized message. A single-commit
+                // pull request is treated as a squash since both strategies are equivalent there.
+                // Note: we rely on the actual number of fetched commits rather than a "commits"
+                // count on the PR payload, since Forgejo/Gitea do not return such a field.
                 if (commit.data.parents.length === 1) {
-                    commit_sha = data.merge_commit_sha;
+                    let rebaseMerged = false;
+                    if (data.merged) {
+                        prCommits = await this.getCommits(owner, repo, prNumber);
+                        const mergeCommitMessage = this.extractCommitMessage(commit.data);
+                        rebaseMerged = prCommits.length > 1 && mergeCommitMessage !== undefined && prCommits.some(c => c.message === mergeCommitMessage);
+                    }
+                    if (!rebaseMerged) {
+                        commit_sha = data.merge_commit_sha;
+                    }
                 }
             }
             squash = (0, git_util_1.inferSquash)(open, commit_sha);
         }
         const commits = [];
         if (!squash) {
-            // fetch all commits
-            try {
-                const { data } = await this.octokit.rest.pulls.listCommits({
-                    owner: owner,
-                    repo: repo,
-                    pull_number: prNumber,
-                });
-                commits.push(...data.map(c => c.sha));
-                if (this.isForCodeberg) {
-                    // For some reason, even though Codeberg advertises API compatibility
-                    // with GitHub, it returns commits in reversed order.
-                    commits.reverse();
-                }
-            }
-            catch (error) {
-                throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
-            }
+            // reuse the commits already fetched while inferring the squash flag, if any
+            const list = prCommits ?? await this.getCommits(owner, repo, prNumber);
+            commits.push(...list.map(c => c.sha));
         }
         return this.mapper.mapPullRequest(data, commits);
     }
     async getPullRequestFromUrl(prUrl, squash) {
         const { owner, project, id } = this.extractPullRequestData(prUrl);
         return this.getPullRequest(owner, project, id, squash);
+    }
+    /**
+     * Read the message out of a git.getCommit response. GitHub returns it at the top level
+     * (`message`), whereas Gitea/Forgejo nest it under `commit` (`commit.message`). Support
+     * both shapes so rebase-vs-squash detection works across providers.
+     */
+    extractCommitMessage(commitData) {
+        const data = commitData;
+        return data.message ?? data.commit?.message;
+    }
+    /**
+     * Fetch all commits belonging to the given pull request, ordered from the oldest
+     * to the newest.
+     * @returns list of commits, each with its sha and message
+     */
+    async getCommits(owner, repo, prNumber) {
+        try {
+            const { data } = await this.octokit.rest.pulls.listCommits({
+                owner: owner,
+                repo: repo,
+                pull_number: prNumber,
+            });
+            const commits = data.map(c => ({ sha: c.sha, message: c.commit.message }));
+            if (this.isForCodeberg) {
+                // For some reason, even though Codeberg advertises API compatibility
+                // with GitHub, it returns commits in reversed order.
+                commits.reverse();
+            }
+            return commits;
+        }
+        catch (error) {
+            throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
+        }
     }
     // WRITE
     async createPullRequest(backport) {
