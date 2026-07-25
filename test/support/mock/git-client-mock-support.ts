@@ -10,6 +10,13 @@ const REPEAT = 20;
 
 const logger = LoggerServiceFactory.getLogger();
 
+// @kie/mock-github@2.0.2 mistypes some GET endpoints (e.g. pulls.listCommits) with
+// `params?: undefined`, even though the path params are required at runtime to build
+// the request path (and, for base-path'd hosts like Codeberg, to avoid an unmatched
+// regex interceptor). Cast through unknown to pass the real path params.
+const listCommitsParams = (params: { owner: string; repo: string; pull_number: number }) =>
+  params as unknown as undefined;
+
 // AXIOS
 
 export const getAxiosMocked = (url: string) => {
@@ -154,22 +161,22 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
     });
   
   mock.rest.pulls
-    .listCommits({
+    .listCommits(listCommitsParams({
       owner: TARGET_OWNER,
       repo: REPO,
-      pull_number: MULT_COMMITS_PR_FIXTURE.number
-    })
+      pull_number: MULT_COMMITS_PR_FIXTURE.number,
+      }))
     .reply({
       status: 200,
       data: MULT_COMMITS_PR_COMMITS
     });
   
   mock.rest.pulls
-    .listCommits({
+    .listCommits(listCommitsParams({
       owner: TARGET_OWNER,
       repo: REPO,
-      pull_number: OPEN_PR_FIXTURE.number
-    })
+      pull_number: OPEN_PR_FIXTURE.number,
+      }))
     .reply({
       status: 200,
       data: MULT_COMMITS_PR_COMMITS
@@ -302,29 +309,32 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
     });
   
   mock.rest.pulls
-    .listCommits({
+    .listCommits(listCommitsParams({
       owner: CB_TARGET_OWNER,
       repo: CB_REPO,
-      pull_number: CB_MULT_COMMITS_PR_FIXTURE.number
-    })
+      pull_number: CB_MULT_COMMITS_PR_FIXTURE.number,
+      }))
     .reply({
       status: 200,
       data: CB_MULT_COMMITS_PR_COMMITS
     });
   
   mock.rest.pulls
-    .listCommits({
+    .listCommits(listCommitsParams({
       owner: CB_TARGET_OWNER,
       repo: CB_REPO,
-      pull_number: CB_OPEN_PR_FIXTURE.number
-    })
+      pull_number: CB_OPEN_PR_FIXTURE.number,
+      }))
     .reply({
       status: 200,
       data: CB_MULT_COMMITS_PR_COMMITS
     });
 
   mock.rest.pulls
-    .create()
+    .create({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+    })
     .reply({
       repeat: REPEAT,
       status: 201,
@@ -335,7 +345,11 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
     });
 
   mock.rest.pulls
-    .requestReviewers()
+    .requestReviewers({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      pull_number: CB_NEW_PR_NUMBER,
+    })
     .reply({
       repeat: REPEAT,
       status: 201,
@@ -343,7 +357,11 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
     });
 
   mock.rest.issues
-    .addAssignees()
+    .addAssignees({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      issue_number: CB_NEW_PR_NUMBER,
+    })
     .reply({
       repeat: REPEAT,
       status: 201,
@@ -351,7 +369,11 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
     });
 
   mock.rest.issues
-    .addLabels()
+    .addLabels({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      issue_number: CB_NEW_PR_NUMBER,
+    })
     .reply({
       repeat: REPEAT,
       status: 200,
@@ -359,7 +381,11 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
     });
 
   mock.rest.issues
-    .createComment()
+    .createComment({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+      issue_number: CB_NEW_PR_NUMBER,
+    })
     .reply({
       repeat: REPEAT,
       status: 201,
