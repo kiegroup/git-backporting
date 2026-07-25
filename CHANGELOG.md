@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.10.0](https://github.com/kiegroup/git-backporting/compare/v4.9.1...v4.10.0) (2026-07-25)
+
+### Features
+
+* add ability to open PRs from forked repo ([#216](https://github.com/kiegroup/git-backporting/issues/216)) ([da19e2a](https://github.com/kiegroup/git-backporting/commit/da19e2ab876adebb4ecb9f89473203bbbd6fff76))
+* filter unused blobs when cloning repo ([#217](https://github.com/kiegroup/git-backporting/issues/217)) ([9a4855c](https://github.com/kiegroup/git-backporting/commit/9a4855ced484211fe1efa70bcde59eddce959ee3))
+
+### Bug Fixes
+
+* **deps:** resolve all npm audit vulnerabilities (39 → 0) ([#220](https://github.com/kiegroup/git-backporting/issues/220)) ([84c49d5](https://github.com/kiegroup/git-backporting/commit/84c49d5a8eccd81d1814a7d00182f81d758ebbaf))
+* properly identify rebase and then ff ([#215](https://github.com/kiegroup/git-backporting/issues/215)) ([6ae3bf8](https://github.com/kiegroup/git-backporting/commit/6ae3bf8732347c39c32ca06c6b9f5bc181c4778d))
+
 ## [4.9.1](///compare/v4.9.0...v4.9.1) (2026-03-25)
 
 ### Bug Fixes
