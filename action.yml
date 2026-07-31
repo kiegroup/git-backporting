@@ -64,6 +64,10 @@ inputs:
     description: >
       Optional backport repository as owner/repo where the backport branch is pushed, useful to create PRs from a fork
     required: false
+  tb-repo:
+    description: >
+      Optional target repository as owner/repo where the backport pull request should be opened against, useful to backport to a different repository than the original one
+    required: false
   reviewers:
     description: >
       Comma separated list of reviewers for the backporting pull request

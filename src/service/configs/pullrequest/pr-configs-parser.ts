@@ -116,7 +116,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
     bpBranchNames: string[]
   ): BackportPullRequest[] {
 
-    const targetRepo = originalPullRequest.targetRepo;
+    const targetRepo = this.getBackportTargetRepo(args.tbRepo, originalPullRequest.targetRepo);
     const sourceRepo = this.getBackportSourceRepo(args.bpRepo, targetRepo);
 
     const reviewers = args.reviewers ?? [];
@@ -161,6 +161,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       return {
         owner: targetRepo.owner,
         repo: targetRepo.project,
+        cloneUrl: targetRepo.cloneUrl,
         head: backportBranch,
         headRepo: sourceRepo,
         base: tb,
@@ -180,13 +181,33 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       return undefined;
     }
 
-    const sanitized = bpRepo.trim();
-    const parts = sanitized.split("/").map(p => p.trim()).filter(p => p.length > 0);
-    if (parts.length < 2) {
-      throw new Error(`Invalid bp repo format "${bpRepo}", expected "owner/repo"`);
+    return this.parseRepo(bpRepo, "bp", targetRepo);
+  }
+
+  private getBackportTargetRepo(tbRepo: string | undefined, targetRepo: GitRepository): GitRepository {
+    if (!tbRepo || tbRepo.trim() === "") {
+      return targetRepo;
     }
 
-    const cloneUrl = new URL(targetRepo.cloneUrl);
+    return this.parseRepo(tbRepo, "tb", targetRepo);
+  }
+
+  /**
+   * Parse a "owner/repo" formatted repository override and derive its clone url
+   * by reusing the scheme/host of the provided reference repository
+   * @param repo owner/repo formatted repository override
+   * @param optionName name of the option the override came from, used in the error message
+   * @param referenceRepo repository whose clone url is used to derive the scheme/host
+   * @returns {GitRepository}
+   */
+  private parseRepo(repo: string, optionName: string, referenceRepo: GitRepository): GitRepository {
+    const sanitized = repo.trim();
+    const parts = sanitized.split("/").map(p => p.trim()).filter(p => p.length > 0);
+    if (parts.length < 2) {
+      throw new Error(`Invalid ${optionName} repo format "${repo}", expected "owner/repo"`);
+    }
+
+    const cloneUrl = new URL(referenceRepo.cloneUrl);
     cloneUrl.pathname = `/${parts.join("/")}.git`;
 
     return {

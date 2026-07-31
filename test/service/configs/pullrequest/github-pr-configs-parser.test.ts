@@ -130,6 +130,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "[prod] PR Title",
@@ -303,6 +304,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "custom-branch",
       base: "prod",
       title: "New Title",
@@ -345,6 +347,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",
@@ -417,6 +420,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",
@@ -489,6 +493,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",
@@ -563,6 +568,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",
@@ -593,6 +599,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       headRepo: {
         cloneUrl: "https://github.com/my-fork/reponame.git",
@@ -607,6 +614,91 @@ describe("github pull request config parser", () => {
       labels: [],
       comments: [],
     });
+  });
+
+  test("override backport target repository", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      tbRepo: "target-org/reponame",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: false,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.backportPullRequests[0]).toEqual({
+      owner: "target-org",
+      repo: "reponame",
+      cloneUrl: "https://github.com/target-org/reponame.git",
+      head: "bp-prod-28f63db",
+      base: "prod",
+      title: "[prod] PR Title",
+      body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+      reviewers: [],
+      assignees: [],
+      labels: [],
+      comments: [],
+    });
+  });
+
+  test("override backport target and source repository", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      tbRepo: "target-org/reponame",
+      bpRepo: "my-fork/reponame",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: false,
+    };
+
+    const configs: Configs = await configParser.parseAndValidate(args);
+
+    expect(configs.backportPullRequests[0]).toEqual({
+      owner: "target-org",
+      repo: "reponame",
+      cloneUrl: "https://github.com/target-org/reponame.git",
+      head: "bp-prod-28f63db",
+      headRepo: {
+        cloneUrl: "https://github.com/my-fork/reponame.git",
+        owner: "my-fork",
+        project: "reponame",
+      },
+      base: "prod",
+      title: "[prod] PR Title",
+      body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
+      reviewers: [],
+      assignees: [],
+      labels: [],
+      comments: [],
+    });
+  });
+
+  test("invalid tb repo format", async () => {
+    const args: Args = {
+      dryRun: false,
+      auth: "",
+      pullRequest: mergedPRUrl,
+      targetBranch: "prod",
+      tbRepo: "invalid-format",
+      gitUser: "Me",
+      gitEmail: "me@email.com",
+      reviewers: [],
+      assignees: [],
+      inheritReviewers: false,
+    };
+
+    await expect(() => configParser.parseAndValidate(args)).rejects.toThrow("Invalid tb repo format \"invalid-format\", expected \"owner/repo\"");
   });
 
   test("using simple config file", async () => {
@@ -660,6 +752,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "[prod] PR Title",
@@ -723,6 +816,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",
@@ -796,6 +890,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-0404fb9-11da4e3",
       base: "prod",
       title: "[prod] PR Title",
@@ -871,6 +966,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",
@@ -968,6 +1064,7 @@ describe("github pull request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "owner",
       repo: "reponame",
+      cloneUrl: "https://github.com/owner/reponame.git",
       head: "bp-prod-28f63db",
       base: "prod",
       title: "New Title",

@@ -180,6 +180,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-9e15674", 
         base: "target", 
         title: "[target] Update test.txt opened", 
@@ -239,6 +240,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-ebb1eca", 
         base: "target", 
         title: "[target] Update test.txt", 
@@ -299,6 +301,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp_branch_name", 
         base: "target", 
         title: "New Title", 
@@ -356,6 +359,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp_branch_name", 
         base: "target", 
         title: "New Title", 
@@ -406,6 +410,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-ebb1eca", 
         base: "target", 
         title: "[target] Update test.txt", 
@@ -455,6 +460,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-ebb1eca", 
         base: "target", 
         title: "[target] Update test.txt", 
@@ -500,6 +506,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-prod-ebb1eca", 
         base: "prod", 
         title: "New Title", 
@@ -544,6 +551,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-e4dd336",
         base: "target", 
         title: "[target] Update test.txt", 
@@ -592,6 +600,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-e4dd336-974519f",
         base: "target", 
         title: "[target] Update test.txt opened", 
@@ -636,6 +645,7 @@ describe("cli runner", () => {
     expect(GitLabClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "superuser", 
         repo: "backporting-example", 
+        cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
         head: "bp-target-e4dd336",
         base: "target", 
         title: "[target] Update test.txt", 

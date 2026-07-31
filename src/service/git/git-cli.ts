@@ -93,13 +93,21 @@ export default class GitCLIService {
   }
 
   /**
-   * Add a new remote to the current repository
+   * Add a new remote to the current repository, or update its url if a remote
+   * with the same name already exists, e.g., because the working folder is
+   * reused across multiple backports
    * @param cwd repository in which addRemote should be performed
    * @param remote remote git link
    * @param remoteName [optional] name of the remote, by default 'fork' is used
    */
   async addRemote(cwd: string, remote: string, remoteName = "fork"): Promise<void> {
     this.logger.info(`Adding new remote ${remote}`);
+    const existingRemotes = await this.git(cwd).getRemotes();
+    if (existingRemotes.some(r => r.name === remoteName)) {
+      await this.git(cwd).remote(["set-url", remoteName, this.remoteWithAuth(remote)]);
+      return;
+    }
+
     await this.git(cwd).addRemote(remoteName, this.remoteWithAuth(remote));
   }
 

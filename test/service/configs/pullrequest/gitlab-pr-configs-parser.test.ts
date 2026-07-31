@@ -135,6 +135,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "[prod] Update test.txt",
@@ -317,6 +318,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",
@@ -389,6 +391,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",
@@ -461,6 +464,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",
@@ -535,6 +539,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",
@@ -596,6 +601,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "[prod] Update test.txt",
@@ -657,6 +663,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",
@@ -726,6 +733,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-e4dd336-974519f", 
       base: "prod",
       title: "[prod] Update test.txt opened",
@@ -801,6 +809,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",
@@ -876,6 +885,7 @@ describe("gitlab merge request config parser", () => {
     expect(configs.backportPullRequests[0]).toEqual({
       owner: "superuser", 
       repo: "backporting-example", 
+      cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
       head: "bp-prod-ebb1eca", 
       base: "prod",
       title: "New Title",

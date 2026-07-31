@@ -70,6 +70,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v1-28f63db", 
           base: "v1", 
           title: "New Title",
@@ -82,6 +83,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v2-28f63db", 
           base: "v2", 
           title: "New Title",
@@ -94,6 +96,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v3-28f63db", 
           base: "v3", 
           title: "New Title",
@@ -142,6 +145,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v1-28f63db", 
           base: "v1", 
           title: "New Title",
@@ -154,6 +158,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v2-28f63db", 
           base: "v2", 
           title: "New Title",
@@ -166,6 +171,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v3-28f63db", 
           base: "v3", 
           title: "New Title",
@@ -215,6 +221,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "custom-branch-v1", 
           base: "v1", 
           title: "New Title",
@@ -227,6 +234,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "custom-branch-v2", 
           base: "v2", 
           title: "New Title",
@@ -239,6 +247,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "custom-branch-v3", 
           base: "v3", 
           title: "New Title",
@@ -288,6 +297,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "custom-branch1", 
           base: "v1", 
           title: "New Title",
@@ -300,6 +310,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "custom-branch2", 
           base: "v2", 
           title: "New Title",
@@ -312,6 +323,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "custom-branch3", 
           base: "v3", 
           title: "New Title",
@@ -382,6 +394,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v4-0404fb9-11da4e3", 
           base: "v4", 
           title: "[v4] PR Title",
@@ -394,6 +407,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v5-0404fb9-11da4e3", 
           base: "v5", 
           title: "[v5] PR Title",
@@ -406,6 +420,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v6-0404fb9-11da4e3", 
           base: "v6",
           title: "[v6] PR Title",
@@ -453,6 +468,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v1-0404fb9-11da4e3", 
           base: "v1", 
           title: "[v1] PR Title",
@@ -465,6 +481,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v2-0404fb9-11da4e3", 
           base: "v2", 
           title: "[v2] PR Title",
@@ -477,6 +494,7 @@ describe("github pull request config parser", () => {
         {
           owner: "owner", 
           repo: "reponame", 
+          cloneUrl: "https://github.com/owner/reponame.git", 
           head: "bp-v3-0404fb9-11da4e3", 
           base: "v3",
           title: "[v3] PR Title",

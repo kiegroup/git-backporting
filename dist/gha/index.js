@@ -61,6 +61,7 @@ class ArgsParser {
             bodyPrefix: this.getOrDefault(args.bodyPrefix),
             bpBranchName: this.getOrDefault(args.bpBranchName),
             bpRepo: this.getOrDefault(args.bpRepo),
+            tbRepo: this.getOrDefault(args.tbRepo),
             reviewers: this.getOrDefault(args.reviewers, []),
             assignees: this.getOrDefault(args.assignees, []),
             inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
@@ -205,6 +206,7 @@ class GHAArgsParser extends args_parser_1.default {
                 bodyPrefix: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("body-prefix", { trimWhitespace: false })),
                 bpBranchName: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("bp-branch-name")),
                 bpRepo: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("bp-repo")),
+                tbRepo: (0, args_utils_1.getOrUndefined)((0, core_1.getInput)("tb-repo")),
                 reviewers: (0, args_utils_1.getAsCleanedCommaSeparatedList)((0, core_1.getInput)("reviewers")),
                 assignees: (0, args_utils_1.getAsCleanedCommaSeparatedList)((0, core_1.getInput)("assignees")),
                 inheritReviewers: !(0, args_utils_1.getAsBooleanOrUndefined)((0, core_1.getInput)("no-inherit-reviewers")),
@@ -391,7 +393,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
      * @returns {GitPullRequest}
      */
     generateBackportPullRequestsData(originalPullRequest, args, targetBranches, bpBranchNames) {
-        const targetRepo = originalPullRequest.targetRepo;
+        const targetRepo = this.getBackportTargetRepo(args.tbRepo, originalPullRequest.targetRepo);
         const sourceRepo = this.getBackportSourceRepo(args.bpRepo, targetRepo);
         const reviewers = args.reviewers ?? [];
         if (reviewers.length == 0 && args.inheritReviewers) {
@@ -430,6 +432,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             return {
                 owner: targetRepo.owner,
                 repo: targetRepo.project,
+                cloneUrl: targetRepo.cloneUrl,
                 head: backportBranch,
                 headRepo: sourceRepo,
                 base: tb,
@@ -447,12 +450,29 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         if (!bpRepo || bpRepo.trim() === "") {
             return undefined;
         }
-        const sanitized = bpRepo.trim();
+        return this.parseRepo(bpRepo, "bp", targetRepo);
+    }
+    getBackportTargetRepo(tbRepo, targetRepo) {
+        if (!tbRepo || tbRepo.trim() === "") {
+            return targetRepo;
+        }
+        return this.parseRepo(tbRepo, "tb", targetRepo);
+    }
+    /**
+     * Parse a "owner/repo" formatted repository override and derive its clone url
+     * by reusing the scheme/host of the provided reference repository
+     * @param repo owner/repo formatted repository override
+     * @param optionName name of the option the override came from, used in the error message
+     * @param referenceRepo repository whose clone url is used to derive the scheme/host
+     * @returns {GitRepository}
+     */
+    parseRepo(repo, optionName, referenceRepo) {
+        const sanitized = repo.trim();
         const parts = sanitized.split("/").map(p => p.trim()).filter(p => p.length > 0);
         if (parts.length < 2) {
-            throw new Error(`Invalid bp repo format "${bpRepo}", expected "owner/repo"`);
+            throw new Error(`Invalid ${optionName} repo format "${repo}", expected "owner/repo"`);
         }
-        const cloneUrl = new URL(targetRepo.cloneUrl);
+        const cloneUrl = new URL(referenceRepo.cloneUrl);
         cloneUrl.pathname = `/${parts.join("/")}.git`;
         return {
             owner: parts[0],
@@ -552,13 +572,20 @@ class GitCLIService {
         await this.git(cwd).checkoutLocalBranch(newBranch);
     }
     /**
-     * Add a new remote to the current repository
+     * Add a new remote to the current repository, or update its url if a remote
+     * with the same name already exists, e.g., because the working folder is
+     * reused across multiple backports
      * @param cwd repository in which addRemote should be performed
      * @param remote remote git link
      * @param remoteName [optional] name of the remote, by default 'fork' is used
      */
     async addRemote(cwd, remote, remoteName = "fork") {
         this.logger.info(`Adding new remote ${remote}`);
+        const existingRemotes = await this.git(cwd).getRemotes();
+        if (existingRemotes.some(r => r.name === remoteName)) {
+            await this.git(cwd).remote(["set-url", remoteName, this.remoteWithAuth(remote)]);
+            return;
+        }
         await this.git(cwd).addRemote(remoteName, this.remoteWithAuth(remote));
     }
     /**
@@ -1696,26 +1723,46 @@ class Runner {
 exports["default"] = Runner;
 function* backportSteps(logger, configs, backportPR, git) {
     // every failible operation should be in one dedicated closure
+    // whether the backport pr targets a different repository than the original pull request's one (--tb-repo),
+    // in which case the original pr's commits are not reachable from a clone of the backport target repo alone
+    const usingDifferentTargetRepo = backportPR.cloneUrl !== configs.originalPullRequest.targetRepo.cloneUrl;
     // 4. clone the repository
     yield async () => {
         logger.debug("Cloning repo..");
-        await git.gitCli.clone(configs.originalPullRequest.targetRepo.cloneUrl, configs.folder, backportPR.base);
+        await git.gitCli.clone(backportPR.cloneUrl, configs.folder, backportPR.base);
     };
     // 5. create new branch from target one and checkout
     yield async () => {
         logger.debug("Creating local branch..");
         await git.gitCli.createLocalBranch(configs.folder, backportPR.head);
     };
-    // 6. fetch pull request remote if source owner != target owner or pull request still open
-    if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
+    let commitsRemote = undefined;
+    if (usingDifferentTargetRepo) {
+        // 6. add a remote pointing to the original pull request's repository, needed to fetch
+        // commits that only exist there, since the backport target repo won't have them
+        commitsRemote = "upstream";
+        yield async () => {
+            await git.gitCli.addRemote(configs.folder, configs.originalPullRequest.targetRepo.cloneUrl, commitsRemote);
+        };
+    }
+    // 7. fetch pull request remote if source owner != target owner, pull request still open,
+    // or backporting to a different repository than the original pull request's one
+    if (usingDifferentTargetRepo ||
+        configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
         configs.originalPullRequest.state === "open") {
         yield async () => {
             logger.debug("Fetching pull request remote..");
             const prefix = git.gitClientType === git_types_1.GitClientType.GITLAB ? "merge-requests" : "pull"; // default is for gitlab
-            await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
+            const ref = `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`;
+            if (commitsRemote) {
+                await git.gitCli.fetch(configs.folder, ref, commitsRemote);
+            }
+            else {
+                await git.gitCli.fetch(configs.folder, ref);
+            }
         };
     }
-    // 7. apply all changes to the new branch
+    // 8. apply all changes to the new branch
     yield async () => {
         logger.debug("Cherry picking commits..");
     };
@@ -1726,18 +1773,18 @@ function* backportSteps(logger, configs, backportPR, git) {
     }
     let target_remote = undefined;
     if (backportPR.headRepo) {
-        // 8. add fork-remote to push backport branch to
+        // 9. add fork-remote to push backport branch to
         target_remote = "fork";
         yield async () => {
             await git.gitCli.addRemote(configs.folder, backportPR.headRepo.cloneUrl, target_remote);
         };
     }
     if (!configs.dryRun) {
-        // 9. push the new branch to origin
+        // 10. push the new branch to origin
         yield async () => {
             await git.gitCli.push(configs.folder, backportPR.head, target_remote);
         };
-        // 10. create pull request new branch -> target branch (using octokit)
+        // 11. create pull request new branch -> target branch (using octokit)
         yield async () => {
             const prUrl = await git.gitClientApi.createPullRequest(backportPR);
             logger.info(`Pull request created: ${prUrl}`);

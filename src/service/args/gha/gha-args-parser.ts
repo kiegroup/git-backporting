@@ -27,6 +27,7 @@ export default class GHAArgsParser extends ArgsParser {
         bodyPrefix: getOrUndefined(getInput("body-prefix", { trimWhitespace: false })),
         bpBranchName: getOrUndefined(getInput("bp-branch-name")),
         bpRepo: getOrUndefined(getInput("bp-repo")),
+        tbRepo: getOrUndefined(getInput("tb-repo")),
         reviewers: getAsCleanedCommaSeparatedList(getInput("reviewers")),
         assignees: getAsCleanedCommaSeparatedList(getInput("assignees")),
         inheritReviewers: !getAsBooleanOrUndefined(getInput("no-inherit-reviewers")),

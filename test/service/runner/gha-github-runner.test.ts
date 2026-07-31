@@ -123,6 +123,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
@@ -177,6 +178,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-9174896", 
         base: "target", 
         title: "[target] PR Title", 
@@ -228,6 +230,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp_branch_name", 
         base: "target", 
         title: "New Title", 
@@ -280,6 +283,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp_branch_name", 
         base: "target", 
         title: "New Title", 
@@ -327,6 +331,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
@@ -374,6 +379,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
@@ -418,6 +424,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp_branch_name", 
         base: "target", 
         title: "New Title", 
@@ -464,6 +471,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
@@ -510,6 +518,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-0404fb9-11da4e3", 
         base: "target", 
         title: "[target] PR Title", 
@@ -557,6 +566,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner",
         repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
         head: "bp-target-28f63db",
         base: "target",
         title: "[target] PR Title",
@@ -603,6 +613,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
@@ -649,6 +660,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-target-28f63db", 
         base: "target", 
         title: "[target] PR Title", 
@@ -703,6 +715,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-v1-28f63db", 
         base: "v1", 
         title: "[v1] PR Title", 
@@ -715,6 +728,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-v2-28f63db", 
         base: "v2", 
         title: "[v2] PR Title", 
@@ -727,6 +741,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "bp-v3-28f63db", 
         base: "v3", 
         title: "[v3] PR Title", 
@@ -781,6 +796,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "custom-v1", 
         base: "v1", 
         title: "[v1] PR Title", 
@@ -793,6 +809,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "custom-v2", 
         base: "v2", 
         title: "[v2] PR Title", 
@@ -805,6 +822,7 @@ describe("gha runner", () => {
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
         owner: "owner", 
         repo: "reponame", 
+        cloneUrl: "https://github.com/owner/reponame.git", 
         head: "custom-v3", 
         base: "v3", 
         title: "[v3] PR Title", 

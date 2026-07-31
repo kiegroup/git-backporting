@@ -27,6 +27,7 @@ export interface GitRepository {
 export interface BackportPullRequest {
   owner: string, // repository's owner
   repo: string, // repository's name
+  cloneUrl: string, // clone url of the target repository (owner/repo above)
   head: string, // name of the source branch
   headRepo?: GitRepository, // optional: source repository, for cross-repository pull requests
   base: string, // name of the target branch

@@ -70,6 +70,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "bp-v1-ebb1eca", 
           base: "v1",
           title: "New Title",
@@ -82,6 +83,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "bp-v2-ebb1eca", 
           base: "v2",
           title: "New Title",
@@ -94,6 +96,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "bp-v3-ebb1eca", 
           base: "v3",
           title: "New Title",
@@ -143,6 +146,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "bp-v1-ebb1eca", 
           base: "v1",
           title: "New Title",
@@ -155,6 +159,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "bp-v2-ebb1eca", 
           base: "v2",
           title: "New Title",
@@ -167,6 +172,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "bp-v3-ebb1eca", 
           base: "v3",
           title: "New Title",
@@ -217,6 +223,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "custom-branch-v1", 
           base: "v1",
           title: "New Title",
@@ -229,6 +236,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "custom-branch-v2", 
           base: "v2",
           title: "New Title",
@@ -241,6 +249,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "custom-branch-v3", 
           base: "v3",
           title: "New Title",
@@ -291,6 +300,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "custom1", 
           base: "v1",
           title: "New Title",
@@ -303,6 +313,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "custom2", 
           base: "v2",
           title: "New Title",
@@ -315,6 +326,7 @@ describe("gitlab merge request config parser", () => {
         {
           owner: "superuser", 
           repo: "backporting-example", 
+          cloneUrl: "https://my.gitlab.host.com/superuser/backporting-example.git", 
           head: "custom3", 
           base: "v3",
           title: "New Title",

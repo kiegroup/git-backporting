@@ -18,6 +18,7 @@ export interface Args {
   // NOTE: keep bpBranchName as singular and of type string for backward compatibilities
   bpBranchName?: string, // comma separated list of backport pr branch names, default computed from commit and target branches
   bpRepo?: string, // optional backport repository as owner/repo where the branch will be pushed
+  tbRepo?: string, // optional target repository as owner/repo where the backport pr should be opened against
   reviewers?: string[], // backport pr reviewers
   assignees?: string[], // backport pr assignees
   inheritReviewers?: boolean, // if true and reviewers == [] then inherit reviewers from original pr

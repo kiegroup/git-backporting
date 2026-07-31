@@ -88,6 +88,7 @@ describe("gha args parser", () => {
       "body-prefix": "New Body Prefix",
       "bp-branch-name": "bp_branch_name",
       "bp-repo": "fork-user/reponame",
+      "tb-repo": "target-org/reponame",
       "reviewers": "al , john,  jack",
       "assignees": " pippo,pluto, paperino",
       "no-inherit-reviewers": "true",
@@ -108,6 +109,7 @@ describe("gha args parser", () => {
     expect(args.bodyPrefix).toEqual("New Body Prefix");
     expect(args.bpBranchName).toEqual("bp_branch_name");
     expect(args.bpRepo).toEqual("fork-user/reponame");
+    expect(args.tbRepo).toEqual("target-org/reponame");
     expectArrayEqual(args.reviewers!, ["al", "john", "jack"]);
     expectArrayEqual(args.assignees!, ["pippo", "pluto", "paperino"]);
     expect(args.inheritReviewers).toEqual(false);

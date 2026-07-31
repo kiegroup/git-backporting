@@ -124,6 +124,14 @@ describe("git cli service", () => {
     expect(post).toEqual("tbranch");
   });
 
+  test("add remote twice updates the url instead of throwing", async () => {
+    await git.addRemote(cwd, "https://example.com/first/repo.git", "upstream");
+    await expect(git.addRemote(cwd, "https://example.com/second/repo.git", "upstream")).resolves.not.toThrow();
+
+    const remoteURL = spawnSync("git", ["remote", "get-url", "upstream"], { cwd }).stdout.toString().trim();
+    expect(remoteURL).toEqual("https://example.com/second/repo.git");
+  });
+
   test("git clone set url with auth correctly for API token", async () => {
     const git2 = new GitCLIService("api-token", {
       user: "Backporting bot",

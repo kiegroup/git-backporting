@@ -126,6 +126,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | No Reviewers Inheritance       | --no-inherit-reviewers        | N            | Considered only if reviewers is empty, if true keep reviewers as empty list, otherwise inherit from original pull request                                                           | false       |
 | Backport Branch Names       | --bp-branch-name        | N            | Comma separated lists of the backporting pull request branch names, if they exceeds 250 chars they will be truncated                                                           | bp-{target-branch}-{sha1}...{shaN}       |
 | Backport Repository       | --bp-repo        | N            | Optional source repository (format owner/repo) where the backport branch is pushed, useful to open the PR from a fork                                                           | {target-owner}/{target-repo}       |
+| Target Repository       | --tb-repo        | N            | Optional target repository (format owner/repo) where the backport pull request should be opened against, useful to backport to a different repository than the original one                                                           | {original-pr-target-owner}/{original-pr-target-repo}       |
 | Labels       | --labels        | N            | Provide custom labels to be added to the backporting pull request                                                           | []       |
 | Inherit labels       | --inherit-labels        | N            | If enabled inherit lables from the original pull request                                                           | false       |
 | No squash       | --no-squash        | N            | Backport all commits found in the pull request. The default behavior is to only backport the first commit that was merged in the base branch. | |
@@ -160,6 +161,23 @@ $ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***
 ```
 
 In this mode you should provide a PAT with enough permissions on the fork repository.
+
+#### Backport to a different target repository
+
+By default, the backport pull request is opened against the same repository targeted by the original pull request.
+If you want to open the backport PR against a different repository altogether, set `--tb-repo` (or action input `tb-repo`) to `owner/repo`. The repository is cloned from and the backport branch is pushed to `--tb-repo` instead of the original pull request's repository.
+
+```bash
+$ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***** --tb-repo my-org/downstream-project
+```
+
+`--tb-repo` and `--bp-repo` can be combined: `--tb-repo` selects where the backport PR is opened, while `--bp-repo` selects the fork the backport branch is pushed from.
+
+```bash
+$ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***** --tb-repo my-org/downstream-project --bp-repo my-user/downstream-project
+```
+
+In this mode you should provide a PAT with enough permissions on the target repository (and on the fork, if `--bp-repo` is also used).
 
 #### Configuration file example
 

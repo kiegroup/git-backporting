@@ -39,6 +39,7 @@ export default abstract class ArgsParser {
       bodyPrefix: this.getOrDefault(args.bodyPrefix),
       bpBranchName: this.getOrDefault(args.bpBranchName),
       bpRepo: this.getOrDefault(args.bpRepo),
+      tbRepo: this.getOrDefault(args.tbRepo),
       reviewers: this.getOrDefault(args.reviewers, []),
       assignees: this.getOrDefault(args.assignees, []),
       inheritReviewers: this.getOrDefault(args.inheritReviewers, true),
