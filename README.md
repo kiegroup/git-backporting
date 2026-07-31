@@ -177,7 +177,7 @@ $ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***
 $ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***** --tb-repo my-org/downstream-project --bp-repo my-user/downstream-project
 ```
 
-In this mode you should provide a PAT with enough permissions on the target repository (and on the fork, if `--bp-repo` is also used).
+When using `--tb-repo` alone, the backport branch is pushed directly to the target repository, so your PAT needs push access there. When combining it with `--bp-repo`, the branch is pushed to the fork instead, so your PAT needs push access on the fork and only the ability to open a pull request on the target repository.
 
 #### Configuration file example
 
