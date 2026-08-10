@@ -305,6 +305,14 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://github.com/target-org/reponame.git", cwd, "target");
 
+    // the original repo is added as a remote and the commits to backport are fetched from it
+    // by sha (not via pull/<N>/head), so merged/squashed PRs work without --no-squash
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledWith(cwd, "https://github.com/owner/reponame.git", "upstream");
+
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", "upstream");
+
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
@@ -323,6 +331,45 @@ describe("cli runner", () => {
         comments: [],
       }
     );
+  });
+
+  test("using target backport repo with multiple commits fetches every sha", async () => {
+    addProcessArgs([
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/8632",
+      "--tb-repo",
+      "target-org/reponame",
+      "--no-squash",
+    ]);
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://github.com/target-org/reponame.git", cwd, "target");
+
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.addRemote).toHaveBeenCalledWith(cwd, "https://github.com/owner/reponame.git", "upstream");
+
+    // both commits of the pr must be fetched by sha from the original repo
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(2);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", "upstream");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "upstream");
+
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith(expect.objectContaining({
+      owner: "target-org",
+      repo: "reponame",
+      cloneUrl: "https://github.com/target-org/reponame.git",
+      base: "target",
+    }));
   });
 
   test("same owner", async () => {
@@ -1114,8 +1161,9 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.addRemote).toHaveBeenCalledWith(cwd, "https://github.com/owner/reponame.git", "upstream");
 
+    // the commit to backport is fetched by sha from the original repo (once per target branch)
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368", "upstream");
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", "upstream");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-v1-28f63db", undefined);

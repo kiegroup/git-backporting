@@ -1773,30 +1773,31 @@ function* backportSteps(logger, configs, backportPR, git) {
         logger.debug("Creating local branch..");
         await git.gitCli.createLocalBranch(configs.folder, backportPR.head);
     };
-    let commitsRemote = undefined;
     if (usingDifferentTargetRepo) {
         // 6. add a remote pointing to the original pull request's repository, needed to fetch
         // commits that only exist there, since the backport target repo won't have them
-        commitsRemote = "upstream";
+        const commitsRemote = "upstream";
         yield async () => {
             await git.gitCli.addRemote(configs.folder, configs.originalPullRequest.targetRepo.cloneUrl, commitsRemote);
         };
+        // 7. fetch the exact commits to backport from the original repository.
+        // Fetching "pull/<N>/head" is not enough here: for a merged (or squashed) pull request the
+        // commit to cherry-pick is the merge/squash commit which lives on the base branch, not on
+        // "pull/<N>/head". Fetching the shas directly makes them available regardless of squash mode.
+        yield async () => {
+            logger.debug("Fetching commits to backport from the original repository..");
+            for (const sha of configs.originalPullRequest.commits) {
+                await git.gitCli.fetch(configs.folder, sha, commitsRemote);
+            }
+        };
     }
-    // 7. fetch pull request remote if source owner != target owner, pull request still open,
-    // or backporting to a different repository than the original pull request's one
-    if (usingDifferentTargetRepo ||
-        configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
+    else if (configs.originalPullRequest.sourceRepo.owner !== configs.originalPullRequest.targetRepo.owner ||
         configs.originalPullRequest.state === "open") {
+        // 7. fetch pull request remote if source owner != target owner or pull request still open
         yield async () => {
             logger.debug("Fetching pull request remote..");
             const prefix = git.gitClientType === git_types_1.GitClientType.GITLAB ? "merge-requests" : "pull"; // default is for gitlab
-            const ref = `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`;
-            if (commitsRemote) {
-                await git.gitCli.fetch(configs.folder, ref, commitsRemote);
-            }
-            else {
-                await git.gitCli.fetch(configs.folder, ref);
-            }
+            await git.gitCli.fetch(configs.folder, `${prefix}/${configs.originalPullRequest.number}/head:pr/${configs.originalPullRequest.number}`);
         };
     }
     // 8. apply all changes to the new branch
