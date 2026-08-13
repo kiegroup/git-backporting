@@ -18,4 +18,4 @@ export default interface GitResponseMapper<PR, S> {
   mapSourceRepo(pull: PR): Promise<GitRepository>;
 
   mapTargetRepo (pull: PR): Promise<GitRepository>;
-}
+};

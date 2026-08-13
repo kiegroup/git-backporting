@@ -1,6 +1,7 @@
 const js = require("@eslint/js");
 const parser = require("@typescript-eslint/parser");
 const plugin = require("@typescript-eslint/eslint-plugin");
+const stylistic = require("@stylistic/eslint-plugin");
 
 module.exports = [
   {
@@ -34,10 +35,12 @@ module.exports = [
     },
     plugins: {
       "@typescript-eslint": plugin,
+      "@stylistic": stylistic,
     },
     rules: {
       "quotes": ["error", "double"],
-      "semi": ["error", "always"],
+      "semi": "off",
+      "@stylistic/semi": ["error", "always"],
       "@typescript-eslint/no-explicit-any": [
         "error",
         { fixToUnknown: true },

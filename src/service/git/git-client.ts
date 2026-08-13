@@ -9,7 +9,7 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
   /**
    * @returns {GitClientType} specific git client enum type
    */
-  getClientType(): GitClientType
+  getClientType(): GitClientType;
 
   // READ
   
@@ -50,5 +50,4 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
    * @param comment comment body
    */
   createPullRequestComment(prUrl: string, comment: string): Promise<string | undefined>;
-
-}
+};

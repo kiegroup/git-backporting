@@ -281,6 +281,7 @@ const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
  * Args and produces a common Configs object
  */
 class ConfigsParser {
+    logger;
     constructor() {
         this.logger = logger_service_factory_1.default.getLogger();
     }
@@ -341,6 +342,7 @@ const configs_parser_1 = __importDefault(__nccwpck_require__(5799));
 const configs_types_1 = __nccwpck_require__(4753);
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
+    gitClient;
     constructor() {
         super();
         this.gitClient = git_client_factory_1.default.getClient();
@@ -358,7 +360,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             throw error;
         }
         const folder = args.folder ?? this.getDefaultFolder();
-        let targetBranches = [];
+        let targetBranches;
         if (args.targetBranchPattern) {
             // parse labels to extract target branch(es)
             targetBranches = this.getTargetBranchesFromLabels(args.targetBranchPattern, pr.labels);
@@ -539,6 +541,9 @@ const fs_1 = __importDefault(__nccwpck_require__(7147));
  * Command line git commands executor service
  */
 class GitCLIService {
+    logger;
+    auth;
+    gitData;
     constructor(auth, gitData) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.auth = auth;
@@ -654,7 +659,7 @@ class GitCLIService {
         catch (error) {
             const diff = await this.git(cwd).diff();
             if (diff) {
-                throw new Error(`${error}\r\nShowing git diff:\r\n` + diff);
+                throw new Error(`${error}\r\nShowing git diff:\r\n` + diff, { cause: error });
             }
             throw error;
         }
@@ -710,6 +715,8 @@ const gitlab_client_1 = __importDefault(__nccwpck_require__(4077));
  * Singleton git service factory class
  */
 class GitClientFactory {
+    static logger = logger_service_factory_1.default.getLogger();
+    static instance;
     // this method assumes there already exists a singleton client instance, otherwise it will fail
     static getClient() {
         if (!GitClientFactory.instance) {
@@ -750,7 +757,6 @@ class GitClientFactory {
     }
 }
 exports["default"] = GitClientFactory;
-GitClientFactory.logger = logger_service_factory_1.default.getLogger();
 
 
 /***/ }),
@@ -910,6 +916,11 @@ const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 class GitHubClient {
+    logger;
+    apiUrl;
+    isForCodeberg;
+    octokit;
+    mapper;
     constructor(token, apiUrl, isForCodeberg = false) {
         this.apiUrl = apiUrl;
         this.isForCodeberg = isForCodeberg;
@@ -1011,7 +1022,7 @@ class GitHubClient {
             return commits;
         }
         catch (error) {
-            throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
+            throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`, { cause: error });
         }
     }
     // WRITE
@@ -1188,6 +1199,8 @@ const rest_1 = __nccwpck_require__(184);
  * Singleton factory class for {Octokit} instance
  */
 class OctokitFactory {
+    static logger = logger_service_factory_1.default.getLogger();
+    static octokit;
     static getOctokit(token, apiUrl) {
         if (!OctokitFactory.octokit) {
             OctokitFactory.octokit = new rest_1.Octokit({
@@ -1200,7 +1213,6 @@ class OctokitFactory {
     }
 }
 exports["default"] = OctokitFactory;
-OctokitFactory.logger = logger_service_factory_1.default.getLogger();
 
 
 /***/ }),
@@ -1221,6 +1233,10 @@ const gitlab_mapper_1 = __importDefault(__nccwpck_require__(2675));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 const https_1 = __importDefault(__nccwpck_require__(5687));
 class GitLabClient {
+    logger;
+    apiUrl;
+    mapper;
+    client;
     constructor(token, apiUrl, rejectUnauthorized = false) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.apiUrl = apiUrl;
@@ -1264,7 +1280,7 @@ class GitLabClient {
                 commits.push(...data.map(c => c.id).reverse());
             }
             catch (error) {
-                throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`);
+                throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`, { cause: error });
             }
         }
         return this.mapper.mapPullRequest(data, commits);
@@ -1411,6 +1427,7 @@ exports["default"] = GitLabClient;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const git_types_1 = __nccwpck_require__(750);
 class GitLabMapper {
+    client;
     // needs client to perform additional requests
     constructor(client) {
         this.client = client;
@@ -1500,6 +1517,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const logger_1 = __importDefault(__nccwpck_require__(1855));
 class ConsoleLoggerService {
+    logger;
+    verbose;
+    context;
     constructor(verbose = true) {
         this.logger = new logger_1.default();
         this.verbose = verbose;
@@ -1553,6 +1573,7 @@ const console_logger_service_1 = __importDefault(__nccwpck_require__(8679));
  * Singleton factory class
  */
 class LoggerServiceFactory {
+    static instance;
     static getLogger() {
         if (!LoggerServiceFactory.instance) {
             LoggerServiceFactory.instance = new console_logger_service_1.default();
@@ -1641,6 +1662,8 @@ const runner_util_1 = __nccwpck_require__(9632);
  * Main runner implementation, it implements the core logic flow
  */
 class Runner {
+    logger;
+    argsParser;
     constructor(parser) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.argsParser = parser;
@@ -25566,7 +25589,7 @@ const dist_src_Octokit = Octokit.plugin(requestLog, legacyRestEndpointMethods, p
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@kie/git-backporting","version":"4.10.0","description":"Git backporting is a tool to execute automatic pull request git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"git-backporting":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"publishConfig":{"access":"public"},"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest --silent","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","postversion":"npm run build && git add dist && rm -rf build","release":"release-it","release:branch":"git checkout -b release/$(release-it --release-version) main","release:prepare":"release-it --no-npm.publish --no-github.release --no-git.push --no-git.tag --no-git.requireUpstream","release:prepare:all":"npm run release:branch && npm run release:prepare"},"repository":{"type":"git","url":"git+https://github.com/kiegroup/git-backporting.git"},"keywords":["backporting","pull-requests","merge-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/kiegroup/git-backporting/issues"},"homepage":"https://github.com/kiegroup/git-backporting#readme","devDependencies":{"@commitlint/cli":"^20.1.0","@commitlint/config-conventional":"^20.0.0","@eslint/js":"^10.0.0","@gitbeaker/rest":"^39.1.0","@kie/mock-github":"^2.0.2","@octokit/webhooks-types":"^6.8.0","@release-it/conventional-changelog":"^10.0.0","@types/fs-extra":"^9.0.13","@types/jest":"^30.0.0","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^8.66.0","@typescript-eslint/parser":"^8.66.0","@vercel/ncc":"^0.36.0","conventional-commits-parser":"^6.2.0","eslint":"^10.0.0","husky":"^8.0.2","jest":"^30.4.2","jest-sonar-reporter":"^2.0.0","release-it":"^19.0.6","semver":"^7.3.8","ts-jest":"^29.4.12","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"22.0.1","axios":"^1.4.0","commander":"^9.3.0","fs-extra":"^11.1.0","https":"^1.0.0","simple-git":"^3.15.1"},"overrides":{"conventional-changelog-conventionalcommits":"^8.0.0","undici":"6.28.0","brace-expansion":"5.0.8"},"allowScripts":{"unrs-resolver@1.12.2":true}}');
+module.exports = JSON.parse('{"name":"@kie/git-backporting","version":"4.10.0","description":"Git backporting is a tool to execute automatic pull request git backporting.","author":"","license":"MIT","private":false,"main":"./dist/gha/index.js","bin":{"git-backporting":"./dist/cli/index.js"},"files":["dist/cli/index.js"],"publishConfig":{"access":"public"},"scripts":{"prepare":"husky install","clean":"rm -rf ./build ./dist","compile":"tsc -p tsconfig.json && tsc-alias -p tsconfig.json","package":"npm run package:cli && npm run package:gha","package:cli":"ncc build ./build/src/bin/cli.js -o dist/cli","package:gha":"ncc build ./build/src/bin/gha.js -o dist/gha","build":"npm run clean && npm run compile && npm run package","test":"jest --silent","test:report":"npm test -- --coverage --testResultsProcessor=jest-sonar-reporter","lint":"eslint . --ext .ts","lint:fix":"npm run lint -- --fix","ts-node":"ts-node","postversion":"npm run build && git add dist && rm -rf build","release":"release-it","release:branch":"git checkout -b release/$(release-it --release-version) main","release:prepare":"release-it --no-npm.publish --no-github.release --no-git.push --no-git.tag --no-git.requireUpstream","release:prepare:all":"npm run release:branch && npm run release:prepare"},"repository":{"type":"git","url":"git+https://github.com/kiegroup/git-backporting.git"},"keywords":["backporting","pull-requests","merge-requests","github-action","cherry-pick"],"bugs":{"url":"https://github.com/kiegroup/git-backporting/issues"},"homepage":"https://github.com/kiegroup/git-backporting#readme","devDependencies":{"@commitlint/cli":"^20.1.0","@commitlint/config-conventional":"^20.0.0","@eslint/js":"^10.0.0","@gitbeaker/rest":"^39.1.0","@kie/mock-github":"^2.0.2","@octokit/webhooks-types":"^6.8.0","@release-it/conventional-changelog":"^10.0.0","@stylistic/eslint-plugin":"^5.10.0","@types/fs-extra":"^9.0.13","@types/jest":"^30.0.0","@types/node":"^18.11.17","@typescript-eslint/eslint-plugin":"^8.66.0","@typescript-eslint/parser":"^8.66.0","@vercel/ncc":"^0.36.0","conventional-commits-parser":"^6.2.0","eslint":"^10.0.0","husky":"^8.0.2","jest":"^30.4.2","jest-sonar-reporter":"^2.0.0","release-it":"^19.0.6","semver":"^7.3.8","ts-jest":"^29.4.12","ts-node":"^10.8.1","tsc-alias":"^1.8.2","tsconfig-paths":"^4.1.0","typescript":"^4.9.3"},"dependencies":{"@actions/core":"^1.10.0","@octokit/rest":"22.0.1","axios":"^1.4.0","commander":"^9.3.0","fs-extra":"^11.1.0","https":"^1.0.0","simple-git":"^3.15.1"},"overrides":{"conventional-changelog-conventionalcommits":"^8.0.0","undici":"6.28.0","brace-expansion":"5.0.8"},"allowScripts":{"unrs-resolver@1.12.2":true}}');
 
 /***/ }),
 

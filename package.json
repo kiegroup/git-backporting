@@ -57,6 +57,7 @@
     "@kie/mock-github": "^2.0.2",
     "@octokit/webhooks-types": "^6.8.0",
     "@release-it/conventional-changelog": "^10.0.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^30.0.0",
     "@types/node": "^18.11.17",

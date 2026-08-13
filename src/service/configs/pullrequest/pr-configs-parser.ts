@@ -29,7 +29,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
 
     const folder: string = args.folder ?? this.getDefaultFolder();
 
-    let targetBranches: string[] = [];
+    let targetBranches: string[] | undefined;
     if (args.targetBranchPattern) {
       // parse labels to extract target branch(es)
       targetBranches = this.getTargetBranchesFromLabels(args.targetBranchPattern, pr.labels);

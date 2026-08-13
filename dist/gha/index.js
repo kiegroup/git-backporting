@@ -244,6 +244,7 @@ const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
  * Args and produces a common Configs object
  */
 class ConfigsParser {
+    logger;
     constructor() {
         this.logger = logger_service_factory_1.default.getLogger();
     }
@@ -304,6 +305,7 @@ const configs_parser_1 = __importDefault(__nccwpck_require__(5799));
 const configs_types_1 = __nccwpck_require__(4753);
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 class PullRequestConfigsParser extends configs_parser_1.default {
+    gitClient;
     constructor() {
         super();
         this.gitClient = git_client_factory_1.default.getClient();
@@ -321,7 +323,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             throw error;
         }
         const folder = args.folder ?? this.getDefaultFolder();
-        let targetBranches = [];
+        let targetBranches;
         if (args.targetBranchPattern) {
             // parse labels to extract target branch(es)
             targetBranches = this.getTargetBranchesFromLabels(args.targetBranchPattern, pr.labels);
@@ -502,6 +504,9 @@ const fs_1 = __importDefault(__nccwpck_require__(7147));
  * Command line git commands executor service
  */
 class GitCLIService {
+    logger;
+    auth;
+    gitData;
     constructor(auth, gitData) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.auth = auth;
@@ -617,7 +622,7 @@ class GitCLIService {
         catch (error) {
             const diff = await this.git(cwd).diff();
             if (diff) {
-                throw new Error(`${error}\r\nShowing git diff:\r\n` + diff);
+                throw new Error(`${error}\r\nShowing git diff:\r\n` + diff, { cause: error });
             }
             throw error;
         }
@@ -673,6 +678,8 @@ const gitlab_client_1 = __importDefault(__nccwpck_require__(4077));
  * Singleton git service factory class
  */
 class GitClientFactory {
+    static logger = logger_service_factory_1.default.getLogger();
+    static instance;
     // this method assumes there already exists a singleton client instance, otherwise it will fail
     static getClient() {
         if (!GitClientFactory.instance) {
@@ -713,7 +720,6 @@ class GitClientFactory {
     }
 }
 exports["default"] = GitClientFactory;
-GitClientFactory.logger = logger_service_factory_1.default.getLogger();
 
 
 /***/ }),
@@ -873,6 +879,11 @@ const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 class GitHubClient {
+    logger;
+    apiUrl;
+    isForCodeberg;
+    octokit;
+    mapper;
     constructor(token, apiUrl, isForCodeberg = false) {
         this.apiUrl = apiUrl;
         this.isForCodeberg = isForCodeberg;
@@ -974,7 +985,7 @@ class GitHubClient {
             return commits;
         }
         catch (error) {
-            throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
+            throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`, { cause: error });
         }
     }
     // WRITE
@@ -1151,6 +1162,8 @@ const rest_1 = __nccwpck_require__(184);
  * Singleton factory class for {Octokit} instance
  */
 class OctokitFactory {
+    static logger = logger_service_factory_1.default.getLogger();
+    static octokit;
     static getOctokit(token, apiUrl) {
         if (!OctokitFactory.octokit) {
             OctokitFactory.octokit = new rest_1.Octokit({
@@ -1163,7 +1176,6 @@ class OctokitFactory {
     }
 }
 exports["default"] = OctokitFactory;
-OctokitFactory.logger = logger_service_factory_1.default.getLogger();
 
 
 /***/ }),
@@ -1184,6 +1196,10 @@ const gitlab_mapper_1 = __importDefault(__nccwpck_require__(2675));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 const https_1 = __importDefault(__nccwpck_require__(5687));
 class GitLabClient {
+    logger;
+    apiUrl;
+    mapper;
+    client;
     constructor(token, apiUrl, rejectUnauthorized = false) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.apiUrl = apiUrl;
@@ -1227,7 +1243,7 @@ class GitLabClient {
                 commits.push(...data.map(c => c.id).reverse());
             }
             catch (error) {
-                throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`);
+                throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`, { cause: error });
             }
         }
         return this.mapper.mapPullRequest(data, commits);
@@ -1374,6 +1390,7 @@ exports["default"] = GitLabClient;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const git_types_1 = __nccwpck_require__(750);
 class GitLabMapper {
+    client;
     // needs client to perform additional requests
     constructor(client) {
         this.client = client;
@@ -1463,6 +1480,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const logger_1 = __importDefault(__nccwpck_require__(1855));
 class ConsoleLoggerService {
+    logger;
+    verbose;
+    context;
     constructor(verbose = true) {
         this.logger = new logger_1.default();
         this.verbose = verbose;
@@ -1516,6 +1536,7 @@ const console_logger_service_1 = __importDefault(__nccwpck_require__(8679));
  * Singleton factory class
  */
 class LoggerServiceFactory {
+    static instance;
     static getLogger() {
         if (!LoggerServiceFactory.instance) {
             LoggerServiceFactory.instance = new console_logger_service_1.default();
@@ -1604,6 +1625,8 @@ const runner_util_1 = __nccwpck_require__(9632);
  * Main runner implementation, it implements the core logic flow
  */
 class Runner {
+    logger;
+    argsParser;
     constructor(parser) {
         this.logger = logger_service_factory_1.default.getLogger();
         this.argsParser = parser;

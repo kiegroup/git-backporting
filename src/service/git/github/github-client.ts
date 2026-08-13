@@ -130,7 +130,7 @@ export default class GitHubClient implements GitClient {
       }
       return commits;
     } catch (error) {
-      throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`);
+      throw new Error(`Failed to retrieve commits for pull request n. ${prNumber}`, { cause: error });
     }
   }
 

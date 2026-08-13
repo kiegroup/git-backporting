@@ -18,4 +18,4 @@ export default interface LoggerService {
   warn(message: string): void;
 
   error(message: string): void;
-}
+};

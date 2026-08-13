@@ -141,7 +141,7 @@ export default class GitCLIService {
     } catch(error) {
       const diff = await this.git(cwd).diff();
       if (diff) {
-        throw new Error(`${error}\r\nShowing git diff:\r\n` + diff);
+        throw new Error(`${error}\r\nShowing git diff:\r\n` + diff, { cause: error });
       }
 
       throw error;

@@ -65,7 +65,7 @@ export default class GitLabClient implements GitClient {
         // gitlab returns them in reverse order
         commits.push(...(data as CommitSchema[]).map(c => c.id).reverse());
       } catch(error) {
-        throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`);
+        throw new Error(`Failed to retrieve commits for merge request n. ${mrNumber}`, { cause: error });
       }
     }
 
