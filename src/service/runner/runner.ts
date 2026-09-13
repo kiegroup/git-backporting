@@ -13,7 +13,7 @@ import { injectError, injectTargetBranch } from "./runner-util";
 
 interface Git {
   gitClientType: GitClientType;
-  gitClientApi: Pick<GitClient, ("createPullRequest" | "createPullRequestComment")>;
+  gitClientApi: Pick<GitClient, ("getLatestPullRequestComments" | "createPullRequest" | "createPullRequestComment")>;
   gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push")>;
 }
 
@@ -124,11 +124,35 @@ export default class Runner {
     return token;
   }
 
+  /**
+   * Check whether a previous run already reported a failed backport to the same
+   * target branch, by looking for a hidden marker in the latest comments of the
+   * original pull request.
+   * @returns true if the failure has already been reported, false otherwise or if
+   *          the comments could not be fetched
+   */
+  private async failureAlreadyReported(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<boolean> {
+    try {
+      const comments = await git.gitClientApi.getLatestPullRequestComments(configs.originalPullRequest.url);
+      return comments.some(c => c.includes(failureMarker(backportPR.base)));
+    } catch (error) {
+      this.logger.warn(`Unable to fetch the comments of ${configs.originalPullRequest.url}: ${error}`);
+      return false;
+    }
+  }
+
   async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void> {
     const remote = backportPR.headRepo?.cloneUrl ?? backportPR.cloneUrl;
     const branchExists = await git.gitCli.remoteBranchExists(remote, backportPR.head);
     if (branchExists) {
       this.logger.warn(`Backport branch ${backportPR.head} already exists on ${remote}, skipping`);
+      return;
+    }
+
+    const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
+
+    if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
+      this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
       return;
     }
 
@@ -138,7 +162,7 @@ export default class Runner {
         await step();
       } catch (error) {
         this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
-        if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+        if (notifyError) {
           // notify the failure as comment in the original pull request
           let comment = injectError(configs.errorNotification.message, error as string);
           comment = injectTargetBranch(comment, backportPR.base);
@@ -150,6 +174,8 @@ export default class Runner {
           } catch (scriptError) {
             this.logger.error(`Something went wrong reconstructing the script: ${scriptError}`);
           }
+          comment += `\n\nThe backport to \`${backportPR.base}\` will not be retried until this comment is deleted.`;
+          comment += `\n\n${failureMarker(backportPR.base)}`;
           await git.gitClientApi.createPullRequestComment(configs.originalPullRequest.url, comment);
         }
         throw error;
@@ -159,6 +185,11 @@ export default class Runner {
   }
 }
 
+
+// Hidden marker appended to the failure notification comment.
+function failureMarker(base: string): string {
+  return `<!-- git-backporting: backport to ${base} failed -->`;
+}
 
 function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, configs: Configs, backportPR: BackportPullRequest, git: Git): Generator<() => Promise<void>, void, unknown> {
   // every failible operation should be in one dedicated closure
@@ -291,6 +322,9 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
   for (const step of backportSteps(fakeLogger, configs, backportPR, {
     gitClientType: git.gitClientType,
     gitClientApi: {
+      async getLatestPullRequestComments(_prUrl: string): Promise<string[]> {
+        return [];
+      },
       async createPullRequest(_backport: BackportPullRequest): Promise<string> {
         s += `# ${git.gitClientType}.createPullRequest`;
         return "";

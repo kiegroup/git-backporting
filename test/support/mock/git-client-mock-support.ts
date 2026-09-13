@@ -17,6 +17,9 @@ const logger = LoggerServiceFactory.getLogger();
 const listCommitsParams = (params: { owner: string; repo: string; pull_number: number }) =>
   params as unknown as undefined;
 
+const listCommentsParams = (params: { owner: string; repo: string }) =>
+  params as unknown as undefined;
+
 // AXIOS
 
 export const getAxiosMocked = (url: string) => {
@@ -264,6 +267,18 @@ export const mockGitHubClient = (apiUrl = "https://api.github.com"): Moctokit =>
       data: {}
     });
 
+  // no previously reported backport failure
+  mock.rest.issues
+    .listComments(listCommentsParams({
+      owner: TARGET_OWNER,
+      repo: REPO,
+    }))
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: []
+    });
+
   mock.rest.git
     .getCommit({
       owner: TARGET_OWNER,
@@ -456,6 +471,18 @@ export const mockCodebergClient = (apiUrl = "https://codeberg.org/api/v1"): Moct
       repeat: REPEAT,
       status: 201,
       data: {}
+    });
+
+  // no previously reported backport failure
+  mock.rest.issues
+    .listComments(listCommentsParams({
+      owner: CB_TARGET_OWNER,
+      repo: CB_REPO,
+    }))
+    .reply({
+      repeat: REPEAT,
+      status: 200,
+      data: []
     });
 
   mock.rest.git
