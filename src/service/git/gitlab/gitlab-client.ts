@@ -187,6 +187,17 @@ export default class GitLabClient implements GitClient {
     return commentUrl;
   }
 
+  // https://docs.gitlab.com/ee/api/notes.html#list-all-merge-request-notes
+  async getLatestPullRequestComments(mrUrl: string): Promise<string[]> {
+    const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
+    const projectId = this.getProjectId(namespace, project);
+
+    const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${id}/notes?sort=desc&per_page=100`);
+    const notes = (data ?? []) as { body?: string }[];
+
+    return notes.map(n => n.body ?? "");
+  }
+
   // UTILS
 
   /**

@@ -35,6 +35,13 @@ import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/
    */
    getPullRequestFromUrl(prUrl: string, squash: boolean | undefined): Promise<GitPullRequest>;
 
+  /**
+   * Get the most recent comments of the pull request.
+   * @param prUrl pull request's URL
+   * @returns {Promise<string[]>} the list of comments
+   */
+  getLatestPullRequestComments(prUrl: string): Promise<string[]>;
+
   // WRITE
 
   /**

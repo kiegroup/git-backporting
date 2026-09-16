@@ -965,6 +965,48 @@ class GitHubClient {
         const { owner, project, id } = this.extractPullRequestData(prUrl);
         return this.getPullRequest(owner, project, id, squash);
     }
+    async getLatestPullRequestComments(prUrl) {
+        const { owner, project, id } = this.extractPullRequestData(prUrl);
+        this.logger.debug(`Fetching latest comments of pull request ${owner}/${project}/${id}`);
+        const perPage = 100;
+        const params = {
+            owner: owner,
+            repo: project,
+            issue_number: id,
+            per_page: perPage,
+        };
+        const { data, headers } = await this.octokit.issues.listComments(params);
+        const firstPage = data.map(c => c.body ?? "");
+        // Forgejo so far didn't implement pagination, and just always returns all comments.
+        const total = this.extractTotalCount(headers);
+        if (total !== undefined && data.length >= total) {
+            return firstPage;
+        }
+        const lastPage = this.extractLastPage(headers, perPage);
+        if (lastPage <= 1) {
+            return firstPage;
+        }
+        // last page may hold only one single comment, so always fetch last two pages
+        const fetchPage = async (page) => {
+            const { data } = await this.octokit.issues.listComments({ ...params, page });
+            return data.map(c => c.body ?? "");
+        };
+        const secondLast = lastPage === 2 ? firstPage : await fetchPage(lastPage - 1);
+        const last = await fetchPage(lastPage);
+        return [...secondLast, ...last];
+    }
+    extractTotalCount(headers) {
+        const total = parseInt(`${headers["x-total-count"]}`);
+        return isNaN(total) ? undefined : total;
+    }
+    extractLastPage(headers, perPage) {
+        const last = /[?&]page=(\d+)[^>]*>;\s*rel="last"/.exec(headers.link ?? "");
+        if (last) {
+            return parseInt(last[1]);
+        }
+        const total = this.extractTotalCount(headers);
+        return total === undefined ? 1 : Math.ceil(total / perPage);
+    }
     /**
      * Read the message out of a git.getCommit response. GitHub returns it at the top level
      * (`message`), whereas Gitea/Forgejo nest it under `commit` (`commit.message`). Support
@@ -1344,6 +1386,14 @@ class GitLabClient {
             this.logger.error(`Error creating comment on merge request ${mrUrl}: ${error}`);
         }
         return commentUrl;
+    }
+    // https://docs.gitlab.com/ee/api/notes.html#list-all-merge-request-notes
+    async getLatestPullRequestComments(mrUrl) {
+        const { namespace, project, id } = this.extractMergeRequestData(mrUrl);
+        const projectId = this.getProjectId(namespace, project);
+        const { data } = await this.client.get(`/projects/${projectId}/merge_requests/${id}/notes?sort=desc&per_page=100`);
+        const notes = (data ?? []);
+        return notes.map(n => n.body ?? "");
     }
     // UTILS
     /**
@@ -1725,11 +1775,33 @@ class Runner {
         }
         return token;
     }
+    /**
+     * Check whether a previous run already reported a failed backport to the same
+     * target branch, by looking for a hidden marker in the latest comments of the
+     * original pull request.
+     * @returns true if the failure has already been reported, false otherwise or if
+     *          the comments could not be fetched
+     */
+    async failureAlreadyReported(configs, backportPR, git) {
+        try {
+            const comments = await git.gitClientApi.getLatestPullRequestComments(configs.originalPullRequest.url);
+            return comments.some(c => c.includes(failureMarker(backportPR.base)));
+        }
+        catch (error) {
+            this.logger.warn(`Unable to fetch the comments of ${configs.originalPullRequest.url}: ${error}`);
+            return false;
+        }
+    }
     async executeBackport(configs, backportPR, git) {
         const remote = backportPR.headRepo?.cloneUrl ?? backportPR.cloneUrl;
         const branchExists = await git.gitCli.remoteBranchExists(remote, backportPR.head);
         if (branchExists) {
             this.logger.warn(`Backport branch ${backportPR.head} already exists on ${remote}, skipping`);
+            return;
+        }
+        const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
+        if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
+            this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
             return;
         }
         let i = 0;
@@ -1739,7 +1811,7 @@ class Runner {
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
-                if (!configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0) {
+                if (notifyError) {
                     // notify the failure as comment in the original pull request
                     let comment = (0, runner_util_1.injectError)(configs.errorNotification.message, error);
                     comment = (0, runner_util_1.injectTargetBranch)(comment, backportPR.base);
@@ -1752,6 +1824,8 @@ class Runner {
                     catch (scriptError) {
                         this.logger.error(`Something went wrong reconstructing the script: ${scriptError}`);
                     }
+                    comment += `\n\nThe backport to \`${backportPR.base}\` will not be retried until this comment is deleted.`;
+                    comment += `\n\n${failureMarker(backportPR.base)}`;
                     await git.gitClientApi.createPullRequestComment(configs.originalPullRequest.url, comment);
                 }
                 throw error;
@@ -1761,6 +1835,10 @@ class Runner {
     }
 }
 exports["default"] = Runner;
+// Hidden marker appended to the failure notification comment.
+function failureMarker(base) {
+    return `<!-- git-backporting: backport to ${base} failed -->`;
+}
 function* backportSteps(logger, configs, backportPR, git) {
     // every failible operation should be in one dedicated closure
     // whether the backport pr targets a different repository than the original pull request's one (--tb-repo),
@@ -1882,6 +1960,9 @@ async function backportScript(configs, backportPR, git, failed) {
     for (const step of backportSteps(fakeLogger, configs, backportPR, {
         gitClientType: git.gitClientType,
         gitClientApi: {
+            async getLatestPullRequestComments(_prUrl) {
+                return [];
+            },
             async createPullRequest(_backport) {
                 s += `# ${git.gitClientType}.createPullRequest`;
                 return "";

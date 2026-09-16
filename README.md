@@ -70,7 +70,7 @@ It works in this way: given the provided `pull/merge request` it infers the serv
 
 After that it clones the corresponding git repository, check out in the provided `target branch` and create a new branch from that (name automatically generated if not provided as option).
 
-By default the tool will try to cherry-pick the single squashed/merged commit into the newly created branch. The `--no-squash` and `--auto-no-squash` options control this behavior according the following table. 
+By default the tool will try to cherry-pick the single squashed/merged commit into the newly created branch. The `--no-squash` and `--auto-no-squash` options control this behavior according the following table.
 
 | No squash | Auto no squash |Behavior|
 |---|---|---|
@@ -135,7 +135,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Strategy Option       | --strategy-option        | N            | Cherry pick merging strategy option, see [git-merge](https://git-scm.com/docs/git-merge#_merge_strategies) doc for all possible values                                                           | "theirs"       |
 | Cherry-pick Options       | --cherry-pick-options        | N            | Additional cherry-pick options, see [git-cherry-pick](https://git-scm.com/docs/git-cherry-pick) doc for all possible values                                                           | "theirs"       |
 | Additional comments       | --comments        | N            | Semicolon separated list of additional comments to be posted to the backported pull request                                                           | []       |
-| Enable error notification       | --enable-err-notification        | N            | If true, enable the error notification as comment on the original pull request                                                           | false       |
+| Enable error notification       | --enable-err-notification        | N            | If true, enable the error notification as comment on the original pull request, see [Error notification](#error-notification)           | false       |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and (`target branch` or `target branch pattern`) are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
@@ -179,6 +179,16 @@ $ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***
 
 When using `--tb-repo` alone, the backport branch is pushed directly to the target repository, so your PAT needs push access there. When combining it with `--bp-repo`, the branch is pushed to the fork instead, so your PAT needs push access on the fork and only the ability to open a pull request on the target repository.
 
+#### Error notification
+
+If error notifications are enabled, every failed backport is reported via comment on the original pull request.
+The comment contains the error, a reconstruction of the attempted steps and a hidden marker identifying the target branch.
+
+This marker is used to debounce the reporting of the same backport failing multiple times in quick succession.
+Before backporting to a target branch, the tool inspects the most recent comments of the original pull request.
+If a failure has already been reported, the backport attempt will be skipped.
+To retry the backport, delete the failure comment (or edit out the marker).
+
 #### Configuration file example
 
 This is an example of a configuration file that can be used.
@@ -211,7 +221,7 @@ This action can be used in any *GitHub* workflow, below you can find a simple ex
 ```yml
 name: Pull Request Backporting using Git Backporting
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       targetBranch:
@@ -220,12 +230,12 @@ on:
         type: string
       pullRequest:
         description: 'Pull request'
-        required: true 
+        required: true
         type: string
       dryRun:
         description: 'Dry run'
         required: false
-        default: "true" 
+        default: "true"
         type: string
 
 jobs:

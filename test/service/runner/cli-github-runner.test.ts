@@ -1542,7 +1542,11 @@ git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185
 git push origin custom-failure-head-v1
 # the step below failed
 # github.createPullRequest
-${"```"}`);
+${"```"}
+
+The backport to ${"`v1`"} will not be retried until this comment is deleted.
+
+<!-- git-backporting: backport to v1 failed -->`);
     expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", `The backport to ${"`v2`"} failed. Check the latest run for more details.
 
 Reconstruction of the attempted steps (beware that escaping may be missing):
@@ -1554,7 +1558,11 @@ git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185
 git push origin custom-failure-head-v2
 # the step below failed
 # github.createPullRequest
-${"```"}`);
+${"```"}
+
+The backport to ${"`v2`"} will not be retried until this comment is deleted.
+
+<!-- git-backporting: backport to v2 failed -->`);
     expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith("https://api.github.com/repos/owner/reponame/pulls/2368", `The backport to ${"`v3`"} failed. Check the latest run for more details.
 
 Reconstruction of the attempted steps (beware that escaping may be missing):
@@ -1566,9 +1574,50 @@ git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185
 git push origin custom-failure-head-v3
 # the step below failed
 # github.createPullRequest
-${"```"}`);
+${"```"}
+
+The backport to ${"`v3`"} will not be retried until this comment is deleted.
+
+<!-- git-backporting: backport to v3 failed -->`);
 
     createPullRequestSpy.mockReset();
+  });
+
+  test("skip target branch whose backport already failed and was reported", async () => {
+    const getCommentsSpy = jest.spyOn(GitHubClient.prototype, "getLatestPullRequestComments").mockResolvedValue([
+      "just an unrelated comment",
+      "The backport to `v2` failed. Check the latest run for more details.\n\n<!-- git-backporting: backport to v2 failed -->",
+    ]);
+    const createPullRequestSpy = jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation((backport: BackportPullRequest) => {
+      throw new Error(`Mocked error: ${backport.base}`);
+    });
+
+    addProcessArgs([
+      "-tb",
+      "v1, v2",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "-f",
+      "/tmp/folder",
+      "--bp-branch-name",
+      "custom-failure-head",
+      "--enable-err-notification",
+    ]);
+
+    // only v1 is attempted, hence only its failure is reported
+    await expect(() => runner.execute()).rejects.toThrow("Failure occurred during one of the backports: [Error: Mocked error: v1]");
+
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://github.com/owner/reponame.git", "/tmp/folder", "v1");
+
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith(
+      "https://api.github.com/repos/owner/reponame/pulls/2368",
+      expect.stringContaining("<!-- git-backporting: backport to v1 failed -->")
+    );
+
+    createPullRequestSpy.mockReset();
+    getCommentsSpy.mockRestore();
   });
 
   test("with some failures and dry run enabled", async () => {

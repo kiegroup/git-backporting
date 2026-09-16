@@ -55,11 +55,11 @@ export default class GitHubClient implements GitClient {
     if (squash === undefined) {
       let commit_sha: string | undefined = undefined;
       if (!open) {
-	const commit = await this.octokit.rest.git.getCommit({
+        const commit = await this.octokit.rest.git.getCommit({
           owner: owner,
           repo: repo,
           commit_sha: (data.merge_commit_sha as string),
-	});
+        });
         // A merge commit with a single parent is produced by BOTH a "squash and merge"
         // and a "rebase and merge", so the parent count alone cannot tell them apart.
         // A rebase replays every commit of the pull request preserving
@@ -97,6 +97,58 @@ export default class GitHubClient implements GitClient {
   async getPullRequestFromUrl(prUrl: string, squash: boolean | undefined): Promise<GitPullRequest> {
     const { owner, project, id } = this.extractPullRequestData(prUrl);
     return this.getPullRequest(owner, project, id, squash);
+  }
+
+  async getLatestPullRequestComments(prUrl: string): Promise<string[]> {
+    const { owner, project, id } = this.extractPullRequestData(prUrl);
+    this.logger.debug(`Fetching latest comments of pull request ${owner}/${project}/${id}`);
+
+    const perPage = 100;
+    const params = {
+      owner: owner,
+      repo: project,
+      issue_number: id,
+      per_page: perPage,
+    };
+
+    const { data, headers } = await this.octokit.issues.listComments(params);
+    const firstPage = data.map(c => c.body ?? "");
+
+    // Forgejo so far didn't implement pagination, and just always returns all comments.
+    const total = this.extractTotalCount(headers);
+    if (total !== undefined && data.length >= total) {
+      return firstPage;
+    }
+
+    const lastPage = this.extractLastPage(headers, perPage);
+    if (lastPage <= 1) {
+      return firstPage;
+    }
+
+    // last page may hold only one single comment, so always fetch last two pages
+    const fetchPage = async (page: number): Promise<string[]> => {
+      const { data } = await this.octokit.issues.listComments({ ...params, page });
+      return data.map(c => c.body ?? "");
+    };
+    const secondLast = lastPage === 2 ? firstPage : await fetchPage(lastPage - 1);
+    const last = await fetchPage(lastPage);
+
+    return [...secondLast, ...last];
+  }
+
+  private extractTotalCount(headers: { [header: string]: string | number | undefined }): number | undefined {
+    const total = parseInt(`${headers["x-total-count"]}`);
+    return isNaN(total) ? undefined : total;
+  }
+
+  private extractLastPage(headers: { link?: string, [header: string]: string | number | undefined }, perPage: number): number {
+    const last = /[?&]page=(\d+)[^>]*>;\s*rel="last"/.exec(headers.link ?? "");
+    if (last) {
+      return parseInt(last[1]);
+    }
+
+    const total = this.extractTotalCount(headers);
+    return total === undefined ? 1 : Math.ceil(total / perPage);
   }
 
   /**
