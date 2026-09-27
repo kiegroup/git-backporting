@@ -141,7 +141,7 @@ export default class GitCLIService {
   async cherryPick(cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined): Promise<void> {
     this.logger.info(`Cherry picking ${sha}`);
 
-    let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`];
+    let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, "--empty=drop"];
     if (cherryPickOptions !== undefined) {
       options = options.concat(cherryPickOptions.split(" "));
     }
@@ -190,4 +190,12 @@ export default class GitCLIService {
     await this.git(cwd).push(remote, branch, options);
   }
 
+  /**
+  * pointToSameCommit checks if two refs point the same commit
+  */
+  async pointToSameCommit(cwd: string, refA: string, refB: string): Promise<boolean>{
+    const shaA = await this.git(cwd).revparse(refA);
+    const shaB = await this.git(cwd).revparse(refB);
+    return shaA === shaB;
+  }
 }

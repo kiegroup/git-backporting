@@ -97,6 +97,7 @@ describe("git cli service", () => {
     // use rev-parse to double check the current branch is the new one
     const output = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd }).stdout.toString().trim();
     expect(output).toEqual("new-local-branch");
+    currentBranch = "new-local-branch";
   });
 
   test("push local branch", async () => {
@@ -104,15 +105,24 @@ describe("git cli service", () => {
     // create file to push
     fs.writeFileSync(path.join(cwd, "test-push"), "testing git push");
   
+    let unchanged = await git.pointToSameCommit(cwd, currentBranch, "main");
+    expect(unchanged).toBe(true);
+
     // add and commit the file
     spawnSync("git", ["add", "."], { cwd });
     spawnSync("git", ["commit", "-m", expressionToTest], { cwd });
   
+    unchanged = await git.pointToSameCommit(cwd, currentBranch, "main");
+    expect(unchanged).toBe(false);
+
     await git.push(cwd, currentBranch, "origin", false);
   
     // use git cherry to verify this commit was pushed
     const output = spawnSync("git", ["cherry", "-v"], { cwd }).stdout.toString();
     expect(output.includes(expressionToTest)).toBe(false);
+
+    unchanged = await git.pointToSameCommit(cwd, currentBranch, "origin/"+currentBranch);
+    expect(unchanged).toBe(true);
   });
 
 

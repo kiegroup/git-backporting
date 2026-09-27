@@ -620,7 +620,7 @@ class GitCLIService {
      */
     async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions) {
         this.logger.info(`Cherry picking ${sha}`);
-        let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`];
+        let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, "--empty=drop"];
         if (cherryPickOptions !== undefined) {
             options = options.concat(cherryPickOptions.split(" "));
         }
@@ -664,6 +664,14 @@ class GitCLIService {
             options.push("--force-with-lease");
         }
         await this.git(cwd).push(remote, branch, options);
+    }
+    /**
+    * pointToSameCommit checks if two refs point the same commit
+    */
+    async pointToSameCommit(cwd, refA, refB) {
+        const shaA = await this.git(cwd).revparse(refA);
+        const shaB = await this.git(cwd).revparse(refB);
+        return shaA === shaB;
     }
 }
 exports["default"] = GitCLIService;
@@ -1890,6 +1898,17 @@ function* backportSteps(logger, configs, backportPR, git) {
             await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
         };
     }
+    // stop early if backport already happened
+    let unchanged = false;
+    yield async () => {
+        unchanged = await git.gitCli.pointToSameCommit(configs.folder, backportPR.base, backportPR.head);
+        if (unchanged) {
+            logger.info("Nothing new to push, exiting early");
+        }
+    };
+    if (unchanged) {
+        return;
+    }
     let target_remote = undefined;
     if (backportPR.headRepo) {
         // 9. add fork-remote to push backport branch to
@@ -1939,11 +1958,15 @@ async function backportScript(configs, backportPR, git, failed) {
             return false;
         },
         async cherryPick(_cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions) {
-            s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} `;
+            s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=drop `;
             if (cherryPickOptions !== undefined) {
                 s += cherryPickOptions + " ";
             }
             s += sha;
+        },
+        async pointToSameCommit(_cwd, refA, refB) {
+            s += "# check if there is anything to push";
+            return refA === refB; // always let the script continue (interesting case)
         },
         async addRemote(_cwd, remote, remoteName = "fork") {
             s += `git remote add ${remoteName} ${remote}`;

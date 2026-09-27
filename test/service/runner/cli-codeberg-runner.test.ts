@@ -1362,7 +1362,8 @@ ${"```sh"}
 git fetch origin v1
 git switch -c custom-failure-head-v1 origin/v1
 git fetch origin pull/2368/head:pr/2368
-git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs --empty=drop 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+# check if there is anything to push
 git push origin custom-failure-head-v1
 # the step below failed
 # codeberg.createPullRequest
@@ -1378,7 +1379,8 @@ ${"```sh"}
 git fetch origin v2
 git switch -c custom-failure-head-v2 origin/v2
 git fetch origin pull/2368/head:pr/2368
-git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs --empty=drop 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+# check if there is anything to push
 git push origin custom-failure-head-v2
 # the step below failed
 # codeberg.createPullRequest
@@ -1395,7 +1397,8 @@ git fetch origin v3
 git switch -c custom-failure-head-v3 origin/v3
 git fetch origin pull/2368/head:pr/2368
 # the step below failed
-git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs --empty=drop 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+# check if there is anything to push
 git push origin custom-failure-head-v3
 # codeberg.createPullRequest
 ${"```"}
