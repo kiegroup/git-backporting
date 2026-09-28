@@ -138,10 +138,10 @@ export default class GitCLIService {
    * @param cwd repository in which the sha should be cherry picked to
    * @param sha commit sha
    */
-  async cherryPick(cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined): Promise<void> {
+  async cherryPick(cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined, emptyCommit = "stop"): Promise<void> {
     this.logger.info(`Cherry picking ${sha}`);
 
-    let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, "--empty=drop"];
+    let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, `--empty=${emptyCommit}`];
     if (cherryPickOptions !== undefined) {
       options = options.concat(cherryPickOptions.split(" "));
     }

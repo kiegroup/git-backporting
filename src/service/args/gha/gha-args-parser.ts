@@ -8,7 +8,7 @@ export default class GHAArgsParser extends ArgsParser {
   readArgs(): Args {
     const configFile = getOrUndefined(getInput("config-file"));
 
-    let args: Args; 
+    let args: Args;
     if (configFile) {
       args = readConfigFile(configFile);
     } else {
@@ -38,6 +38,7 @@ export default class GHAArgsParser extends ArgsParser {
         strategy: getOrUndefined(getInput("strategy")),
         strategyOption: getOrUndefined(getInput("strategy-option")),
         cherryPickOptions: getOrUndefined(getInput("cherry-pick-options")),
+        emptyCommit: getOrUndefined(getInput("empty-commit")),
         comments: getAsSemicolonSeparatedList(getInput("comments")),
         enableErrorNotification: getAsBooleanOrUndefined(getInput("enable-err-notification")),
       };

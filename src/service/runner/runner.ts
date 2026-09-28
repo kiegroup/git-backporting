@@ -245,7 +245,7 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
   };
   for (const sha of configs.originalPullRequest.commits) {
     yield async () => {
-      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
+      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions, configs.emptyCommit);
     };
   }
 
@@ -312,8 +312,8 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
     async remoteBranchExists(_remote: string, _branch: string): Promise<boolean> {
       return false;
     },
-    async cherryPick(_cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined): Promise<void> {
-      s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=drop `;
+    async cherryPick(_cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined, emptyCommit = "stop"): Promise<void> {
+      s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;
       if (cherryPickOptions !== undefined) {
         s += cherryPickOptions + " ";
       }

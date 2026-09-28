@@ -8,7 +8,7 @@ export const MESSAGE_TARGET_BRANCH_PLACEHOLDER = "{{target-branch}}";
 export interface LocalGit {
   user: string, // local git user
   email: string, // local git email
-} 
+}
 
 export interface ErrorNotification {
   enabled: boolean, // if the error notification is enabled
@@ -26,6 +26,7 @@ export interface Configs {
   mergeStrategy?: string, // cherry-pick merge strategy
   mergeStrategyOption?: string, // cherry-pick merge strategy option
   cherryPickOptions?: string, // additional cherry-pick options
+  emptyCommit: string,  // how to behave with empty commits <drop|keep|stop>
   originalPullRequest: GitPullRequest,
   backportPullRequests: BackportPullRequest[],
   errorNotification: ErrorNotification,

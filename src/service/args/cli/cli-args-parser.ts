@@ -35,6 +35,7 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
       .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
       .option("--cherry-pick-options <options>", "additional cherry-pick options")
+      .option("--empty-commit <drop|keep|stop>", "how to behave with empty commits")
       .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", getAsSemicolonSeparatedList)
       .option("--enable-err-notification", "if true, enable the error notification as comment on the original pull request")
       .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
@@ -44,8 +45,8 @@ export default class CLIArgsParser extends ArgsParser {
     const opts = this.getCommand()
       .parse()
       .opts();
-    
-    let args: Args; 
+
+    let args: Args;
     if (opts.configFile) {
       // if config file is set ignore all other options
       args = readConfigFile(opts.configFile);
@@ -76,6 +77,7 @@ export default class CLIArgsParser extends ArgsParser {
         strategy: opts.strategy,
         strategyOption: opts.strategyOption,
         cherryPickOptions: opts.cherryPickOptions,
+        emptyCommit: opts.emptyCommit,
         comments: opts.comments,
         enableErrorNotification: opts.enableErrNotification,
       };

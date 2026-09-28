@@ -49,7 +49,7 @@ afterAll(() => {
 beforeEach(() => {
   // reset git env tokens
   resetEnvTokens();
-  
+
   mockGitHubClient();
 
   // create GHA arguments parser
@@ -66,7 +66,7 @@ describe("gha runner", () => {
       "target-branch": "target",
       "pull-request": "https://github.com/owner/reponame/pull/2368"
     });
-    
+
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
@@ -79,12 +79,12 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
@@ -109,24 +109,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-28f63db", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-28f63db",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -164,24 +164,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-9174896");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/4444/head:pr/4444");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-9174896", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-9174896", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-9174896",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/4444\r\n\r\nPlease review and merge",
         reviewers: ["gh-user"],
         assignees: [],
@@ -216,24 +216,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp_branch_name", 
-        base: "target", 
-        title: "New Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp_branch_name",
+        base: "target",
+        title: "New Title",
         body: "New Body Prefix\r\n\r\nNew Body",
         reviewers: ["user1", "user2"],
         assignees: ["user3", "user4"],
@@ -269,24 +269,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp_branch_name", 
-        base: "target", 
-        title: "New Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp_branch_name",
+        base: "target",
+        title: "New Title",
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
@@ -317,24 +317,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-28f63db", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-28f63db",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -365,24 +365,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-28f63db", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-28f63db",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -397,7 +397,7 @@ describe("gha runner", () => {
     spyGetInput({
       "config-file": GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT_PATHNAME,
     });
-    
+
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
@@ -410,24 +410,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp_branch_name");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp_branch_name", 
-        base: "target", 
-        title: "New Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp_branch_name",
+        base: "target",
+        title: "New Title",
         body: "New Body Prefix - New Body",
         reviewers: [],
         assignees: ["user3", "user4"],
@@ -457,24 +457,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-28f63db", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-28f63db",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -491,7 +491,7 @@ describe("gha runner", () => {
       "pull-request": "https://api.github.com/repos/owner/reponame/pulls/8632",
       "no-squash": "true",
     });
-    
+
     await runner.execute();
 
     const cwd = process.cwd() + "/bp";
@@ -504,24 +504,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-0404fb9-11da4e3");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-0404fb9-11da4e3", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-0404fb9-11da4e3", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-0404fb9-11da4e3",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -552,12 +552,12 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", "ort", "ours", undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", "ort", "ours", undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -604,19 +604,19 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, "-x --allow-empty");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, "-x --allow-empty", "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-28f63db", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-28f63db",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -646,24 +646,24 @@ describe("gha runner", () => {
 
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-target-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-target-28f63db", 
-        base: "target", 
-        title: "[target] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-target-28f63db",
+        base: "target",
+        title: "[target] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -680,7 +680,7 @@ describe("gha runner", () => {
       "pull-request": "https://github.com/owner/reponame/pull/2368",
       "folder": "/tmp/folder",
     });
-    
+
     await runner.execute();
 
     const cwd = "/tmp/folder";
@@ -697,14 +697,14 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-v1-28f63db");
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-v2-28f63db");
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "bp-v3-28f63db");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-v1-28f63db", undefined);
@@ -713,12 +713,12 @@ describe("gha runner", () => {
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(3);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-v1-28f63db", 
-        base: "v1", 
-        title: "[v1] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-v1-28f63db",
+        base: "v1",
+        title: "[v1] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -726,12 +726,12 @@ describe("gha runner", () => {
         comments: [],
     });
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-v2-28f63db", 
-        base: "v2", 
-        title: "[v2] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-v2-28f63db",
+        base: "v2",
+        title: "[v2] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -739,12 +739,12 @@ describe("gha runner", () => {
         comments: [],
     });
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "bp-v3-28f63db", 
-        base: "v3", 
-        title: "[v3] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "bp-v3-28f63db",
+        base: "v3",
+        title: "[v3] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -761,7 +761,7 @@ describe("gha runner", () => {
       "folder": "/tmp/folder",
       "bp-branch-name": "custom"
     });
-    
+
     await runner.execute();
 
     const cwd = "/tmp/folder";
@@ -778,14 +778,14 @@ describe("gha runner", () => {
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-v1");
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-v2");
     expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-v3");
-    
+
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-v1", undefined);
@@ -794,12 +794,12 @@ describe("gha runner", () => {
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(3);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "custom-v1", 
-        base: "v1", 
-        title: "[v1] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "custom-v1",
+        base: "v1",
+        title: "[v1] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -807,12 +807,12 @@ describe("gha runner", () => {
         comments: [],
     });
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "custom-v2", 
-        base: "v2", 
-        title: "[v2] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "custom-v2",
+        base: "v2",
+        title: "[v2] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
@@ -820,12 +820,12 @@ describe("gha runner", () => {
         comments: [],
     });
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith({
-        owner: "owner", 
-        repo: "reponame", 
-        cloneUrl: "https://github.com/owner/reponame.git", 
-        head: "custom-v3", 
-        base: "v3", 
-        title: "[v3] PR Title", 
+        owner: "owner",
+        repo: "reponame",
+        cloneUrl: "https://github.com/owner/reponame.git",
+        head: "custom-v3",
+        base: "v3",
+        title: "[v3] PR Title",
         body: "**Backport:** https://github.com/owner/reponame/pull/2368\r\n\r\nPlease review and merge",
         reviewers: ["gh-user", "that-s-a-user"],
         assignees: [],
