@@ -29,6 +29,7 @@ export interface Args {
   strategy?: string, // cherry-pick merge strategy
   strategyOption?: string, // cherry-pick merge strategy option
   cherryPickOptions?: string, // additional cherry-pick options
+  emptyCommit?: string, // how to behave with empty commits <drop|keep|stop>
   comments?: string[], // additional comments to be posted
   enableErrorNotification?: boolean, // enable the error notification on original pull request
 }

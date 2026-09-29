@@ -91,7 +91,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
@@ -121,7 +121,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
@@ -155,7 +155,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(0);
     expect(GitCLIService.prototype.addRemote).toHaveBeenCalledTimes(0);
@@ -192,7 +192,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(0);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(0);
@@ -223,7 +223,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -360,8 +360,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "upstream");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined, "drop");
 
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
     expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledWith(expect.objectContaining({
@@ -396,7 +396,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -456,7 +456,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/4444/head:pr/4444");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "91748965051fae1330ad58d15cf694e103267c87", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-9174896", undefined);
@@ -505,8 +505,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/4444/head:pr/4444");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-0404fb9-11da4e3", undefined);
@@ -566,7 +566,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name", undefined);
@@ -625,7 +625,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name", undefined);
@@ -676,7 +676,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -726,7 +726,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -772,7 +772,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp_branch_name", undefined);
@@ -821,7 +821,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -869,8 +869,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-0404fb9-11da4e3", undefined);
@@ -925,7 +925,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, truncatedBranch, undefined);
@@ -977,8 +977,8 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(2);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", "ort", "find-renames", undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "0404fb922ab75c3a8aecad5c97d9af388df04695", "ort", "find-renames", undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenLastCalledWith(cwd, "11da4e38aa3e577ffde6d546f1c52e53b04d3151", "ort", "find-renames", undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-0404fb9-11da4e3", undefined);
@@ -1029,7 +1029,7 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(0);
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-target-28f63db", undefined);
@@ -1083,9 +1083,9 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "bp-v1-28f63db", undefined);
@@ -1224,9 +1224,9 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom1", undefined);
@@ -1313,9 +1313,9 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v1", undefined);
@@ -1480,9 +1480,9 @@ describe("cli runner", () => {
     expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(3);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
-    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined);
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledWith(cwd, "28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc", undefined, undefined, undefined, "drop");
 
     expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(3);
     expect(GitCLIService.prototype.push).toHaveBeenCalledWith(cwd, "custom-failure-head-v1", undefined);
@@ -1538,7 +1538,8 @@ ${"```sh"}
 git fetch origin v1
 git switch -c custom-failure-head-v1 origin/v1
 git fetch origin pull/2368/head:pr/2368
-git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs --empty=drop 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+# check if there is anything to push
 git push origin custom-failure-head-v1
 # the step below failed
 # github.createPullRequest
@@ -1554,7 +1555,8 @@ ${"```sh"}
 git fetch origin v2
 git switch -c custom-failure-head-v2 origin/v2
 git fetch origin pull/2368/head:pr/2368
-git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs --empty=drop 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+# check if there is anything to push
 git push origin custom-failure-head-v2
 # the step below failed
 # github.createPullRequest
@@ -1570,7 +1572,8 @@ ${"```sh"}
 git fetch origin v3
 git switch -c custom-failure-head-v3 origin/v3
 git fetch origin pull/2368/head:pr/2368
-git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+git cherry-pick -m 1 --strategy=recursive --strategy-option=theirs --empty=drop 28f63db774185f4ec4b57cd9aaeb12dbfb4c9ecc
+# check if there is anything to push
 git push origin custom-failure-head-v3
 # the step below failed
 # github.createPullRequest

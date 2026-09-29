@@ -72,6 +72,7 @@ class ArgsParser {
             strategy: this.getOrDefault(args.strategy),
             strategyOption: this.getOrDefault(args.strategyOption),
             cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
+            emptyCommit: this.getOrDefault(args.emptyCommit),
             comments: this.getOrDefault(args.comments),
             enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
         };
@@ -214,6 +215,7 @@ class CLIArgsParser extends args_parser_1.default {
             .option("--strategy <strategy>", "cherry-pick merge strategy, default to 'recursive'", undefined)
             .option("--strategy-option <strategy-option>", "cherry-pick merge strategy option, default to 'theirs'")
             .option("--cherry-pick-options <options>", "additional cherry-pick options")
+            .option("--empty-commit <drop|keep|stop>", "how to behave with empty commits")
             .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", args_utils_1.getAsSemicolonSeparatedList)
             .option("--enable-err-notification", "if true, enable the error notification as comment on the original pull request")
             .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
@@ -254,6 +256,7 @@ class CLIArgsParser extends args_parser_1.default {
                 strategy: opts.strategy,
                 strategyOption: opts.strategyOption,
                 cherryPickOptions: opts.cherryPickOptions,
+                emptyCommit: opts.emptyCommit,
                 comments: opts.comments,
                 enableErrorNotification: opts.enableErrNotification,
             };
@@ -383,6 +386,7 @@ class PullRequestConfigsParser extends configs_parser_1.default {
             mergeStrategy: args.strategy,
             mergeStrategyOption: args.strategyOption,
             cherryPickOptions: args.cherryPickOptions,
+            emptyCommit: args.emptyCommit || "drop",
             originalPullRequest: pr,
             backportPullRequests: this.generateBackportPullRequestsData(pr, args, targetBranches, bpBranchNames),
             git: {
@@ -655,9 +659,9 @@ class GitCLIService {
      * @param cwd repository in which the sha should be cherry picked to
      * @param sha commit sha
      */
-    async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions) {
+    async cherryPick(cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions, emptyCommit = "stop") {
         this.logger.info(`Cherry picking ${sha}`);
-        let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`];
+        let options = ["cherry-pick", "-m", "1", `--strategy=${strategy}`, `--strategy-option=${strategyOption}`, `--empty=${emptyCommit}`];
         if (cherryPickOptions !== undefined) {
             options = options.concat(cherryPickOptions.split(" "));
         }
@@ -701,6 +705,14 @@ class GitCLIService {
             options.push("--force-with-lease");
         }
         await this.git(cwd).push(remote, branch, options);
+    }
+    /**
+    * pointToSameCommit checks if two refs point the same commit
+    */
+    async pointToSameCommit(cwd, refA, refB) {
+        const shaA = await this.git(cwd).revparse(refA);
+        const shaB = await this.git(cwd).revparse(refB);
+        return shaA === shaB;
     }
 }
 exports["default"] = GitCLIService;
@@ -1924,8 +1936,19 @@ function* backportSteps(logger, configs, backportPR, git) {
     };
     for (const sha of configs.originalPullRequest.commits) {
         yield async () => {
-            await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
+            await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions, configs.emptyCommit);
         };
+    }
+    // stop early if backport already happened
+    let unchanged = false;
+    yield async () => {
+        unchanged = await git.gitCli.pointToSameCommit(configs.folder, backportPR.base, backportPR.head);
+        if (unchanged) {
+            logger.info("Nothing new to push, exiting early");
+        }
+    };
+    if (unchanged) {
+        return;
     }
     let target_remote = undefined;
     if (backportPR.headRepo) {
@@ -1975,12 +1998,16 @@ async function backportScript(configs, backportPR, git, failed) {
         async remoteBranchExists(_remote, _branch) {
             return false;
         },
-        async cherryPick(_cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions) {
-            s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} `;
+        async cherryPick(_cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions, emptyCommit = "stop") {
+            s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;
             if (cherryPickOptions !== undefined) {
                 s += cherryPickOptions + " ";
             }
             s += sha;
+        },
+        async pointToSameCommit(_cwd, refA, refB) {
+            s += "# check if there is anything to push";
+            return refA === refB; // always let the script continue (interesting case)
         },
         async addRemote(_cwd, remote, remoteName = "fork") {
             s += `git remote add ${remoteName} ${remote}`;

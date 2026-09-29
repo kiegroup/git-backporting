@@ -14,7 +14,7 @@ import { injectError, injectTargetBranch } from "./runner-util";
 interface Git {
   gitClientType: GitClientType;
   gitClientApi: Pick<GitClient, ("getLatestPullRequestComments" | "createPullRequest" | "createPullRequestComment")>;
-  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push")>;
+  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" )>;
 }
 
 /**
@@ -245,8 +245,20 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
   };
   for (const sha of configs.originalPullRequest.commits) {
     yield async () => {
-      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions);
+      await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions, configs.emptyCommit);
     };
+  }
+
+  // stop early if backport already happened
+  let unchanged = false;
+  yield async () => {
+    unchanged = await git.gitCli.pointToSameCommit(configs.folder, backportPR.base, backportPR.head);
+    if (unchanged) {
+      logger.info("Nothing new to push, exiting early");
+    }
+  };
+  if (unchanged) {
+    return;
   }
 
   let target_remote: string | undefined = undefined;
@@ -300,12 +312,16 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
     async remoteBranchExists(_remote: string, _branch: string): Promise<boolean> {
       return false;
     },
-    async cherryPick(_cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined): Promise<void> {
-      s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} `;
+    async cherryPick(_cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined, emptyCommit = "stop"): Promise<void> {
+      s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;
       if (cherryPickOptions !== undefined) {
         s += cherryPickOptions + " ";
       }
       s += sha;
+    },
+    async pointToSameCommit(_cwd: string, refA: string, refB: string): Promise<boolean> {
+      s += "# check if there is anything to push";
+      return refA === refB; // always let the script continue (interesting case)
     },
     async addRemote(_cwd: string, remote: string, remoteName = "fork"): Promise<void> {
       s += `git remote add ${remoteName} ${remote}`;

@@ -1,7 +1,7 @@
 import { Args } from "@bp/service/args/args.types";
 
 /**
- * Abstract arguments parser interface in charge to parse inputs and 
+ * Abstract arguments parser interface in charge to parse inputs and
  * produce a common Args object
  */
 export default abstract class ArgsParser {
@@ -23,7 +23,7 @@ export default abstract class ArgsParser {
     if ((!args.targetBranch || args.targetBranch.trim().length == 0) && !args.targetBranchPattern) {
       throw new Error("Missing option: target branch(es) or target regular expression must be provided");
     }
-    
+
     return {
       pullRequest: args.pullRequest,
       targetBranch: args.targetBranch,
@@ -50,6 +50,7 @@ export default abstract class ArgsParser {
       strategy: this.getOrDefault(args.strategy),
       strategyOption: this.getOrDefault(args.strategyOption),
       cherryPickOptions: this.getOrDefault(args.cherryPickOptions),
+      emptyCommit: this.getOrDefault(args.emptyCommit),
       comments: this.getOrDefault(args.comments),
       enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
     };

@@ -53,6 +53,7 @@ export default class PullRequestConfigsParser extends ConfigsParser {
       mergeStrategy: args.strategy,
       mergeStrategyOption: args.strategyOption,
       cherryPickOptions: args.cherryPickOptions,
+      emptyCommit: args.emptyCommit || "drop",
       originalPullRequest: pr,
       backportPullRequests: this.generateBackportPullRequestsData(pr, args, targetBranches, bpBranchNames),
       git: {
