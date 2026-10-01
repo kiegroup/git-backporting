@@ -6,6 +6,7 @@ import OctokitFactory from "@bp/service/git/github/octokit-factory";
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { Octokit } from "@octokit/rest";
+import { RequestError } from "@octokit/request-error";
 import { PullRequest } from "@octokit/webhooks-types";
 
 export default class GitHubClient implements GitClient {
@@ -192,16 +193,28 @@ export default class GitHubClient implements GitClient {
     this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
     this.logger.info(`${JSON.stringify(backport, null, 2)}`);
 
-    const { data } = await this.octokit.pulls.create({
-      owner: backport.owner,
-      repo: backport.repo,
-      head: backport.headRepo ? `${backport.headRepo.owner}:${backport.head}` : backport.head,
-      ...(backport.headRepo ? { head_repo: backport.headRepo.project } : {}),
-      base: backport.base,
-      title: backport.title,
-      body: backport.body,
-      maintainer_can_modify: true,
-    });
+    let data: PullRequest;
+    try {
+      const resp = await this.octokit.pulls.create({
+        owner: backport.owner,
+        repo: backport.repo,
+        head: backport.headRepo ? `${backport.headRepo.owner}:${backport.head}` : backport.head,
+        ...(backport.headRepo ? { head_repo: backport.headRepo.project } : {}),
+        base: backport.base,
+        title: backport.title,
+        body: backport.body,
+        maintainer_can_modify: true,
+      });
+      data = resp.data as PullRequest;
+    } catch (err) {
+      if (err instanceof RequestError && err.status === 409) {
+        // Forgejo returns unstructured message:
+        // pull request already exists for these targets [id: .., issue_id: .., head_repo_id: .., base_repo_id: .., head_branch: bp-..., base_branch: ...]
+        this.logger.warn(err.message);
+        return "";
+      }
+      throw err;
+    }
 
     if (!data) {
       throw new Error("Pull request creation failed");
@@ -214,7 +227,7 @@ export default class GitHubClient implements GitClient {
         this.octokit.issues.addLabels({
           owner: backport.owner,
           repo: backport.repo,
-          issue_number: (data as PullRequest).number,
+          issue_number: data.number,
           labels: backport.labels,
         }).catch(error => this.logger.error(`Error setting labels: ${error}`))
       );
@@ -225,7 +238,7 @@ export default class GitHubClient implements GitClient {
         this.octokit.pulls.requestReviewers({
           owner: backport.owner,
           repo: backport.repo,
-          pull_number: (data as PullRequest).number,
+          pull_number: data.number,
           reviewers: backport.reviewers,
         }).catch(error => this.logger.error(`Error requesting reviewers: ${error}`))
       );
@@ -236,7 +249,7 @@ export default class GitHubClient implements GitClient {
         this.octokit.issues.addAssignees({
           owner: backport.owner,
           repo: backport.repo,
-          issue_number: (data as PullRequest).number,
+          issue_number: data.number,
           assignees: backport.assignees,
         }).catch(error => this.logger.error(`Error setting assignees: ${error}`))
       );
@@ -248,7 +261,7 @@ export default class GitHubClient implements GitClient {
           this.octokit.issues.createComment({
             owner: backport.owner,
             repo: backport.repo,
-            issue_number: (data as PullRequest).number,
+            issue_number: data.number,
             body: c,
           }).catch(error => this.logger.error(`Error posting comment: ${error}`))
         );

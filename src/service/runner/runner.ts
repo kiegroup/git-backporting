@@ -295,7 +295,11 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
     // 11. create pull request new branch -> target branch (using octokit)
     yield async () => {
       const prUrl = await git.gitClientApi.createPullRequest(backportPR);
-      logger.info(`Pull request created: ${prUrl}`);
+      if (prUrl) {
+        logger.info(`Pull request created: ${prUrl}`);
+      } else {
+        logger.info("The existing pull request has been updated");
+      }
     };
   } else {
     yield async () => {
