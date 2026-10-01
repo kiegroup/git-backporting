@@ -2,7 +2,7 @@ import ArgsParser from "@bp/service/args/args-parser";
 import { Args } from "@bp/service/args/args.types";
 import { Configs } from "@bp/service/configs/configs.types";
 import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs-parser";
-import GitCLIService from "@bp/service/git/git-cli";
+import GitCLIService, { NonFastForwardError } from "@bp/service/git/git-cli";
 import GitClient from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
@@ -14,7 +14,7 @@ import { injectError, injectTargetBranch } from "./runner-util";
 interface Git {
   gitClientType: GitClientType;
   gitClientApi: Pick<GitClient, ("getLatestPullRequestComments" | "createPullRequest" | "createPullRequestComment")>;
-  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" )>;
+  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "hasRemoteOriginalWork" | "hasLocalOriginalWork" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" )>;
 }
 
 /**
@@ -267,7 +267,29 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
   if (!configs.dryRun) {
     // 10. push the new branch to origin
     yield async () => {
+      try {
         await git.gitCli.push(configs.folder, backportPR.head, target_remote);
+      } catch (err) {
+        if (!(err instanceof NonFastForwardError)) {
+          throw err;
+        }
+        logger.info("Non-fast-forward remote branch");
+        // fetch the diverting remote
+        await git.gitCli.fetch(configs.folder, backportPR.head, target_remote);
+        if (
+          await git.gitCli.hasRemoteOriginalWork(configs.folder, backportPR.head, target_remote)
+        ) {
+          logger.info("Remote branch contains original work, aborting");
+          // throw original error: we cannot push in non-fast-forwarding way
+          throw err.cause;
+        }
+        if (
+          await git.gitCli.hasLocalOriginalWork(configs.folder, backportPR.head, target_remote)
+        ) {
+          logger.info("Force-pushing rebased branch");
+          await git.gitCli.push(configs.folder, backportPR.head, target_remote, true);
+        }
+      }
     };
 
     // 11. create pull request new branch -> target branch (using octokit)
@@ -301,6 +323,12 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
     },
     async fetch(_cwd: string, branch: string, remote = "origin"): Promise<void> {
       s += `git fetch ${remote} ${branch}`;
+    },
+    async hasRemoteOriginalWork(_cwd: string, _branch: string, _remote = "origin"): Promise<boolean> {
+      return false;
+    },
+    async hasLocalOriginalWork(_cwd: string, _branch: string, _remote = "origin"): Promise<boolean> {
+      return true;
     },
     async cherryPick(_cwd: string, sha: string, strategy = "recursive", strategyOption = "theirs", cherryPickOptions: string | undefined, emptyCommit = "stop"): Promise<void> {
       s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;
