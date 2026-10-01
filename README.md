@@ -137,6 +137,8 @@ This tool comes with some inputs that allow users to override the default behavi
 | Empty commit behavior     | --empty-commit        | N            | Redundant commits handling: `drop`, `keep` or `stop`; see [git-cherry-pick](https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---emptydropkeepstop) doc for details                                                          | "drop"       |
 | Additional comments       | --comments        | N            | Semicolon separated list of additional comments to be posted to the backported pull request                                                           | []       |
 | Enable error notification       | --enable-err-notification        | N            | If true, enable the error notification as comment on the original pull request, see [Error notification](#error-notification)           | false       |
+| Post Command       | --post-command        | N            | Shell command to run after cherry-pick(s) succeed but before the result is committed and pushed. If the command produces changes, they are staged and included in an additional fixup commit | |
+| Post Command Commit Message | --post-command-commit-message | N | Commit message for the fixup commit created when `--post-command` produces changes | "fixup: post-backport adjustments" |
 | Dry Run       | -d, --dry-run        | N            | If enabled the tool does not push nor create anything remotely, use this to skip PR creation                                                           | false       |
 
 > **NOTE**: `pull request` and (`target branch` or `target branch pattern`) are *mandatory*, they must be provided as CLI options or as part of the configuration file (if used).
@@ -189,6 +191,33 @@ This marker is used to debounce the reporting of the same backport failing multi
 Before backporting to a target branch, the tool inspects the most recent comments of the original pull request.
 If a failure has already been reported, the backport attempt will be skipped.
 To retry the backport, delete the failure comment (or edit out the marker).
+
+#### Post-command
+
+When backporting across major version branches, the cherry-picked code may contain import paths or references that are correct on the source branch but wrong on the target branch (e.g., Go module paths, Python package versions, namespace renames). The `--post-command` option lets you run an arbitrary shell command after the cherry-pick(s) succeed but before the result is committed and pushed. If the command produces changes, they are staged and included in an additional fixup commit.
+
+Example: fix Go module imports after backporting from `main` (v3) to `release-2.0` (v2):
+```bash
+$ git-backporting -tb release-2.0 -pr https://github.com/owner/repo/pull/42 -a ***** \
+    --post-command 'sed -i "s|github.com/owner/repo/v3|github.com/owner/repo/v2|g" $(find . -name "*.go")' \
+    --post-command-commit-message "fixup: update module paths from v3 to v2"
+```
+
+Example: run `go mod tidy` after cherry-pick:
+```bash
+$ git-backporting -tb release-2.0 -pr https://github.com/owner/repo/pull/42 -a ***** \
+    --post-command 'go mod tidy'
+```
+
+As a GitHub Action:
+```yaml
+- uses: kiegroup/git-backporting@main
+  with:
+    pull-request: https://github.com/owner/repo/pull/42
+    target-branch: release-2.0
+    post-command: "go mod tidy"
+    post-command-commit-message: "fixup: go mod tidy"
+```
 
 #### Configuration file example
 

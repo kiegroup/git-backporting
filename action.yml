@@ -122,6 +122,17 @@ inputs:
       If true, enable the error notification as comment on the original pull request
     required: false
     default: "false"
+  post-command:
+    description: >
+      Shell command to run after cherry-pick(s) succeed but before the result is
+      committed and pushed. If the command produces changes, they are staged and
+      included in an additional fixup commit.
+    required: false
+  post-command-commit-message:
+    description: >
+      Commit message for the fixup commit created when post-command produces changes
+    required: false
+    default: "fixup: post-backport adjustments"
 
 runs:
   using: node24
