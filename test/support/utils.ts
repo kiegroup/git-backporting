@@ -14,6 +14,7 @@ export const resetEnvTokens = () => {
   delete process.env[AuthTokenId.GITHUB_TOKEN];
   delete process.env[AuthTokenId.GITLAB_TOKEN];
   delete process.env[AuthTokenId.CODEBERG_TOKEN];
+  delete process.env[AuthTokenId.FORGEJO_TOKEN];
   delete process.env[AuthTokenId.GIT_TOKEN];
 };
 

@@ -7,7 +7,7 @@ const PUBLIC_GITHUB_API = "https://api.github.com";
 
 /**
  * Infer the remote GIT service to interact with based on the provided 
- * pull request URL
+ * pull request URL and environment variables
  * @param prUrl provided pull request URL
  * @returns {GitClientType}
  */
@@ -20,6 +20,13 @@ export const inferGitClient = (prUrl: string): GitClientType => {
     return GitClientType.GITLAB;
   } else if (stdPrUrl.includes(GitClientType.CODEBERG.toString())) {
     return GitClientType.CODEBERG;
+  }
+
+  // When running as Forgejo action, some env variables are set
+  // https://forgejo.org/docs/latest/user/actions/reference/#env-1
+  let [_, isForgejoRunner] = getEnv("FORGEJO_SERVER_URL");
+  if (isForgejoRunner) {
+    return GitClientType.FORGEJO;
   }
 
   throw new Error(`Remote git service not recognized from pr url: ${prUrl}`);
@@ -82,6 +89,8 @@ export const getGitTokenFromEnv = (gitType: GitClientType): string | undefined =
     [specToken, specOk] = getEnv(AuthTokenId.GITLAB_TOKEN);
   } else if (GitClientType.CODEBERG == gitType) {
     [specToken, specOk] = getEnv(AuthTokenId.CODEBERG_TOKEN);
+  } else if (GitClientType.FORGEJO == gitType) {
+    [specToken, specOk] = getEnv(AuthTokenId.FORGEJO_TOKEN);
   }
 
   if (specOk) {
