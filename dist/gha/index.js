@@ -813,6 +813,27 @@ exports["default"] = GitClientFactory;
 
 /***/ }),
 
+/***/ 8127:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PullRequestExists = void 0;
+class PullRequestExists extends Error {
+    url;
+    constructor(url) {
+        super("Pull request already exists: " + url);
+        this.url = url;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+exports.PullRequestExists = PullRequestExists;
+;
+
+
+/***/ }),
+
 /***/ 9080:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -972,11 +993,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const git_client_1 = __nccwpck_require__(8127);
 const git_util_1 = __nccwpck_require__(9080);
 const git_types_1 = __nccwpck_require__(750);
 const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
+const request_error_1 = __nccwpck_require__(6999);
 class GitHubClient {
     logger;
     apiUrl;
@@ -1133,16 +1156,47 @@ class GitHubClient {
     async createPullRequest(backport) {
         this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
         this.logger.info(`${JSON.stringify(backport, null, 2)}`);
-        const { data } = await this.octokit.pulls.create({
+        let data;
+        const params = {
             owner: backport.owner,
             repo: backport.repo,
-            head: backport.headRepo ? `${backport.headRepo.owner}:${backport.head}` : backport.head,
+            head: backport.headRepo
+                ? `${backport.headRepo.owner}:${backport.head}`
+                : backport.head,
             ...(backport.headRepo ? { head_repo: backport.headRepo.project } : {}),
             base: backport.base,
-            title: backport.title,
-            body: backport.body,
-            maintainer_can_modify: true,
-        });
+        };
+        try {
+            const resp = await this.octokit.pulls.create({
+                title: backport.title,
+                body: backport.body,
+                maintainer_can_modify: true,
+                ...params,
+            });
+            data = resp.data;
+        }
+        catch (err) {
+            if (err instanceof request_error_1.RequestError) {
+                // If a PR exists with this base and head branches
+                // Forgejo returns 409, GitHub returns 422
+                if ((this.compatibleForge && err.status === 409) ||
+                    (!this.compatibleForge && err.status === 422)) {
+                    const prList = await this.octokit.pulls.list({
+                        state: "open",
+                        per_page: 1,
+                        ...params,
+                    });
+                    if (prList.data.length == 1) {
+                        // found the conflicting PR
+                        throw new git_client_1.PullRequestExists(prList.data[0].html_url);
+                    }
+                    // if we don't get exactly 1 PR something else is wrong
+                    // throw the exception
+                    this.logger.warn(`Found ${prList.data.length} similar pull requests`);
+                }
+            }
+            throw err;
+        }
         if (!data) {
             throw new Error("Pull request creation failed");
         }
@@ -1299,7 +1353,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const rest_1 = __nccwpck_require__(184);
+const rest_1 = __nccwpck_require__(1942);
 /**
  * Singleton factory class for {Octokit} instance
  */
@@ -1789,6 +1843,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const pr_configs_parser_1 = __importDefault(__nccwpck_require__(6618));
 const git_cli_1 = __importStar(__nccwpck_require__(7538));
+const git_client_1 = __nccwpck_require__(8127);
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
@@ -2041,8 +2096,16 @@ function* backportSteps(logger, configs, backportPR, git) {
         };
         // 11. create pull request new branch -> target branch (using octokit)
         yield async () => {
-            const prUrl = await git.gitClientApi.createPullRequest(backportPR);
-            logger.info(`Pull request created: ${prUrl}`);
+            try {
+                const prUrl = await git.gitClientApi.createPullRequest(backportPR);
+                logger.info(`Pull request created: ${prUrl}`);
+            }
+            catch (err) {
+                if (!(err instanceof git_client_1.PullRequestExists)) {
+                    throw err;
+                }
+                logger.info(`Existing pull request updated: ${err.url}`);
+            }
         };
     }
     else {
@@ -22792,7 +22855,58 @@ module.exports = axios;
 
 /***/ }),
 
-/***/ 184:
+/***/ 6999:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "RequestError": () => (/* binding */ RequestError)
+/* harmony export */ });
+class RequestError extends Error {
+  name;
+  /**
+   * http status code
+   */
+  status;
+  /**
+   * Request options that lead to the error.
+   */
+  request;
+  /**
+   * Response object if a response was received
+   */
+  response;
+  constructor(message, statusCode, options) {
+    super(message, { cause: options.cause });
+    this.name = "HttpError";
+    this.status = Number.parseInt(statusCode);
+    if (Number.isNaN(this.status)) {
+      this.status = 0;
+    }
+    /* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist */
+    if ("response" in options) {
+      this.response = options.response;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          /(?<! ) .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+  }
+}
+
+
+
+/***/ }),
+
+/***/ 1942:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -23342,47 +23456,8 @@ function node_modules_universal_user_agent_getUserAgent() {
 
 // EXTERNAL MODULE: ./node_modules/fast-content-type-parse/index.js
 var fast_content_type_parse = __nccwpck_require__(7263);
-;// CONCATENATED MODULE: ./node_modules/@octokit/request-error/dist-src/index.js
-class RequestError extends Error {
-  name;
-  /**
-   * http status code
-   */
-  status;
-  /**
-   * Request options that lead to the error.
-   */
-  request;
-  /**
-   * Response object if a response was received
-   */
-  response;
-  constructor(message, statusCode, options) {
-    super(message, { cause: options.cause });
-    this.name = "HttpError";
-    this.status = Number.parseInt(statusCode);
-    if (Number.isNaN(this.status)) {
-      this.status = 0;
-    }
-    /* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist */
-    if ("response" in options) {
-      this.response = options.response;
-    }
-    const requestCopy = Object.assign({}, options.request);
-    if (options.request.headers.authorization) {
-      requestCopy.headers = Object.assign({}, options.request.headers, {
-        authorization: options.request.headers.authorization.replace(
-          /(?<! ) .*$/,
-          " [REDACTED]"
-        )
-      });
-    }
-    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
-    this.request = requestCopy;
-  }
-}
-
-
+// EXTERNAL MODULE: ./node_modules/@octokit/request-error/dist-src/index.js
+var dist_src = __nccwpck_require__(6999);
 ;// CONCATENATED MODULE: ./node_modules/@octokit/request/dist-bundle/index.js
 // pkg/dist-src/index.js
 
@@ -23460,7 +23535,7 @@ async function fetchWrapper(requestOptions) {
         }
       }
     }
-    const requestError = new RequestError(message, 500, {
+    const requestError = new dist_src.RequestError(message, 500, {
       request: requestOptions
     });
     requestError.cause = error;
@@ -23492,21 +23567,21 @@ async function fetchWrapper(requestOptions) {
     if (status < 400) {
       return octokitResponse;
     }
-    throw new RequestError(fetchResponse.statusText, status, {
+    throw new dist_src.RequestError(fetchResponse.statusText, status, {
       response: octokitResponse,
       request: requestOptions
     });
   }
   if (status === 304) {
     octokitResponse.data = await getResponseData(fetchResponse);
-    throw new RequestError("Not modified", status, {
+    throw new dist_src.RequestError("Not modified", status, {
       response: octokitResponse,
       request: requestOptions
     });
   }
   if (status >= 400) {
     octokitResponse.data = await getResponseData(fetchResponse);
-    throw new RequestError(toErrorMessage(octokitResponse.data), status, {
+    throw new dist_src.RequestError(toErrorMessage(octokitResponse.data), status, {
       response: octokitResponse,
       request: requestOptions
     });

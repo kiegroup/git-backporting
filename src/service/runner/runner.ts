@@ -3,7 +3,7 @@ import { Args } from "@bp/service/args/args.types";
 import { Configs } from "@bp/service/configs/configs.types";
 import PullRequestConfigsParser from "@bp/service/configs/pullrequest/pr-configs-parser";
 import GitCLIService, { NonFastForwardError } from "@bp/service/git/git-cli";
-import GitClient from "@bp/service/git/git-client";
+import GitClient, { PullRequestExists } from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
 import LoggerService from "@bp/service/logger/logger-service";
@@ -294,8 +294,15 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
 
     // 11. create pull request new branch -> target branch (using octokit)
     yield async () => {
-      const prUrl = await git.gitClientApi.createPullRequest(backportPR);
-      logger.info(`Pull request created: ${prUrl}`);
+      try{
+        const prUrl = await git.gitClientApi.createPullRequest(backportPR);
+        logger.info(`Pull request created: ${prUrl}`);
+      } catch (err) {
+        if (!(err instanceof PullRequestExists)) {
+          throw err;
+        }
+        logger.info(`Existing pull request updated: ${err.url}`);
+      }
     };
   } else {
     yield async () => {

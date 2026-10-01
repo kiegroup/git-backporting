@@ -1,5 +1,12 @@
 import { BackportPullRequest, GitClientType, GitPullRequest } from "@bp/service/git/git.types";
 
+export class PullRequestExists extends Error {
+    constructor(public readonly url: string) {
+        super("Pull request already exists: "+url);
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+
 /**
  * Git management service interface, which provides a common API for interacting 
  * with several git management services like GitHub, Gitlab or Bitbucket.
