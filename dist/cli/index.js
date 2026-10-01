@@ -534,13 +534,46 @@ exports["default"] = PullRequestConfigsParser;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonFastForwardError = void 0;
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const simple_git_1 = __importDefault(__nccwpck_require__(9103));
+const simple_git_1 = __importStar(__nccwpck_require__(9103));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
+class NonFastForwardError extends Error {
+    cause;
+    constructor(cause) {
+        super(cause instanceof Error ? cause.message : String(cause), { cause });
+        this.cause = cause;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+exports.NonFastForwardError = NonFastForwardError;
 /**
  * Command line git commands executor service
  */
@@ -704,7 +737,16 @@ class GitCLIService {
         if (force) {
             options.push("--force-with-lease");
         }
-        await this.git(cwd).push(remote, branch, options);
+        try {
+            await this.git(cwd).push(remote, branch, options);
+        }
+        catch (err) {
+            // hacky, but is there a better way to detect a non-fast-forward rejection?
+            if (err instanceof simple_git_1.GitError && err.message.includes("[rejected] (non-fast-forward)")) {
+                throw new NonFastForwardError(err);
+            }
+            throw err;
+        }
     }
     /**
     * pointToSameCommit checks if two refs point the same commit
