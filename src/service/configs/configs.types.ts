@@ -39,6 +39,8 @@ export enum AuthTokenId {
   GITLAB_TOKEN = "GITLAB_TOKEN",
   // codeberg specific token
   CODEBERG_TOKEN = "CODEBERG_TOKEN",
+  // forgejo specific token
+  FORGEJO_TOKEN = "FORGEJO_TOKEN",
   // generic git token
   GIT_TOKEN = "GIT_TOKEN",
 }
