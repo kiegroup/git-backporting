@@ -1,4 +1,4 @@
-import GitCLIService from "@bp/service/git/git-cli";
+import GitCLIService, { NonFastForwardError } from "@bp/service/git/git-cli";
 import { FileState, GitActionTypes, MockGithub } from "@kie/mock-github";
 import { spawnSync } from "child_process";
 import { assert } from "console";
@@ -125,6 +125,11 @@ describe("git cli service", () => {
     expect(unchanged).toBe(true);
   });
 
+  test("push diverting local branch throws a dedicated error", async () => {
+    spawnSync("git", ["switch", "sbranch"], { cwd });
+    spawnSync("git", ["commit","--amend", "-m", "bla"], { cwd });
+    expect(git.push(cwd, "sbranch", "origin", false)).rejects.toBeInstanceOf(NonFastForwardError);
+  });
 
   test("git clone on already created repo", async () => {
     await git.clone("remote", cwd, "tbranch");

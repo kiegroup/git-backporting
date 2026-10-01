@@ -1,8 +1,15 @@
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
-import simpleGit, { SimpleGit } from "simple-git";
+import simpleGit, { GitError, SimpleGit } from "simple-git";
 import fs from "fs";
 import { LocalGit } from "@bp/service/configs/configs.types";
+
+export class NonFastForwardError extends Error {
+  constructor(public readonly cause: unknown) {
+    super(cause instanceof Error ? cause.message : String(cause), { cause });
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
 
 /**
  * Command line git commands executor service
@@ -187,7 +194,15 @@ export default class GitCLIService {
     if (force) {
       options.push("--force-with-lease");
     }
-    await this.git(cwd).push(remote, branch, options);
+    try {
+      await this.git(cwd).push(remote, branch, options);
+    } catch (err) {
+      // hacky, but is there a better way to detect a non-fast-forward rejection?
+      if (err instanceof GitError && err.message.includes("[rejected] (non-fast-forward)")) {
+        throw new NonFastForwardError(err);
+      }
+      throw err;
+    }
   }
 
   /**
