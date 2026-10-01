@@ -1747,12 +1747,35 @@ exports.injectTargetBranch = injectTargetBranch;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const pr_configs_parser_1 = __importDefault(__nccwpck_require__(6618));
-const git_cli_1 = __importDefault(__nccwpck_require__(7538));
+const git_cli_1 = __importStar(__nccwpck_require__(7538));
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
@@ -1982,7 +2005,26 @@ function* backportSteps(logger, configs, backportPR, git) {
     if (!configs.dryRun) {
         // 10. push the new branch to origin
         yield async () => {
-            await git.gitCli.push(configs.folder, backportPR.head, target_remote);
+            try {
+                await git.gitCli.push(configs.folder, backportPR.head, target_remote);
+            }
+            catch (err) {
+                if (!(err instanceof git_cli_1.NonFastForwardError)) {
+                    throw err;
+                }
+                logger.info("Non-fast-forward remote branch");
+                // fetch the diverting remote
+                await git.gitCli.fetch(configs.folder, backportPR.head, target_remote);
+                if (await git.gitCli.hasRemoteOriginalWork(configs.folder, backportPR.head, target_remote)) {
+                    logger.info("Remote branch contains original work, aborting");
+                    // throw original error: we cannot push in non-fast-forwarding way
+                    throw err.cause;
+                }
+                if (await git.gitCli.hasLocalOriginalWork(configs.folder, backportPR.head, target_remote)) {
+                    logger.info("Force-pushing rebased branch");
+                    await git.gitCli.push(configs.folder, backportPR.head, target_remote, true);
+                }
+            }
         };
         // 11. create pull request new branch -> target branch (using octokit)
         yield async () => {
@@ -2015,6 +2057,12 @@ async function backportScript(configs, backportPR, git, failed) {
         },
         async fetch(_cwd, branch, remote = "origin") {
             s += `git fetch ${remote} ${branch}`;
+        },
+        async hasRemoteOriginalWork(_cwd, _branch, _remote = "origin") {
+            return false;
+        },
+        async hasLocalOriginalWork(_cwd, _branch, _remote = "origin") {
+            return true;
         },
         async cherryPick(_cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions, emptyCommit = "stop") {
             s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;
