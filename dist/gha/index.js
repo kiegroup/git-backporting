@@ -640,16 +640,6 @@ class GitCLIService {
         await this.git(cwd).fetch(remote, branch, ["--quiet"]);
     }
     /**
-     * Check if a branch exists in a remote repository.
-     * @param remote remote name or URL
-     * @param branch branch name to search
-     */
-    async remoteBranchExists(remote, branch) {
-        this.logger.info(`Checking if branch ${branch} exists on ${remote}`);
-        const output = await (0, simple_git_1.default)().raw(["ls-remote", "--heads", this.remoteWithAuth(remote), branch]);
-        return output.trim().length > 0;
-    }
-    /**
      * Check if the remote branch contains commits without an equivalent in
      * the local branch (i.e. someone added some work to the remote branch)
      * @param cwd repository in which the local branch lives
@@ -1879,12 +1869,6 @@ class Runner {
         }
     }
     async executeBackport(configs, backportPR, git) {
-        const remote = backportPR.headRepo?.cloneUrl ?? backportPR.cloneUrl;
-        const branchExists = await git.gitCli.remoteBranchExists(remote, backportPR.head);
-        if (branchExists) {
-            this.logger.warn(`Backport branch ${backportPR.head} already exists on ${remote}, skipping`);
-            return;
-        }
         const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
         if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
             this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
@@ -2031,9 +2015,6 @@ async function backportScript(configs, backportPR, git, failed) {
         },
         async fetch(_cwd, branch, remote = "origin") {
             s += `git fetch ${remote} ${branch}`;
-        },
-        async remoteBranchExists(_remote, _branch) {
-            return false;
         },
         async cherryPick(_cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions, emptyCommit = "stop") {
             s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;

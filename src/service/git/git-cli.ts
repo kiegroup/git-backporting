@@ -130,17 +130,6 @@ export default class GitCLIService {
   }
 
   /**
-   * Check if a branch exists in a remote repository.
-   * @param remote remote name or URL
-   * @param branch branch name to search
-   */
-  async remoteBranchExists(remote: string, branch: string): Promise<boolean> {
-    this.logger.info(`Checking if branch ${branch} exists on ${remote}`);
-    const output = await simpleGit().raw(["ls-remote", "--heads", this.remoteWithAuth(remote), branch]);
-    return output.trim().length > 0;
-  }
-
-  /**
    * Check if the remote branch contains commits without an equivalent in
    * the local branch (i.e. someone added some work to the remote branch)
    * @param cwd repository in which the local branch lives
