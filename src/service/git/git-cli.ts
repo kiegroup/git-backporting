@@ -141,6 +141,50 @@ export default class GitCLIService {
   }
 
   /**
+   * Check if the remote branch contains commits without an equivalent in
+   * the local branch (i.e. someone added some work to the remote branch)
+   * @param cwd repository in which the local branch lives
+   * @param branch branch name to search
+   * @param remote remote name or URL
+   */
+  async hasRemoteOriginalWork(cwd: string, branch: string, remote = "origin"): Promise<boolean> {
+    return this._isUpstreamMissingWork(
+      cwd,
+      `refs/heads/${branch}`,
+      `refs/remotes/${remote}/${branch}`,
+    );
+  }
+
+  /**
+   * Check if the local branch contains commits without an equivalent in
+   * the remote branch (i.e. some new work has been added to the local branch)
+   * @param cwd repository in which the local branch lives
+   * @param branch branch name to search
+   * @param remote remote name or URL
+   */
+  async hasLocalOriginalWork(cwd: string, branch: string, remote = "origin"): Promise<boolean> {
+    return this._isUpstreamMissingWork(
+      cwd,
+      `refs/remotes/${remote}/${branch}`,
+      `refs/heads/${branch}`,
+    );
+  }
+
+  /**
+   * Check if `upstream` is missing work present in `head`.
+   * @param cwd repository in which the local branch lives
+   * @param upstream refspec to compare
+   * @param head reference refspec
+   */
+  async _isUpstreamMissingWork(cwd: string, upstream: string, head: string): Promise<boolean> {
+    const stdout = await this.git(cwd).raw(["cherry", upstream, head]);
+    // prefix:
+    // - means equivalent present in both refs
+    // + means missing from upstream
+    return stdout.split("\n").some(line => line.startsWith("+"));
+  }
+
+  /**
    * Get cherry-pick a specific sha
    * @param cwd repository in which the sha should be cherry picked to
    * @param sha commit sha

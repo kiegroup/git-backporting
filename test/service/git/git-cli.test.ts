@@ -129,6 +129,12 @@ describe("git cli service", () => {
     spawnSync("git", ["switch", "sbranch"], { cwd });
     spawnSync("git", ["commit","--amend", "-m", "bla"], { cwd });
     expect(git.push(cwd, "sbranch", "origin", false)).rejects.toBeInstanceOf(NonFastForwardError);
+    const remoteOriginal = await git.hasRemoteOriginalWork(cwd, "sbranch", "origin");
+    expect(remoteOriginal).toBe(false);
+    const localOriginal = await git.hasLocalOriginalWork(cwd, "sbranch", "origin");
+    expect(localOriginal).toBe(false);
+    // force push now succeeds
+    await git.push(cwd, "sbranch", "origin", true);
   });
 
   test("git clone on already created repo", async () => {
