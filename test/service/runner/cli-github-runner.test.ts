@@ -1671,4 +1671,64 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
 
     cherryPickSpy.mockReset();
   });
+
+  test("without post-command, runPostCommand is not called", async () => {
+    addProcessArgs([
+      "-d",
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368"
+    ]);
+
+    await runner.execute();
+
+    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledTimes(0);
+    expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledTimes(0);
+  });
+
+  test("with post-command", async () => {
+    addProcessArgs([
+      "-d",
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "--post-command",
+      "go mod tidy",
+    ]);
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledWith(cwd, "go mod tidy");
+    expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledWith(cwd, "fixup: post-backport adjustments");
+  });
+
+  test("with post-command and custom commit message", async () => {
+    addProcessArgs([
+      "-d",
+      "-tb",
+      "target",
+      "-pr",
+      "https://github.com/owner/reponame/pull/2368",
+      "--post-command",
+      "go mod tidy",
+      "--post-command-commit-message",
+      "fixup: tidy go modules",
+    ]);
+
+    await runner.execute();
+
+    const cwd = process.cwd() + "/bp";
+
+    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledWith(cwd, "go mod tidy");
+    expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledWith(cwd, "fixup: tidy go modules");
+  });
 });

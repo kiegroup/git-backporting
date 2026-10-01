@@ -30,6 +30,8 @@ export interface Configs {
   originalPullRequest: GitPullRequest,
   backportPullRequests: BackportPullRequest[],
   errorNotification: ErrorNotification,
+  postCommand?: string, // shell command to run after cherry-pick
+  postCommandCommitMessage: string, // commit message for post-command changes
  }
 
 export enum AuthTokenId {

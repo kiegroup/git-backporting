@@ -64,6 +64,8 @@ export default class PullRequestConfigsParser extends ConfigsParser {
         enabled: args.enableErrorNotification ?? false,
         message: this.getDefaultErrorComment(),
       },
+      postCommand: args.postCommand,
+      postCommandCommitMessage: args.postCommandCommitMessage ?? "fixup: post-backport adjustments",
     };
   }
 

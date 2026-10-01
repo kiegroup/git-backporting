@@ -32,4 +32,6 @@ export interface Args {
   emptyCommit?: string, // how to behave with empty commits <drop|keep|stop>
   comments?: string[], // additional comments to be posted
   enableErrorNotification?: boolean, // enable the error notification on original pull request
+  postCommand?: string, // shell command to run after cherry-pick, before commit/push
+  postCommandCommitMessage?: string, // commit message for changes produced by post-command
 }

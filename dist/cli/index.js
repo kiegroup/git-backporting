@@ -75,6 +75,8 @@ class ArgsParser {
             emptyCommit: this.getOrDefault(args.emptyCommit),
             comments: this.getOrDefault(args.comments),
             enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
+            postCommand: this.getOrDefault(args.postCommand),
+            postCommandCommitMessage: this.getOrDefault(args.postCommandCommitMessage),
         };
     }
 }
@@ -218,6 +220,8 @@ class CLIArgsParser extends args_parser_1.default {
             .option("--empty-commit <drop|keep|stop>", "how to behave with empty commits")
             .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", args_utils_1.getAsSemicolonSeparatedList)
             .option("--enable-err-notification", "if true, enable the error notification as comment on the original pull request")
+            .option("--post-command <command>", "shell command to run after cherry-pick, before commit/push")
+            .option("--post-command-commit-message <message>", "commit message for changes produced by post-command")
             .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
     }
     readArgs() {
@@ -259,6 +263,8 @@ class CLIArgsParser extends args_parser_1.default {
                 emptyCommit: opts.emptyCommit,
                 comments: opts.comments,
                 enableErrorNotification: opts.enableErrNotification,
+                postCommand: opts.postCommand,
+                postCommandCommitMessage: opts.postCommandCommitMessage,
             };
         }
         return args;
@@ -397,6 +403,8 @@ class PullRequestConfigsParser extends configs_parser_1.default {
                 enabled: args.enableErrorNotification ?? false,
                 message: this.getDefaultErrorComment(),
             },
+            postCommand: args.postCommand,
+            postCommandCommitMessage: args.postCommandCommitMessage ?? "fixup: post-backport adjustments",
         };
     }
     getDefaultFolder() {
@@ -540,6 +548,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const simple_git_1 = __importDefault(__nccwpck_require__(9103));
+const child_process_1 = __nccwpck_require__(2081);
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 /**
  * Command line git commands executor service
@@ -713,6 +722,45 @@ class GitCLIService {
         const shaA = await this.git(cwd).revparse(refA);
         const shaB = await this.git(cwd).revparse(refB);
         return shaA === shaB;
+    }
+    /**
+     * Run an arbitrary shell command in the given working directory.
+     * Throws if the command exits with a non-zero status.
+     * @param cwd working directory
+     * @param command shell command to execute
+     */
+    async runPostCommand(cwd, command) {
+        this.logger.info(`Running post-command: ${command}`);
+        try {
+            const output = (0, child_process_1.execSync)(command, {
+                cwd,
+                stdio: ["pipe", "pipe", "pipe"],
+                encoding: "utf-8",
+            });
+            if (output && output.trim().length > 0) {
+                this.logger.info(`Post-command output:\n${output}`);
+            }
+        }
+        catch (error) {
+            throw new Error(`Post-command failed: ${error}`, { cause: error });
+        }
+    }
+    /**
+     * Stage all changes and create a commit if there are any modifications.
+     * If there are no changes, this is a no-op.
+     * @param cwd working directory
+     * @param message commit message
+     */
+    async stageAndCommit(cwd, message) {
+        const status = await this.git(cwd).status();
+        const hasChanges = status.files.length > 0;
+        if (!hasChanges) {
+            this.logger.info("Post-command produced no changes, skipping commit");
+            return;
+        }
+        this.logger.info(`Post-command produced changes, committing with message: ${message}`);
+        await this.git(cwd).add("-A");
+        await this.git(cwd).commit(message);
     }
 }
 exports["default"] = GitCLIService;
@@ -1939,6 +1987,14 @@ function* backportSteps(logger, configs, backportPR, git) {
             await git.gitCli.cherryPick(configs.folder, sha, configs.mergeStrategy, configs.mergeStrategyOption, configs.cherryPickOptions, configs.emptyCommit);
         };
     }
+    // 9. run post-command if configured
+    if (configs.postCommand) {
+        yield async () => {
+            logger.info(`Running post-command: ${configs.postCommand}`);
+            await git.gitCli.runPostCommand(configs.folder, configs.postCommand);
+            await git.gitCli.stageAndCommit(configs.folder, configs.postCommandCommitMessage);
+        };
+    }
     // stop early if backport already happened
     let unchanged = false;
     yield async () => {
@@ -2008,6 +2064,12 @@ async function backportScript(configs, backportPR, git, failed) {
         async pointToSameCommit(_cwd, refA, refB) {
             s += "# check if there is anything to push";
             return refA === refB; // always let the script continue (interesting case)
+        },
+        async runPostCommand(_cwd, command) {
+            s += command;
+        },
+        async stageAndCommit(_cwd, message) {
+            s += `git add -A && git diff --cached --quiet || git commit -m "${message}"`;
         },
         async addRemote(_cwd, remote, remoteName = "fork") {
             s += `git remote add ${remoteName} ${remote}`;
