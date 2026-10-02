@@ -534,13 +534,46 @@ exports["default"] = PullRequestConfigsParser;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonFastForwardError = void 0;
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const simple_git_1 = __importDefault(__nccwpck_require__(9103));
+const simple_git_1 = __importStar(__nccwpck_require__(9103));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
+class NonFastForwardError extends Error {
+    cause;
+    constructor(cause) {
+        super(cause instanceof Error ? cause.message : String(cause), { cause });
+        this.cause = cause;
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+exports.NonFastForwardError = NonFastForwardError;
 /**
  * Command line git commands executor service
  */
@@ -645,14 +678,37 @@ class GitCLIService {
         await this.git(cwd).fetch(remote, branch, ["--quiet"]);
     }
     /**
-     * Check if a branch exists in a remote repository.
-     * @param remote remote name or URL
+     * Check if the remote branch contains commits without an equivalent in
+     * the local branch (i.e. someone added some work to the remote branch)
+     * @param cwd repository in which the local branch lives
      * @param branch branch name to search
+     * @param remote remote name or URL
      */
-    async remoteBranchExists(remote, branch) {
-        this.logger.info(`Checking if branch ${branch} exists on ${remote}`);
-        const output = await (0, simple_git_1.default)().raw(["ls-remote", "--heads", this.remoteWithAuth(remote), branch]);
-        return output.trim().length > 0;
+    async hasRemoteOriginalWork(cwd, branch, remote = "origin") {
+        return this._isUpstreamMissingWork(cwd, `refs/heads/${branch}`, `refs/remotes/${remote}/${branch}`);
+    }
+    /**
+     * Check if the local branch contains commits without an equivalent in
+     * the remote branch (i.e. some new work has been added to the local branch)
+     * @param cwd repository in which the local branch lives
+     * @param branch branch name to search
+     * @param remote remote name or URL
+     */
+    async hasLocalOriginalWork(cwd, branch, remote = "origin") {
+        return this._isUpstreamMissingWork(cwd, `refs/remotes/${remote}/${branch}`, `refs/heads/${branch}`);
+    }
+    /**
+     * Check if `upstream` is missing work present in `head`.
+     * @param cwd repository in which the local branch lives
+     * @param upstream refspec to compare
+     * @param head reference refspec
+     */
+    async _isUpstreamMissingWork(cwd, upstream, head) {
+        const stdout = await this.git(cwd).raw(["cherry", upstream, head]);
+        // prefix:
+        // - means equivalent present in both refs
+        // + means missing from upstream
+        return stdout.split("\n").some(line => line.startsWith("+"));
     }
     /**
      * Get cherry-pick a specific sha
@@ -704,7 +760,16 @@ class GitCLIService {
         if (force) {
             options.push("--force-with-lease");
         }
-        await this.git(cwd).push(remote, branch, options);
+        try {
+            await this.git(cwd).push(remote, branch, options);
+        }
+        catch (err) {
+            // hacky, but is there a better way to detect a non-fast-forward rejection?
+            if (err instanceof simple_git_1.GitError && err.message.includes("[rejected] (non-fast-forward)")) {
+                throw new NonFastForwardError(err);
+            }
+            throw err;
+        }
     }
     /**
     * pointToSameCommit checks if two refs point the same commit
@@ -937,6 +1002,7 @@ const git_types_1 = __nccwpck_require__(750);
 const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
 const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
+const request_error_1 = __nccwpck_require__(6999);
 class GitHubClient {
     logger;
     apiUrl;
@@ -1093,16 +1159,29 @@ class GitHubClient {
     async createPullRequest(backport) {
         this.logger.info(`Creating pull request ${backport.head} -> ${backport.base}`);
         this.logger.info(`${JSON.stringify(backport, null, 2)}`);
-        const { data } = await this.octokit.pulls.create({
-            owner: backport.owner,
-            repo: backport.repo,
-            head: backport.headRepo ? `${backport.headRepo.owner}:${backport.head}` : backport.head,
-            ...(backport.headRepo ? { head_repo: backport.headRepo.project } : {}),
-            base: backport.base,
-            title: backport.title,
-            body: backport.body,
-            maintainer_can_modify: true,
-        });
+        let data;
+        try {
+            const resp = await this.octokit.pulls.create({
+                owner: backport.owner,
+                repo: backport.repo,
+                head: backport.headRepo ? `${backport.headRepo.owner}:${backport.head}` : backport.head,
+                ...(backport.headRepo ? { head_repo: backport.headRepo.project } : {}),
+                base: backport.base,
+                title: backport.title,
+                body: backport.body,
+                maintainer_can_modify: true,
+            });
+            data = resp.data;
+        }
+        catch (err) {
+            if (err instanceof request_error_1.RequestError && err.status === 409) {
+                // Forgejo returns unstructured message:
+                // pull request already exists for these targets [id: .., issue_id: .., head_repo_id: .., base_repo_id: .., head_branch: bp-..., base_branch: ...]
+                this.logger.warn(err.message);
+                return "";
+            }
+            throw err;
+        }
         if (!data) {
             throw new Error("Pull request creation failed");
         }
@@ -1259,7 +1338,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const rest_1 = __nccwpck_require__(184);
+const rest_1 = __nccwpck_require__(1942);
 /**
  * Singleton factory class for {Octokit} instance
  */
@@ -1720,12 +1799,35 @@ exports.injectTargetBranch = injectTargetBranch;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const pr_configs_parser_1 = __importDefault(__nccwpck_require__(6618));
-const git_cli_1 = __importDefault(__nccwpck_require__(7538));
+const git_cli_1 = __importStar(__nccwpck_require__(7538));
 const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
 const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
@@ -1842,12 +1944,6 @@ class Runner {
         }
     }
     async executeBackport(configs, backportPR, git) {
-        const remote = backportPR.headRepo?.cloneUrl ?? backportPR.cloneUrl;
-        const branchExists = await git.gitCli.remoteBranchExists(remote, backportPR.head);
-        if (branchExists) {
-            this.logger.warn(`Backport branch ${backportPR.head} already exists on ${remote}, skipping`);
-            return;
-        }
         const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
         if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
             this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
@@ -1961,12 +2057,36 @@ function* backportSteps(logger, configs, backportPR, git) {
     if (!configs.dryRun) {
         // 10. push the new branch to origin
         yield async () => {
-            await git.gitCli.push(configs.folder, backportPR.head, target_remote);
+            try {
+                await git.gitCli.push(configs.folder, backportPR.head, target_remote);
+            }
+            catch (err) {
+                if (!(err instanceof git_cli_1.NonFastForwardError)) {
+                    throw err;
+                }
+                logger.info("Non-fast-forward remote branch");
+                // fetch the diverting remote
+                await git.gitCli.fetch(configs.folder, backportPR.head, target_remote);
+                if (await git.gitCli.hasRemoteOriginalWork(configs.folder, backportPR.head, target_remote)) {
+                    logger.info("Remote branch contains original work, aborting");
+                    // throw original error: we cannot push in non-fast-forwarding way
+                    throw err.cause;
+                }
+                if (await git.gitCli.hasLocalOriginalWork(configs.folder, backportPR.head, target_remote)) {
+                    logger.info("Force-pushing rebased branch");
+                    await git.gitCli.push(configs.folder, backportPR.head, target_remote, true);
+                }
+            }
         };
         // 11. create pull request new branch -> target branch (using octokit)
         yield async () => {
             const prUrl = await git.gitClientApi.createPullRequest(backportPR);
-            logger.info(`Pull request created: ${prUrl}`);
+            if (prUrl) {
+                logger.info(`Pull request created: ${prUrl}`);
+            }
+            else {
+                logger.info("The existing pull request has been updated");
+            }
         };
     }
     else {
@@ -1995,8 +2115,11 @@ async function backportScript(configs, backportPR, git, failed) {
         async fetch(_cwd, branch, remote = "origin") {
             s += `git fetch ${remote} ${branch}`;
         },
-        async remoteBranchExists(_remote, _branch) {
+        async hasRemoteOriginalWork(_cwd, _branch, _remote = "origin") {
             return false;
+        },
+        async hasLocalOriginalWork(_cwd, _branch, _remote = "origin") {
+            return true;
         },
         async cherryPick(_cwd, sha, strategy = "recursive", strategyOption = "theirs", cherryPickOptions, emptyCommit = "stop") {
             s += `git cherry-pick -m 1 --strategy=${strategy} --strategy-option=${strategyOption} --empty=${emptyCommit} `;
@@ -21670,7 +21793,58 @@ module.exports = axios;
 
 /***/ }),
 
-/***/ 184:
+/***/ 6999:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "RequestError": () => (/* binding */ RequestError)
+/* harmony export */ });
+class RequestError extends Error {
+  name;
+  /**
+   * http status code
+   */
+  status;
+  /**
+   * Request options that lead to the error.
+   */
+  request;
+  /**
+   * Response object if a response was received
+   */
+  response;
+  constructor(message, statusCode, options) {
+    super(message, { cause: options.cause });
+    this.name = "HttpError";
+    this.status = Number.parseInt(statusCode);
+    if (Number.isNaN(this.status)) {
+      this.status = 0;
+    }
+    /* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist */
+    if ("response" in options) {
+      this.response = options.response;
+    }
+    const requestCopy = Object.assign({}, options.request);
+    if (options.request.headers.authorization) {
+      requestCopy.headers = Object.assign({}, options.request.headers, {
+        authorization: options.request.headers.authorization.replace(
+          /(?<! ) .*$/,
+          " [REDACTED]"
+        )
+      });
+    }
+    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
+    this.request = requestCopy;
+  }
+}
+
+
+
+/***/ }),
+
+/***/ 1942:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -22220,47 +22394,8 @@ function node_modules_universal_user_agent_getUserAgent() {
 
 // EXTERNAL MODULE: ./node_modules/fast-content-type-parse/index.js
 var fast_content_type_parse = __nccwpck_require__(7263);
-;// CONCATENATED MODULE: ./node_modules/@octokit/request-error/dist-src/index.js
-class RequestError extends Error {
-  name;
-  /**
-   * http status code
-   */
-  status;
-  /**
-   * Request options that lead to the error.
-   */
-  request;
-  /**
-   * Response object if a response was received
-   */
-  response;
-  constructor(message, statusCode, options) {
-    super(message, { cause: options.cause });
-    this.name = "HttpError";
-    this.status = Number.parseInt(statusCode);
-    if (Number.isNaN(this.status)) {
-      this.status = 0;
-    }
-    /* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist */
-    if ("response" in options) {
-      this.response = options.response;
-    }
-    const requestCopy = Object.assign({}, options.request);
-    if (options.request.headers.authorization) {
-      requestCopy.headers = Object.assign({}, options.request.headers, {
-        authorization: options.request.headers.authorization.replace(
-          /(?<! ) .*$/,
-          " [REDACTED]"
-        )
-      });
-    }
-    requestCopy.url = requestCopy.url.replace(/\bclient_secret=\w+/g, "client_secret=[REDACTED]").replace(/\baccess_token=\w+/g, "access_token=[REDACTED]");
-    this.request = requestCopy;
-  }
-}
-
-
+// EXTERNAL MODULE: ./node_modules/@octokit/request-error/dist-src/index.js
+var dist_src = __nccwpck_require__(6999);
 ;// CONCATENATED MODULE: ./node_modules/@octokit/request/dist-bundle/index.js
 // pkg/dist-src/index.js
 
@@ -22338,7 +22473,7 @@ async function fetchWrapper(requestOptions) {
         }
       }
     }
-    const requestError = new RequestError(message, 500, {
+    const requestError = new dist_src.RequestError(message, 500, {
       request: requestOptions
     });
     requestError.cause = error;
@@ -22370,21 +22505,21 @@ async function fetchWrapper(requestOptions) {
     if (status < 400) {
       return octokitResponse;
     }
-    throw new RequestError(fetchResponse.statusText, status, {
+    throw new dist_src.RequestError(fetchResponse.statusText, status, {
       response: octokitResponse,
       request: requestOptions
     });
   }
   if (status === 304) {
     octokitResponse.data = await getResponseData(fetchResponse);
-    throw new RequestError("Not modified", status, {
+    throw new dist_src.RequestError("Not modified", status, {
       response: octokitResponse,
       request: requestOptions
     });
   }
   if (status >= 400) {
     octokitResponse.data = await getResponseData(fetchResponse);
-    throw new RequestError(toErrorMessage(octokitResponse.data), status, {
+    throw new dist_src.RequestError(toErrorMessage(octokitResponse.data), status, {
       response: octokitResponse,
       request: requestOptions
     });

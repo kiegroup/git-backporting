@@ -1,8 +1,15 @@
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
-import simpleGit, { SimpleGit } from "simple-git";
+import simpleGit, { GitError, SimpleGit } from "simple-git";
 import fs from "fs";
 import { LocalGit } from "@bp/service/configs/configs.types";
+
+export class NonFastForwardError extends Error {
+  constructor(public readonly cause: unknown) {
+    super(cause instanceof Error ? cause.message : String(cause), { cause });
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
 
 /**
  * Command line git commands executor service
@@ -123,14 +130,47 @@ export default class GitCLIService {
   }
 
   /**
-   * Check if a branch exists in a remote repository.
-   * @param remote remote name or URL
+   * Check if the remote branch contains commits without an equivalent in
+   * the local branch (i.e. someone added some work to the remote branch)
+   * @param cwd repository in which the local branch lives
    * @param branch branch name to search
+   * @param remote remote name or URL
    */
-  async remoteBranchExists(remote: string, branch: string): Promise<boolean> {
-    this.logger.info(`Checking if branch ${branch} exists on ${remote}`);
-    const output = await simpleGit().raw(["ls-remote", "--heads", this.remoteWithAuth(remote), branch]);
-    return output.trim().length > 0;
+  async hasRemoteOriginalWork(cwd: string, branch: string, remote = "origin"): Promise<boolean> {
+    return this._isUpstreamMissingWork(
+      cwd,
+      `refs/heads/${branch}`,
+      `refs/remotes/${remote}/${branch}`,
+    );
+  }
+
+  /**
+   * Check if the local branch contains commits without an equivalent in
+   * the remote branch (i.e. some new work has been added to the local branch)
+   * @param cwd repository in which the local branch lives
+   * @param branch branch name to search
+   * @param remote remote name or URL
+   */
+  async hasLocalOriginalWork(cwd: string, branch: string, remote = "origin"): Promise<boolean> {
+    return this._isUpstreamMissingWork(
+      cwd,
+      `refs/remotes/${remote}/${branch}`,
+      `refs/heads/${branch}`,
+    );
+  }
+
+  /**
+   * Check if `upstream` is missing work present in `head`.
+   * @param cwd repository in which the local branch lives
+   * @param upstream refspec to compare
+   * @param head reference refspec
+   */
+  async _isUpstreamMissingWork(cwd: string, upstream: string, head: string): Promise<boolean> {
+    const stdout = await this.git(cwd).raw(["cherry", upstream, head]);
+    // prefix:
+    // - means equivalent present in both refs
+    // + means missing from upstream
+    return stdout.split("\n").some(line => line.startsWith("+"));
   }
 
   /**
@@ -187,7 +227,15 @@ export default class GitCLIService {
     if (force) {
       options.push("--force-with-lease");
     }
-    await this.git(cwd).push(remote, branch, options);
+    try {
+      await this.git(cwd).push(remote, branch, options);
+    } catch (err) {
+      // hacky, but is there a better way to detect a non-fast-forward rejection?
+      if (err instanceof GitError && err.message.includes("[rejected] (non-fast-forward)")) {
+        throw new NonFastForwardError(err);
+      }
+      throw err;
+    }
   }
 
   /**
