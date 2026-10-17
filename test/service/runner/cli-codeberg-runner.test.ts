@@ -1,6 +1,6 @@
 import ArgsParser from "@bp/service/args/args-parser";
 import Runner from "@bp/service/runner/runner";
-import GitCLIService from "@bp/service/git/git-cli";
+import GitCLIService, { NonFastForwardError } from "@bp/service/git/git-cli";
 import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
@@ -1458,5 +1458,57 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
     expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
 
     cherryPickSpy.mockReset();
+  });
+
+  test("with existing branch and pull request", async () => {
+    const cherryPickSpy = jest.spyOn(GitCLIService.prototype, "push").mockImplementation(async (_cwd: string, _branch: string, _remote = "origin", force = false) => {
+      if (!force) {
+        throw new NonFastForwardError("existing branch");
+      }
+    });
+    const localWorkSpy = jest.spyOn(GitCLIService.prototype, "hasLocalOriginalWork").mockImplementation(async (_cwd: string, _branch: string, _remote = "origin") => {
+      return true;
+    });
+    const createPullRequestSpy = jest.spyOn(GitHubClient.prototype, "createPullRequest").mockImplementation(async (_backport: BackportPullRequest) => {
+      return "";
+    });
+
+    addProcessArgs([
+      "-tb",
+      "v1",
+      "-pr",
+      "https://codeberg.org/owner/reponame/pulls/2368",
+      "-f",
+      "/tmp/folder",
+      "--bp-branch-name",
+      "custom-failure-head",
+    ]);
+
+    await runner.execute();
+
+    const cwd = "/tmp/folder";
+
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledTimes(1);
+    expect(GitClientFactory.getOrCreate).toHaveBeenCalledWith(GitClientType.CODEBERG, undefined, "https://codeberg.org/api/v1");
+
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://codeberg.org/owner/reponame.git", cwd, "v1");
+
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.createLocalBranch).toHaveBeenCalledWith(cwd, "custom-failure-head");
+
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledTimes(2);
+    expect(GitCLIService.prototype.fetch).toHaveBeenCalledWith(cwd, "pull/2368/head:pr/2368");
+
+    expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
+
+    expect(GitCLIService.prototype.push).toHaveBeenCalledTimes(2);
+
+    expect(GitHubClient.prototype.createPullRequest).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(0);
+
+    cherryPickSpy.mockReset();
+    localWorkSpy.mockReset();
+    createPullRequestSpy.mockReset();
   });
 });
