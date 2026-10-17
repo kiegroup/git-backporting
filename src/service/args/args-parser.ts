@@ -53,6 +53,8 @@ export default abstract class ArgsParser {
       emptyCommit: this.getOrDefault(args.emptyCommit),
       comments: this.getOrDefault(args.comments),
       enableErrorNotification: this.getOrDefault(args.enableErrorNotification, false),
+      postCommand: this.getOrDefault(args.postCommand),
+      postCommandCommitMessage: this.getOrDefault(args.postCommandCommitMessage),
     };
   }
 }

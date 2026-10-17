@@ -38,6 +38,8 @@ export default class CLIArgsParser extends ArgsParser {
       .option("--empty-commit <drop|keep|stop>", "how to behave with empty commits")
       .option("--comments <comments>", "semicolon separated list of additional comments to be posted to the backported pull request", getAsSemicolonSeparatedList)
       .option("--enable-err-notification", "if true, enable the error notification as comment on the original pull request")
+      .option("--post-command <command>", "shell command to run after cherry-pick, before commit/push")
+      .option("--post-command-commit-message <message>", "commit message for changes produced by post-command")
       .option("-cf, --config-file <config-file>", "configuration file containing all valid options, the json must match Args interface");
   }
 
@@ -80,6 +82,8 @@ export default class CLIArgsParser extends ArgsParser {
         emptyCommit: opts.emptyCommit,
         comments: opts.comments,
         enableErrorNotification: opts.enableErrNotification,
+        postCommand: opts.postCommand,
+        postCommandCommitMessage: opts.postCommandCommitMessage,
       };
     }
 

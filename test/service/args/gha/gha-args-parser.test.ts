@@ -334,4 +334,40 @@ describe("gha args parser", () => {
     const args: Args = parser.parse();
     expect(args.enableErrorNotification).toEqual(true);
   });
+
+  test("post-command not set by default", () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://localhost/whatever/pulls/1",
+    });
+
+    const args: Args = parser.parse();
+    expect(args.postCommand).toEqual(undefined);
+    expect(args.postCommandCommitMessage).toEqual(undefined);
+  });
+
+  test("with post-command", () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://localhost/whatever/pulls/1",
+      "post-command": "go mod tidy",
+    });
+
+    const args: Args = parser.parse();
+    expect(args.postCommand).toEqual("go mod tidy");
+    expect(args.postCommandCommitMessage).toEqual(undefined);
+  });
+
+  test("with post-command and custom commit message", () => {
+    spyGetInput({
+      "target-branch": "target",
+      "pull-request": "https://localhost/whatever/pulls/1",
+      "post-command": "go mod tidy",
+      "post-command-commit-message": "fixup: tidy go modules",
+    });
+
+    const args: Args = parser.parse();
+    expect(args.postCommand).toEqual("go mod tidy");
+    expect(args.postCommandCommitMessage).toEqual("fixup: tidy go modules");
+  });
 });

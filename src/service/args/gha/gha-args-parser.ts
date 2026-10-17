@@ -41,6 +41,8 @@ export default class GHAArgsParser extends ArgsParser {
         emptyCommit: getOrUndefined(getInput("empty-commit")),
         comments: getAsSemicolonSeparatedList(getInput("comments")),
         enableErrorNotification: getAsBooleanOrUndefined(getInput("enable-err-notification")),
+        postCommand: getOrUndefined(getInput("post-command")),
+        postCommandCommitMessage: getOrUndefined(getInput("post-command-commit-message")),
       };
     }
 

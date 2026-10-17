@@ -14,7 +14,7 @@ import { injectError, injectTargetBranch } from "./runner-util";
 interface Git {
   gitClientType: GitClientType;
   gitClientApi: Pick<GitClient, ("getLatestPullRequestComments" | "createPullRequest" | "createPullRequestComment")>;
-  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" )>;
+  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" | "runPostCommand" | "stageAndCommit" )>;
 }
 
 /**
@@ -249,6 +249,15 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
     };
   }
 
+  // 9. run post-command if configured
+  if (configs.postCommand) {
+    yield async () => {
+      logger.info(`Running post-command: ${configs.postCommand}`);
+      await git.gitCli.runPostCommand(configs.folder, configs.postCommand!);
+      await git.gitCli.stageAndCommit(configs.folder, configs.postCommandCommitMessage);
+    };
+  }
+
   // stop early if backport already happened
   let unchanged = false;
   yield async () => {
@@ -322,6 +331,12 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
     async pointToSameCommit(_cwd: string, refA: string, refB: string): Promise<boolean> {
       s += "# check if there is anything to push";
       return refA === refB; // always let the script continue (interesting case)
+    },
+    async runPostCommand(_cwd: string, command: string): Promise<void> {
+      s += command;
+    },
+    async stageAndCommit(_cwd: string, message: string): Promise<void> {
+      s += `git add -A && git diff --cached --quiet || git commit -m "${message}"`;
     },
     async addRemote(_cwd: string, remote: string, remoteName = "fork"): Promise<void> {
       s += `git remote add ${remoteName} ${remote}`;
