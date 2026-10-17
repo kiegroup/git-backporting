@@ -12,20 +12,20 @@ export default class GitHubClient implements GitClient {
 
   private logger: LoggerService;
   private apiUrl: string;
-  private isForCodeberg: boolean;
+  private compatibleForge: GitClientType | undefined; // undefined for github
   private octokit: Octokit;
   private mapper: GitHubMapper;
 
-  constructor(token: string | undefined, apiUrl: string, isForCodeberg = false) {
+  constructor(token: string | undefined, apiUrl: string, compatibleForge?: GitClientType) {
     this.apiUrl = apiUrl;
-    this.isForCodeberg = isForCodeberg;
+    this.compatibleForge = compatibleForge;
     this.logger = LoggerServiceFactory.getLogger();
     this.octokit = OctokitFactory.getOctokit(token, this.apiUrl);
     this.mapper = new GitHubMapper();
   }
 
   getClientType(): GitClientType {
-    return this.isForCodeberg ? GitClientType.CODEBERG : GitClientType.GITHUB;
+    return this.compatibleForge ?? GitClientType.GITHUB;
   }
 
   // READ
@@ -175,8 +175,8 @@ export default class GitHubClient implements GitClient {
       });
 
       const commits = data.map(c => ({ sha: c.sha, message: c.commit.message }));
-      if (this.isForCodeberg) {
-        // For some reason, even though Codeberg advertises API compatibility
+      if (this.compatibleForge) {
+        // For some reason, even though Codeberg/Forgejo advertises API compatibility
         // with GitHub, it returns commits in reversed order.
         commits.reverse();
       }

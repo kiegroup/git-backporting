@@ -286,6 +286,8 @@ var AuthTokenId;
     AuthTokenId["GITLAB_TOKEN"] = "GITLAB_TOKEN";
     // codeberg specific token
     AuthTokenId["CODEBERG_TOKEN"] = "CODEBERG_TOKEN";
+    // forgejo specific token
+    AuthTokenId["FORGEJO_TOKEN"] = "FORGEJO_TOKEN";
     // generic git token
     AuthTokenId["GIT_TOKEN"] = "GIT_TOKEN";
 })(AuthTokenId = exports.AuthTokenId || (exports.AuthTokenId = {}));
@@ -727,7 +729,8 @@ class GitClientFactory {
                 GitClientFactory.instance = new gitlab_client_1.default(authToken, apiUrl);
                 break;
             case git_types_1.GitClientType.CODEBERG:
-                GitClientFactory.instance = new github_client_1.default(authToken, apiUrl, true);
+            case git_types_1.GitClientType.FORGEJO:
+                GitClientFactory.instance = new github_client_1.default(authToken, apiUrl, type);
                 break;
             default:
                 throw new Error(`Invalid git service type received: ${type}`);
@@ -762,7 +765,7 @@ const PUBLIC_GITHUB_URL = "https://github.com";
 const PUBLIC_GITHUB_API = "https://api.github.com";
 /**
  * Infer the remote GIT service to interact with based on the provided
- * pull request URL
+ * pull request URL and environment variables
  * @param prUrl provided pull request URL
  * @returns {GitClientType}
  */
@@ -776,6 +779,12 @@ const inferGitClient = (prUrl) => {
     }
     else if (stdPrUrl.includes(git_types_1.GitClientType.CODEBERG.toString())) {
         return git_types_1.GitClientType.CODEBERG;
+    }
+    // When running as Forgejo action, some env variables are set
+    // https://forgejo.org/docs/latest/user/actions/reference/#env-1
+    let [_, isForgejoRunner] = (0, exports.getEnv)("FORGEJO_SERVER_URL");
+    if (isForgejoRunner) {
+        return git_types_1.GitClientType.FORGEJO;
     }
     throw new Error(`Remote git service not recognized from pr url: ${prUrl}`);
 };
@@ -839,6 +848,9 @@ const getGitTokenFromEnv = (gitType) => {
     else if (git_types_1.GitClientType.CODEBERG == gitType) {
         [specToken, specOk] = (0, exports.getEnv)(configs_types_1.AuthTokenId.CODEBERG_TOKEN);
     }
+    else if (git_types_1.GitClientType.FORGEJO == gitType) {
+        [specToken, specOk] = (0, exports.getEnv)(configs_types_1.AuthTokenId.FORGEJO_TOKEN);
+    }
     if (specOk) {
         token = specToken;
     }
@@ -873,6 +885,7 @@ var GitClientType;
     GitClientType["GITHUB"] = "github";
     GitClientType["GITLAB"] = "gitlab";
     GitClientType["CODEBERG"] = "codeberg";
+    GitClientType["FORGEJO"] = "forgejo";
 })(GitClientType = exports.GitClientType || (exports.GitClientType = {}));
 var GitRepoState;
 (function (GitRepoState) {
@@ -902,18 +915,18 @@ const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 class GitHubClient {
     logger;
     apiUrl;
-    isForCodeberg;
+    compatibleForge; // undefined for github
     octokit;
     mapper;
-    constructor(token, apiUrl, isForCodeberg = false) {
+    constructor(token, apiUrl, compatibleForge) {
         this.apiUrl = apiUrl;
-        this.isForCodeberg = isForCodeberg;
+        this.compatibleForge = compatibleForge;
         this.logger = logger_service_factory_1.default.getLogger();
         this.octokit = octokit_factory_1.default.getOctokit(token, this.apiUrl);
         this.mapper = new github_mapper_1.default();
     }
     getClientType() {
-        return this.isForCodeberg ? git_types_1.GitClientType.CODEBERG : git_types_1.GitClientType.GITHUB;
+        return this.compatibleForge ?? git_types_1.GitClientType.GITHUB;
     }
     // READ
     getDefaultGitUser() {
@@ -1040,8 +1053,8 @@ class GitHubClient {
                 pull_number: prNumber,
             });
             const commits = data.map(c => ({ sha: c.sha, message: c.commit.message }));
-            if (this.isForCodeberg) {
-                // For some reason, even though Codeberg advertises API compatibility
+            if (this.compatibleForge) {
+                // For some reason, even though Codeberg/Forgejo advertises API compatibility
                 // with GitHub, it returns commits in reversed order.
                 commits.reverse();
             }

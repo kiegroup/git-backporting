@@ -43,7 +43,8 @@ export interface BackportPullRequest {
 export enum GitClientType {
   GITHUB = "github",
   GITLAB = "gitlab",
-  CODEBERG = "codeberg",
+  CODEBERG = "codeberg", // codeberg runs Forgejo, kept for historic reasons
+  FORGEJO = "forgejo",
 }
 
 export enum GitRepoState {

@@ -115,7 +115,7 @@ This tool comes with some inputs that allow users to override the default behavi
 | Configuration File  | -cf, --config-file  | N            | Configuration file, in JSON format, containing all options to be overridded, note that if provided all other CLI options will be ignored                                        |             |
 | Auth          | -a, --auth           | N            | Git access/authorization token, if provided all token env variables will be ignored. See [auth token](#authorization-token) section for more details | ""          |
 | Folder        | -f, --folder         | N            | Local folder full name of the repository that will be checked out, e.g., /tmp/folder                                                                                     | {cwd}/bp    |
-| Git Client       | --git-client        | N            | Git client type <github|gitlab|codeberg>, if not set it is infered from pull-request
+| Git Client       | --git-client        | N            | Git client type <github|gitlab|codeberg|forgejo>, if not set it is infered from pull-request / env variables
 | Git User       | -gu, --git-user        | N            | Local git user name                                                       | "GitHub"       |
 | Git Email       | -ge, --git-email        | N            | Local git user email                                                       | "noreply@github.com"       |
 | Title       | --title        | N            | Backporting pull request title                                                       | "{original-pr-title}"       |
@@ -147,7 +147,8 @@ Since version `4.5.0` we introduced a new feature that allows user to provide th
 Here the supported list of env variables:
 - `GITHUB_TOKEN`: this is checked only if backporting on Github platform.
 - `GITLAB_TOKEN`: this is checked only if backporting on Gitlab platform.
-- `CODEBERG_TOKEN`: this is checked only if backporting on Codeberg platform.
+- `CODEBERG_TOKEN`: this is checked only if backporting on Codeberg.org.
+- `FORGEJO_TOKEN`: this is checked only if backporting on Forgejo.
 - `GIT_TOKEN`: this is considered if none of the previous envs are set.
 
 > **NOTE**: if `--auth` argument is provided, all env variables will be ignored even if not empty.
@@ -211,7 +212,7 @@ Right now **Git Backporting** supports the following git management services:
 
  * ***GITLAB***: This has been introduced since version `3.0.0`, it works for both public and private *GitLab* servers. The interaction with this service is performed using plain [*axios*](https://axios-http.com) requests. The *gitlab* api version that is used to make requests is `v4`, at the moment there is no possibility to override it.
 
- * ***CODEBERG***: Introduced since version `4.4.0`, it works for public [codeberg.org](https://codeberg.org/) platform. Thanks to the api compatibility with GitHub, the interaction with this service is performed using using [*octokit*](https://octokit.github.io/rest.js) client library.
+ * ***CODEBERG/FORGEJO***: Introduced since version `4.4.0`, it works for public [codeberg.org](https://codeberg.org/) and self-hosted platform. Thanks to the api compatibility with GitHub, the interaction with this service is performed using using [*octokit*](https://octokit.github.io/rest.js) client library.
 
 > **NOTE**: by default, all gitlab requests are performed setting `rejectUnauthorized=false`, planning to make this configurable too.
 
