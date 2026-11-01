@@ -1,6 +1,6 @@
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
-import simpleGit, { SimpleGit } from "simple-git";
+import { simpleGit, SimpleGit } from "simple-git";
 import fs from "fs";
 import { LocalGit } from "@bp/service/configs/configs.types";
 
