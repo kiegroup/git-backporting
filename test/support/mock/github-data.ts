@@ -1457,6 +1457,15 @@ export const MULT_COMMITS_PR_FIXTURE = {
       "color": "AB975B",
       "default": false,
       "description": ""
+    },
+    {
+      "id": 4901021058,
+      "node_id": "LA_8wDOImgs2354988AAAABJB-lgQ",
+      "url": "https://api.github.com/repos/owner/reponame/labels/unrelated-label",
+      "name": "unrelated label",
+      "color": "AB975B",
+      "default": false,
+      "description": ""
     }
   ],
   "milestone": null,

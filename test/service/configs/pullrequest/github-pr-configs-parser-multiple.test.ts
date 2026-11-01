@@ -445,6 +445,7 @@ describe("github pull request config parser", () => {
       reviewers: [],
       assignees: [],
       inheritReviewers: true,
+      inheritLabels: true,
       squash: false,
     };
 
@@ -475,7 +476,7 @@ describe("github pull request config parser", () => {
           body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
           reviewers: ["gh-user", "that-s-a-user"],
           assignees: [],
-          labels: [],
+          labels: ["unrelated label"],
           comments: [],
         },
         {
@@ -488,7 +489,7 @@ describe("github pull request config parser", () => {
           body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
           reviewers: ["gh-user", "that-s-a-user"],
           assignees: [],
-          labels: [],
+          labels: ["unrelated label"],
           comments: [],
         },
         {
@@ -501,7 +502,7 @@ describe("github pull request config parser", () => {
           body: "**Backport:** https://github.com/owner/reponame/pull/8632\r\n\r\nPlease review and merge",
           reviewers: ["gh-user", "that-s-a-user"],
           assignees: [],
-          labels: [],
+          labels: ["unrelated label"],
           comments: [],
         },
       ])
