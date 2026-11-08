@@ -1,0 +1,47 @@
+name: Update major version tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Stable release tag (vX.Y.Z)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-major-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate release tag
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "major=v${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+            echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            if [[ "$EVENT_NAME" == workflow_dispatch ]]; then
+              echo "::error::Expected a stable release tag in the form vX.Y.Z."
+              exit 1
+            fi
+            echo "Skipping non-release tag: $RELEASE_TAG"
+          fi
+      - uses: actions/checkout@v7
+        if: steps.version.outputs.major != ''
+        with:
+          ref: refs/tags/${{ steps.version.outputs.tag }}
+      - name: Update major tag
+        if: steps.version.outputs.major != ''
+        env:
+          MAJOR_TAG: ${{ steps.version.outputs.major }}
+        run: |
+          git tag --force "$MAJOR_TAG" HEAD
+          git push --force origin "refs/tags/$MAJOR_TAG"
