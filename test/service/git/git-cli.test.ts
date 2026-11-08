@@ -128,7 +128,7 @@ describe("git cli service", () => {
   test("push diverting local branch throws a dedicated error", async () => {
     spawnSync("git", ["switch", "sbranch"], { cwd });
     spawnSync("git", ["commit","--amend", "-m", "bla"], { cwd });
-    expect(git.push(cwd, "sbranch", "origin", false)).rejects.toBeInstanceOf(NonFastForwardError);
+    await expect(git.push(cwd, "sbranch", "origin", false)).rejects.toBeInstanceOf(NonFastForwardError);
     const remoteOriginal = await git.hasRemoteOriginalWork(cwd, "sbranch", "origin");
     expect(remoteOriginal).toBe(false);
     const localOriginal = await git.hasLocalOriginalWork(cwd, "sbranch", "origin");
