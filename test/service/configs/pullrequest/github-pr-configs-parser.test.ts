@@ -872,6 +872,7 @@ describe("github pull request config parser", () => {
         "backport v1",
         "backport v2",
         "backport v3",
+        "unrelated label",
       ],
       targetRepo: {
         owner: "owner",

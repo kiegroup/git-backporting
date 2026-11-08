@@ -452,7 +452,14 @@ class PullRequestConfigsParser extends configs_parser_1.default {
         const body = bodyPrefix + (args.body ?? `${originalPullRequest.body}`);
         const labels = args.labels ?? [];
         if (args.inheritLabels) {
-            labels.push(...originalPullRequest.labels);
+            if (args.targetBranchPattern) {
+                // filter out labels which are used to specify the target branch
+                const regExp = new RegExp(args.targetBranchPattern);
+                labels.push(...originalPullRequest.labels.filter(l => !regExp.test(l)));
+            }
+            else {
+                labels.push(...originalPullRequest.labels);
+            }
         }
         return targetBranches.map((tb, idx) => {
             // if there multiple branch names take the corresponding one, otherwise get the the first one if it exists

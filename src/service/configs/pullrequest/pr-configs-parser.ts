@@ -134,7 +134,13 @@ export default class PullRequestConfigsParser extends ConfigsParser {
 
     const labels = args.labels ?? [];
     if (args.inheritLabels) {
-      labels.push(...originalPullRequest.labels);
+      if (args.targetBranchPattern) {
+        // filter out labels which are used to specify the target branch
+        const regExp = new RegExp(args.targetBranchPattern);
+        labels.push(...originalPullRequest.labels.filter(l => !regExp.test(l)));
+      } else {
+        labels.push(...originalPullRequest.labels);
+      }
     }
 
     return targetBranches.map((tb, idx) => {
