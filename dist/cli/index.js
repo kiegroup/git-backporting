@@ -1944,9 +1944,14 @@ class Runner {
             }
             this.logger.clearContext();
         }
-        const escapeCell = (value) => value.replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
-        const rows = results.map(({ branch, result, error }) => `| ${escapeCell(branch)} | ${result} | ${escapeCell(error)} |`);
-        this.logger.info(["Backport results:", "| Target Branch | Result | Error |", "| --- | --- | --- |", ...rows].join("\n"));
+        const branchWidth = Math.max("Target Branch".length, ...results.map(({ branch }) => branch.length));
+        const resultWidth = Math.max("Result".length, ...results.map(({ result }) => result.length));
+        const prefix = (branch, result) => `${branch.padEnd(branchWidth)}  ${result.padEnd(resultWidth)}  `;
+        const rows = results.map(({ branch, result, error }) => {
+            const lines = error.replace(/(?:\r?\n)+$/, "").split(/\r?\n/);
+            return prefix(branch, result) + lines.join(`\n${" ".repeat(branchWidth + resultWidth + 4)}`);
+        });
+        this.logger.info(["Backport results:", prefix("Target Branch", "Result") + "Error", `${"-".repeat(branchWidth)}  ${"-".repeat(resultWidth)}  -----`, ...rows].join("\n"));
         if (failures.length > 0) {
             throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
         }

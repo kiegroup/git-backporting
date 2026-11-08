@@ -76,9 +76,9 @@ describe("cli runner", () => {
     addProcessArgs(["-tb", "v1,v2,v3", "-pr", "https://github.com/owner/reponame/pull/2368"]);
 
     await expect(runner.execute()).rejects.toThrow("conflict");
-    expect(info).toHaveBeenCalledWith(expect.stringContaining("| v1 | OK | - |"));
-    expect(info).toHaveBeenCalledWith(expect.stringContaining("| v2 | KO | Error: conflict \\| details<br>next line |"));
-    expect(info).toHaveBeenCalledWith(expect.stringContaining("| v3 | SKIPPED | - |"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v1             OK       -"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v2             KO       Error: conflict | details\n                        next line"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v3             SKIPPED  -"));
     backport.mockRestore();
     info.mockRestore();
   });
@@ -1629,8 +1629,8 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
     // only v1 is attempted, hence only its failure is reported
     await expect(() => runner.execute()).rejects.toThrow("Failure occurred during one of the backports: [Error: Mocked error: v1]");
 
-    expect(info).toHaveBeenCalledWith(expect.stringContaining("| v1 | KO | Error: Mocked error: v1 |"));
-    expect(info).toHaveBeenCalledWith(expect.stringContaining("| v2 | SKIPPED | - |"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v1             KO       Error: Mocked error: v1"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v2             SKIPPED  -"));
     info.mockRestore();
     expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://github.com/owner/reponame.git", "/tmp/folder", "v1");
