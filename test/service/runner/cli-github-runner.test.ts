@@ -5,8 +5,10 @@ import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
 import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
+import { PullRequestExists } from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
+import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { AuthTokenId } from "@bp/service/configs/configs.types";
 
 const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT_PATHNAME = "./cli-github-runner-pr-merged-with-overrides.json";
@@ -64,6 +66,40 @@ beforeEach(() => {
 });
 
 describe("cli runner", () => {
+
+  test("reports success, failure, and skipped targets in the final report", async () => {
+    const logger = LoggerServiceFactory.getLogger();
+    const info = jest.spyOn(logger, "info");
+    const backport = jest.spyOn(runner, "executeBackport")
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("conflict | details\nnext line"))
+      .mockResolvedValueOnce("skipped" as never);
+    addProcessArgs(["-tb", "v1,v2,v3", "-pr", "https://github.com/owner/reponame/pull/2368"]);
+
+    await expect(runner.execute()).rejects.toThrow("conflict");
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v1             OK       -"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v2             KO       Error: conflict | details\n                        next line"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v3             SKIPPED  -"));
+    backport.mockRestore();
+    info.mockRestore();
+  });
+
+  test("reports created and existing pull request URLs to the summary on failure", async () => {
+    const report = jest.fn();
+    const summaryRunner = new Runner(parser, report);
+    const create = jest.spyOn(GitHubClient.prototype, "createPullRequest")
+      .mockResolvedValueOnce("https://github.com/owner/repo/pull/1")
+      .mockRejectedValueOnce(new PullRequestExists("https://github.com/owner/repo/pull/2"))
+      .mockRejectedValueOnce(new Error("conflict"));
+    addProcessArgs(["-tb", "v1,v2,v3", "-pr", "https://github.com/owner/reponame/pull/2368"]);
+    await expect(summaryRunner.execute()).rejects.toThrow("conflict");
+    expect(report).toHaveBeenCalledWith([
+      expect.objectContaining({ branch: "v1", result: "OK", url: "https://github.com/owner/repo/pull/1" }),
+      expect.objectContaining({ branch: "v2", result: "OK", url: "https://github.com/owner/repo/pull/2" }),
+      expect.objectContaining({ branch: "v3", result: "KO", error: "Error: conflict" }),
+    ]);
+    create.mockReset();
+  });
 
   test("with dry run", async () => {
     addProcessArgs([
@@ -1587,6 +1623,7 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
   });
 
   test("skip target branch whose backport already failed and was reported", async () => {
+    const info = jest.spyOn(LoggerServiceFactory.getLogger(), "info");
     const getCommentsSpy = jest.spyOn(GitHubClient.prototype, "getLatestPullRequestComments").mockResolvedValue([
       "just an unrelated comment",
       "The backport to `v2` failed. Check the latest run for more details.\n\n<!-- git-backporting: backport to v2 failed -->",
@@ -1610,6 +1647,9 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
     // only v1 is attempted, hence only its failure is reported
     await expect(() => runner.execute()).rejects.toThrow("Failure occurred during one of the backports: [Error: Mocked error: v1]");
 
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v1             KO       Error: Mocked error: v1"));
+    expect(info).toHaveBeenCalledWith(expect.stringContaining("v2             SKIPPED  -"));
+    info.mockRestore();
     expect(GitCLIService.prototype.clone).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.clone).toHaveBeenCalledWith("https://github.com/owner/reponame.git", "/tmp/folder", "v1");
 

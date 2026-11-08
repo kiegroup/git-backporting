@@ -11,6 +11,13 @@ import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { inferGitClient, inferGitApiUrl, getGitTokenFromEnv } from "@bp/service/git/git-util";
 import { injectError, injectTargetBranch } from "./runner-util";
 
+export interface BackportResult {
+  branch: string;
+  result: "OK" | "KO" | "SKIPPED";
+  error: string;
+  url?: string;
+}
+
 interface Git {
   gitClientType: GitClientType;
   gitClientApi: Pick<GitClient, ("getLatestPullRequestComments" | "createPullRequest" | "createPullRequestComment")>;
@@ -25,7 +32,7 @@ export default class Runner {
   private logger: LoggerService;
   private argsParser: ArgsParser;
 
-  constructor(parser: ArgsParser) {
+  constructor(parser: ArgsParser, private readonly reportSummary?: (results: BackportResult[]) => Promise<void> | void) {
     this.logger = LoggerServiceFactory.getLogger();
     this.argsParser = parser;
   }
@@ -82,20 +89,40 @@ export default class Runner {
     const git: GitCLIService = new GitCLIService(configs.auth, configs.git);
 
     const failures: string[] = [];
+    const results: BackportResult[] = [];
     // we need sequential backporting as they will operate on the same folder
     // avoid cloning the same repo multiple times
     for (const pr of backportPRs) {
       this.logger.setContext(pr.base);
       try {
-        await this.executeBackport(configs, pr, {
+        const result = await this.executeBackport(configs, pr, {
           gitClientType: gitClientType,
           gitClientApi: gitApi,
           gitCli: git,
         });
+        results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-", url: result === "skipped" ? undefined : result });
       } catch (error) {
         failures.push(error as string);
+        results.push({ branch: pr.base, result: "KO", error: String(error) });
       }
       this.logger.clearContext();
+    }
+
+    const branchWidth = Math.max("Target Branch".length, ...results.map(({ branch }) => branch.length));
+    const resultWidth = Math.max("Result".length, ...results.map(({ result }) => result.length));
+    const prefix = (branch: string, result: string): string => `${branch.padEnd(branchWidth)}  ${result.padEnd(resultWidth)}  `;
+    const rows = results.map(({ branch, result, error }) => {
+      const lines = error.replace(/(?:\r?\n)+$/, "").split(/\r?\n/);
+      return prefix(branch, result) + lines.join(`\n${" ".repeat(branchWidth + resultWidth + 4)}`);
+    });
+    this.logger.info(["Backport results:", prefix("Target Branch", "Result") + "Error", `${"-".repeat(branchWidth)}  ${"-".repeat(resultWidth)}  -----`, ...rows].join("\n"));
+
+    if (this.reportSummary) {
+      try {
+        await this.reportSummary(results);
+      } catch (error) {
+        this.logger.warn(`Unable to write backport summary: ${error}`);
+      }
     }
 
     if (failures.length > 0) {
@@ -141,18 +168,20 @@ export default class Runner {
     }
   }
 
-  async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void> {
+  async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<string | undefined> {
     const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
 
     if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
       this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
-      return;
+      return "skipped";
     }
 
     let i = 0;
+    let url: string | undefined;
     for (const step of backportSteps(this.logger, configs, backportPR, git)) {
       try {
-        await step();
+        const stepResult = await step();
+        if (stepResult) {url = stepResult;}
       } catch (error) {
         this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
         if (notifyError) {
@@ -175,6 +204,7 @@ export default class Runner {
       }
       i++;
     }
+    return url;
   }
 }
 
@@ -184,7 +214,7 @@ function failureMarker(base: string): string {
   return `<!-- git-backporting: backport to ${base} failed -->`;
 }
 
-function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, configs: Configs, backportPR: BackportPullRequest, git: Git): Generator<() => Promise<void>, void, unknown> {
+function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, configs: Configs, backportPR: BackportPullRequest, git: Git): Generator<() => Promise<string | void>, void, unknown> {
   // every failible operation should be in one dedicated closure
 
   // whether the backport pr targets a different repository than the original pull request's one (--tb-repo),
@@ -297,11 +327,13 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
       try{
         const prUrl = await git.gitClientApi.createPullRequest(backportPR);
         logger.info(`Pull request created: ${prUrl}`);
+        return prUrl;
       } catch (err) {
         if (!(err instanceof PullRequestExists)) {
           throw err;
         }
         logger.info(`Existing pull request updated: ${err.url}`);
+        return err.url;
       }
     };
   } else {

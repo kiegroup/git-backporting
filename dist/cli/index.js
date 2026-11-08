@@ -1875,9 +1875,11 @@ const runner_util_1 = __nccwpck_require__(9632);
  * Main runner implementation, it implements the core logic flow
  */
 class Runner {
+    reportSummary;
     logger;
     argsParser;
-    constructor(parser) {
+    constructor(parser, reportSummary) {
+        this.reportSummary = reportSummary;
         this.logger = logger_service_factory_1.default.getLogger();
         this.argsParser = parser;
     }
@@ -1925,21 +1927,40 @@ class Runner {
         // start local git operations
         const git = new git_cli_1.default(configs.auth, configs.git);
         const failures = [];
+        const results = [];
         // we need sequential backporting as they will operate on the same folder
         // avoid cloning the same repo multiple times
         for (const pr of backportPRs) {
             this.logger.setContext(pr.base);
             try {
-                await this.executeBackport(configs, pr, {
+                const result = await this.executeBackport(configs, pr, {
                     gitClientType: gitClientType,
                     gitClientApi: gitApi,
                     gitCli: git,
                 });
+                results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-", url: result === "skipped" ? undefined : result });
             }
             catch (error) {
                 failures.push(error);
+                results.push({ branch: pr.base, result: "KO", error: String(error) });
             }
             this.logger.clearContext();
+        }
+        const branchWidth = Math.max("Target Branch".length, ...results.map(({ branch }) => branch.length));
+        const resultWidth = Math.max("Result".length, ...results.map(({ result }) => result.length));
+        const prefix = (branch, result) => `${branch.padEnd(branchWidth)}  ${result.padEnd(resultWidth)}  `;
+        const rows = results.map(({ branch, result, error }) => {
+            const lines = error.replace(/(?:\r?\n)+$/, "").split(/\r?\n/);
+            return prefix(branch, result) + lines.join(`\n${" ".repeat(branchWidth + resultWidth + 4)}`);
+        });
+        this.logger.info(["Backport results:", prefix("Target Branch", "Result") + "Error", `${"-".repeat(branchWidth)}  ${"-".repeat(resultWidth)}  -----`, ...rows].join("\n"));
+        if (this.reportSummary) {
+            try {
+                await this.reportSummary(results);
+            }
+            catch (error) {
+                this.logger.warn(`Unable to write backport summary: ${error}`);
+            }
         }
         if (failures.length > 0) {
             throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
@@ -1985,12 +2006,16 @@ class Runner {
         const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
         if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
             this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
-            return;
+            return "skipped";
         }
         let i = 0;
+        let url;
         for (const step of backportSteps(this.logger, configs, backportPR, git)) {
             try {
-                await step();
+                const stepResult = await step();
+                if (stepResult) {
+                    url = stepResult;
+                }
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
@@ -2015,6 +2040,7 @@ class Runner {
             }
             i++;
         }
+        return url;
     }
 }
 exports["default"] = Runner;
@@ -2121,12 +2147,14 @@ function* backportSteps(logger, configs, backportPR, git) {
             try {
                 const prUrl = await git.gitClientApi.createPullRequest(backportPR);
                 logger.info(`Pull request created: ${prUrl}`);
+                return prUrl;
             }
             catch (err) {
                 if (!(err instanceof git_client_1.PullRequestExists)) {
                     throw err;
                 }
                 logger.info(`Existing pull request updated: ${err.url}`);
+                return err.url;
             }
         };
     }

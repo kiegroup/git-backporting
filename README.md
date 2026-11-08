@@ -181,6 +181,10 @@ $ git-backporting -tb v1 -pr https://github.com/upstream/project/pull/123 -a ***
 
 When using `--tb-repo` alone, the backport branch is pushed directly to the target repository, so your PAT needs push access there. When combining it with `--bp-repo`, the branch is pushed to the fork instead, so your PAT needs push access on the fork and only the ability to open a pull request on the target repository.
 
+#### Backport results
+
+After processing the target branches, the log contains a table showing each result. `OK` means the backport completed without an error (including a dry run or an already up-to-date branch), `KO` includes the error, and `SKIPPED` means a previous failure notification prevented a retry. The process still fails if any attempted backport failed. When run as a GitHub Action, the workflow run summary also shows the results, links to created or existing backport pull requests, and expandable error details.
+
 #### Error notification
 
 If error notifications are enabled, every failed backport is reported via comment on the original pull request.
