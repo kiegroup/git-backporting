@@ -33,12 +33,12 @@ jobs:
       - name: Npm config
         run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
       - run: npm ci
-      - name: Compute next version
-        run: |
-          next_version=$(npx release-it --release-version --no-git.requireCleanWorkingDir)
-          echo "NEXT_VERSION=${next_version}" >> $GITHUB_ENV
       - name: Prepare the release changes
         run: npm run release:prepare -- --ci --no-git.commit ${{ github.event.inputs.options }}
+      - name: Read prepared version
+        run: |
+          next_version=$(node -p "require('./package.json').version")
+          echo "NEXT_VERSION=${next_version}" >> "$GITHUB_ENV"
       - name: Create Pull Request
         uses: gr2m/create-or-update-pull-request-action@v1.x
         with:
