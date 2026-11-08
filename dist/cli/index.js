@@ -2,7 +2,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 8709:
+/***/ 1130:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -11,8 +11,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const cli_args_parser_1 = __importDefault(__nccwpck_require__(7938));
-const runner_1 = __importDefault(__nccwpck_require__(8810));
+const cli_args_parser_1 = __importDefault(__nccwpck_require__(8277));
+const runner_1 = __importDefault(__nccwpck_require__(1356));
 // create CLI arguments parser
 const parser = new cli_args_parser_1.default();
 // create runner
@@ -22,7 +22,7 @@ runner.run();
 
 /***/ }),
 
-/***/ 3025:
+/***/ 1997:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -83,7 +83,7 @@ exports["default"] = ArgsParser;
 
 /***/ }),
 
-/***/ 8048:
+/***/ 9496:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -172,7 +172,7 @@ exports.getAsBooleanOrUndefined = getAsBooleanOrUndefined;
 
 /***/ }),
 
-/***/ 7938:
+/***/ 8277:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -181,10 +181,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const args_parser_1 = __importDefault(__nccwpck_require__(3025));
-const commander_1 = __nccwpck_require__(4379);
+const args_parser_1 = __importDefault(__nccwpck_require__(1997));
+const commander_1 = __nccwpck_require__(7674);
 const package_json_1 = __nccwpck_require__(6625);
-const args_utils_1 = __nccwpck_require__(8048);
+const args_utils_1 = __nccwpck_require__(9496);
 class CLIArgsParser extends args_parser_1.default {
     getCommand() {
         return new commander_1.Command(package_json_1.name)
@@ -269,7 +269,7 @@ exports["default"] = CLIArgsParser;
 
 /***/ }),
 
-/***/ 5799:
+/***/ 3815:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -278,7 +278,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
 /**
  * Abstract configuration parser class in charge to parse
  * Args and produces a common Configs object
@@ -307,7 +307,7 @@ exports["default"] = ConfigsParser;
 
 /***/ }),
 
-/***/ 4753:
+/***/ 8004:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -333,7 +333,7 @@ var AuthTokenId;
 
 /***/ }),
 
-/***/ 6618:
+/***/ 7716:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -342,10 +342,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const args_utils_1 = __nccwpck_require__(8048);
-const configs_parser_1 = __importDefault(__nccwpck_require__(5799));
-const configs_types_1 = __nccwpck_require__(4753);
-const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
+const args_utils_1 = __nccwpck_require__(9496);
+const configs_parser_1 = __importDefault(__nccwpck_require__(3815));
+const configs_types_1 = __nccwpck_require__(8004);
+const git_client_factory_1 = __importDefault(__nccwpck_require__(4804));
 class PullRequestConfigsParser extends configs_parser_1.default {
     gitClient;
     constructor() {
@@ -538,7 +538,7 @@ exports["default"] = PullRequestConfigsParser;
 
 /***/ }),
 
-/***/ 7538:
+/***/ 4223:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -548,8 +548,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NonFastForwardError = void 0;
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const simple_git_1 = __nccwpck_require__(3362);
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const simple_git_1 = __nccwpck_require__(6164);
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 class NonFastForwardError extends Error {
     cause;
@@ -771,7 +771,7 @@ exports["default"] = GitCLIService;
 
 /***/ }),
 
-/***/ 8550:
+/***/ 4804:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -780,10 +780,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const git_types_1 = __nccwpck_require__(750);
-const github_client_1 = __importDefault(__nccwpck_require__(4628));
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const gitlab_client_1 = __importDefault(__nccwpck_require__(4077));
+const git_types_1 = __nccwpck_require__(3452);
+const github_client_1 = __importDefault(__nccwpck_require__(5035));
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const gitlab_client_1 = __importDefault(__nccwpck_require__(4737));
 /**
  * Singleton git service factory class
  */
@@ -835,7 +835,7 @@ exports["default"] = GitClientFactory;
 
 /***/ }),
 
-/***/ 8127:
+/***/ 2539:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -856,7 +856,7 @@ exports.PullRequestExists = PullRequestExists;
 
 /***/ }),
 
-/***/ 9080:
+/***/ 6912:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -866,9 +866,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getEnv = exports.getGitTokenFromEnv = exports.inferSquash = exports.inferGitApiUrl = exports.inferGitClient = void 0;
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const git_types_1 = __nccwpck_require__(750);
-const configs_types_1 = __nccwpck_require__(4753);
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const git_types_1 = __nccwpck_require__(3452);
+const configs_types_1 = __nccwpck_require__(8004);
 const PUBLIC_GITHUB_URL = "https://github.com";
 const PUBLIC_GITHUB_API = "https://api.github.com";
 /**
@@ -981,7 +981,7 @@ exports.getEnv = getEnv;
 
 /***/ }),
 
-/***/ 750:
+/***/ 3452:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1006,7 +1006,7 @@ var GitRepoState;
 
 /***/ }),
 
-/***/ 4628:
+/***/ 5035:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1015,13 +1015,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const git_client_1 = __nccwpck_require__(8127);
-const git_util_1 = __nccwpck_require__(9080);
-const git_types_1 = __nccwpck_require__(750);
-const github_mapper_1 = __importDefault(__nccwpck_require__(5764));
-const octokit_factory_1 = __importDefault(__nccwpck_require__(4257));
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const request_error_1 = __nccwpck_require__(6999);
+const git_client_1 = __nccwpck_require__(2539);
+const git_util_1 = __nccwpck_require__(6912);
+const git_types_1 = __nccwpck_require__(3452);
+const github_mapper_1 = __importDefault(__nccwpck_require__(6722));
+const octokit_factory_1 = __importDefault(__nccwpck_require__(3053));
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const request_error_1 = __nccwpck_require__(9460);
 class GitHubClient {
     logger;
     apiUrl;
@@ -1300,13 +1300,13 @@ exports["default"] = GitHubClient;
 
 /***/ }),
 
-/***/ 5764:
+/***/ 6722:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const git_types_1 = __nccwpck_require__(750);
+const git_types_1 = __nccwpck_require__(3452);
 class GitHubMapper {
     mapGitState(state) {
         switch (state) {
@@ -1365,7 +1365,7 @@ exports["default"] = GitHubMapper;
 
 /***/ }),
 
-/***/ 4257:
+/***/ 3053:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1374,8 +1374,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const rest_1 = __nccwpck_require__(1942);
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const rest_1 = __nccwpck_require__(242);
 /**
  * Singleton factory class for {Octokit} instance
  */
@@ -1398,7 +1398,7 @@ exports["default"] = OctokitFactory;
 
 /***/ }),
 
-/***/ 4077:
+/***/ 4737:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1407,11 +1407,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const git_util_1 = __nccwpck_require__(9080);
-const git_types_1 = __nccwpck_require__(750);
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const gitlab_mapper_1 = __importDefault(__nccwpck_require__(2675));
-const axios_1 = __importDefault(__nccwpck_require__(8757));
+const git_util_1 = __nccwpck_require__(6912);
+const git_types_1 = __nccwpck_require__(3452);
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const gitlab_mapper_1 = __importDefault(__nccwpck_require__(6711));
+const axios_1 = __importDefault(__nccwpck_require__(2260));
 const https_1 = __importDefault(__nccwpck_require__(5687));
 class GitLabClient {
     logger;
@@ -1608,13 +1608,13 @@ exports["default"] = GitLabClient;
 
 /***/ }),
 
-/***/ 2675:
+/***/ 6711:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const git_types_1 = __nccwpck_require__(750);
+const git_types_1 = __nccwpck_require__(3452);
 class GitLabMapper {
     client;
     // needs client to perform additional requests
@@ -1695,7 +1695,7 @@ exports["default"] = GitLabMapper;
 
 /***/ }),
 
-/***/ 8679:
+/***/ 9702:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1704,7 +1704,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const logger_1 = __importDefault(__nccwpck_require__(1855));
+const logger_1 = __importDefault(__nccwpck_require__(7665));
 class ConsoleLoggerService {
     logger;
     verbose;
@@ -1748,7 +1748,7 @@ exports["default"] = ConsoleLoggerService;
 
 /***/ }),
 
-/***/ 8936:
+/***/ 556:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1757,7 +1757,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const console_logger_service_1 = __importDefault(__nccwpck_require__(8679));
+const console_logger_service_1 = __importDefault(__nccwpck_require__(9702));
 /**
  * Singleton factory class
  */
@@ -1775,7 +1775,7 @@ exports["default"] = LoggerServiceFactory;
 
 /***/ }),
 
-/***/ 1855:
+/***/ 7665:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1798,14 +1798,14 @@ exports["default"] = Logger;
 
 /***/ }),
 
-/***/ 9632:
+/***/ 7380:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.injectTargetBranch = exports.injectError = void 0;
-const configs_types_1 = __nccwpck_require__(4753);
+const configs_types_1 = __nccwpck_require__(8004);
 /**
  * Inject the error message in the provided `message`.
  * This is injected in place of the MESSAGE_ERROR_PLACEHOLDER placeholder
@@ -1831,7 +1831,7 @@ exports.injectTargetBranch = injectTargetBranch;
 
 /***/ }),
 
-/***/ 8810:
+/***/ 1356:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1863,14 +1863,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const pr_configs_parser_1 = __importDefault(__nccwpck_require__(6618));
-const git_cli_1 = __importStar(__nccwpck_require__(7538));
-const git_client_1 = __nccwpck_require__(8127);
-const git_client_factory_1 = __importDefault(__nccwpck_require__(8550));
-const git_types_1 = __nccwpck_require__(750);
-const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
-const git_util_1 = __nccwpck_require__(9080);
-const runner_util_1 = __nccwpck_require__(9632);
+const pr_configs_parser_1 = __importDefault(__nccwpck_require__(7716));
+const git_cli_1 = __importStar(__nccwpck_require__(4223));
+const git_client_1 = __nccwpck_require__(2539);
+const git_client_factory_1 = __importDefault(__nccwpck_require__(4804));
+const git_types_1 = __nccwpck_require__(3452);
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(556));
+const git_util_1 = __nccwpck_require__(6912);
+const runner_util_1 = __nccwpck_require__(7380);
 /**
  * Main runner implementation, it implements the core logic flow
  */
@@ -1925,22 +1925,28 @@ class Runner {
         // start local git operations
         const git = new git_cli_1.default(configs.auth, configs.git);
         const failures = [];
+        const results = [];
         // we need sequential backporting as they will operate on the same folder
         // avoid cloning the same repo multiple times
         for (const pr of backportPRs) {
             this.logger.setContext(pr.base);
             try {
-                await this.executeBackport(configs, pr, {
+                const result = await this.executeBackport(configs, pr, {
                     gitClientType: gitClientType,
                     gitClientApi: gitApi,
                     gitCli: git,
                 });
+                results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-" });
             }
             catch (error) {
                 failures.push(error);
+                results.push({ branch: pr.base, result: "KO", error: String(error) });
             }
             this.logger.clearContext();
         }
+        const escapeCell = (value) => value.replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
+        const rows = results.map(({ branch, result, error }) => `| ${escapeCell(branch)} | ${result} | ${escapeCell(error)} |`);
+        this.logger.info(["Backport results:", "| Target Branch | Result | Error |", "| --- | --- | --- |", ...rows].join("\n"));
         if (failures.length > 0) {
             throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
         }
@@ -1985,7 +1991,7 @@ class Runner {
         const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
         if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
             this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
-            return;
+            return "skipped";
         }
         let i = 0;
         for (const step of backportSteps(this.logger, configs, backportPR, git)) {
@@ -2218,7 +2224,7 @@ async function backportScript(configs, backportPR, git, failed) {
 
 /***/ }),
 
-/***/ 4751:
+/***/ 3021:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2227,12 +2233,12 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-__export(__nccwpck_require__(2825));
+__export(__nccwpck_require__(8468));
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 
-/***/ 2825:
+/***/ 8468:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -2242,7 +2248,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __nccwpck_require__(7147);
-const debug_1 = __importDefault(__nccwpck_require__(8237));
+const debug_1 = __importDefault(__nccwpck_require__(5096));
 const log = debug_1.default('@kwsites/file-exists');
 function check(path, isFile, isDirectory) {
     log(`checking %s`, path);
@@ -2294,7 +2300,7 @@ exports.READABLE = exports.FILE + exports.FOLDER;
 
 /***/ }),
 
-/***/ 9819:
+/***/ 5130:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -2360,20 +2366,20 @@ exports["default"] = deferred;
 
 /***/ }),
 
-/***/ 4812:
+/***/ 4691:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports =
 {
-  parallel      : __nccwpck_require__(8210),
-  serial        : __nccwpck_require__(445),
-  serialOrdered : __nccwpck_require__(3578)
+  parallel      : __nccwpck_require__(5358),
+  serial        : __nccwpck_require__(4236),
+  serialOrdered : __nccwpck_require__(1354)
 };
 
 
 /***/ }),
 
-/***/ 1700:
+/***/ 6596:
 /***/ ((module) => {
 
 // API
@@ -2409,10 +2415,10 @@ function clean(key)
 
 /***/ }),
 
-/***/ 2794:
+/***/ 7814:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var defer = __nccwpck_require__(5295);
+var defer = __nccwpck_require__(5305);
 
 // API
 module.exports = async;
@@ -2450,7 +2456,7 @@ function async(callback)
 
 /***/ }),
 
-/***/ 5295:
+/***/ 5305:
 /***/ ((module) => {
 
 module.exports = defer;
@@ -2483,11 +2489,11 @@ function defer(fn)
 
 /***/ }),
 
-/***/ 9023:
+/***/ 7585:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var async = __nccwpck_require__(2794)
-  , abort = __nccwpck_require__(1700)
+var async = __nccwpck_require__(7814)
+  , abort = __nccwpck_require__(6596)
   ;
 
 // API
@@ -2565,7 +2571,7 @@ function runJob(iterator, key, item, callback)
 
 /***/ }),
 
-/***/ 2474:
+/***/ 8605:
 /***/ ((module) => {
 
 // API
@@ -2609,11 +2615,11 @@ function state(list, sortMethod)
 
 /***/ }),
 
-/***/ 7942:
+/***/ 8107:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var abort = __nccwpck_require__(1700)
-  , async = __nccwpck_require__(2794)
+var abort = __nccwpck_require__(6596)
+  , async = __nccwpck_require__(7814)
   ;
 
 // API
@@ -2645,12 +2651,12 @@ function terminator(callback)
 
 /***/ }),
 
-/***/ 8210:
+/***/ 5358:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var iterate    = __nccwpck_require__(9023)
-  , initState  = __nccwpck_require__(2474)
-  , terminator = __nccwpck_require__(7942)
+var iterate    = __nccwpck_require__(7585)
+  , initState  = __nccwpck_require__(8605)
+  , terminator = __nccwpck_require__(8107)
   ;
 
 // Public API
@@ -2695,10 +2701,10 @@ function parallel(list, iterator, callback)
 
 /***/ }),
 
-/***/ 445:
+/***/ 4236:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var serialOrdered = __nccwpck_require__(3578);
+var serialOrdered = __nccwpck_require__(1354);
 
 // Public API
 module.exports = serial;
@@ -2719,12 +2725,12 @@ function serial(list, iterator, callback)
 
 /***/ }),
 
-/***/ 3578:
+/***/ 1354:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var iterate    = __nccwpck_require__(9023)
-  , initState  = __nccwpck_require__(2474)
-  , terminator = __nccwpck_require__(7942)
+var iterate    = __nccwpck_require__(7585)
+  , initState  = __nccwpck_require__(8605)
+  , terminator = __nccwpck_require__(8107)
   ;
 
 // Public API
@@ -2801,7 +2807,7 @@ function descending(a, b)
 
 /***/ }),
 
-/***/ 7401:
+/***/ 9632:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
 "use strict";
@@ -2810,8 +2816,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const events_1 = __nccwpck_require__(2361);
-const debug_1 = __importDefault(__nccwpck_require__(8237));
-const promisify_1 = __importDefault(__nccwpck_require__(6948));
+const debug_1 = __importDefault(__nccwpck_require__(5096));
+const promisify_1 = __importDefault(__nccwpck_require__(9683));
 const debug = debug_1.default('agent-base');
 function isAgent(v) {
     return Boolean(v) && typeof v.addRequest === 'function';
@@ -3011,7 +3017,7 @@ module.exports = createAgent;
 
 /***/ }),
 
-/***/ 6948:
+/***/ 9683:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -3036,7 +3042,7 @@ exports["default"] = promisify;
 
 /***/ }),
 
-/***/ 9808:
+/***/ 6773:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -3058,9 +3064,9 @@ const net_1 = __importDefault(__nccwpck_require__(1808));
 const tls_1 = __importDefault(__nccwpck_require__(4404));
 const url_1 = __importDefault(__nccwpck_require__(7310));
 const assert_1 = __importDefault(__nccwpck_require__(9491));
-const debug_1 = __importDefault(__nccwpck_require__(8237));
-const agent_base_1 = __nccwpck_require__(7401);
-const parse_proxy_response_1 = __importDefault(__nccwpck_require__(8494));
+const debug_1 = __importDefault(__nccwpck_require__(5096));
+const agent_base_1 = __nccwpck_require__(9632);
+const parse_proxy_response_1 = __importDefault(__nccwpck_require__(1367));
 const debug = debug_1.default('https-proxy-agent:agent');
 /**
  * The `HttpsProxyAgent` implements an HTTP Agent subclass that connects to
@@ -3220,7 +3226,7 @@ function omit(obj, ...keys) {
 
 /***/ }),
 
-/***/ 8414:
+/***/ 9949:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
 "use strict";
@@ -3228,7 +3234,7 @@ function omit(obj, ...keys) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const agent_1 = __importDefault(__nccwpck_require__(9808));
+const agent_1 = __importDefault(__nccwpck_require__(6773));
 function createHttpsProxyAgent(opts) {
     return new agent_1.default(opts);
 }
@@ -3241,7 +3247,7 @@ module.exports = createHttpsProxyAgent;
 
 /***/ }),
 
-/***/ 8494:
+/***/ 1367:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -3250,7 +3256,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const debug_1 = __importDefault(__nccwpck_require__(8237));
+const debug_1 = __importDefault(__nccwpck_require__(5096));
 const debug = debug_1.default('https-proxy-agent:parse-proxy-response');
 function parseProxyResponse(socket) {
     return new Promise((resolve, reject) => {
@@ -3314,17 +3320,17 @@ exports["default"] = parseProxyResponse;
 
 /***/ }),
 
-/***/ 9227:
+/***/ 876:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var bind = __nccwpck_require__(8334);
+var bind = __nccwpck_require__(8707);
 
-var $apply = __nccwpck_require__(4177);
-var $call = __nccwpck_require__(2808);
-var $reflectApply = __nccwpck_require__(8309);
+var $apply = __nccwpck_require__(2987);
+var $call = __nccwpck_require__(337);
+var $reflectApply = __nccwpck_require__(9631);
 
 /** @type {import('./actualApply')} */
 module.exports = $reflectApply || bind.call($call, $apply);
@@ -3332,7 +3338,7 @@ module.exports = $reflectApply || bind.call($call, $apply);
 
 /***/ }),
 
-/***/ 4177:
+/***/ 2987:
 /***/ ((module) => {
 
 "use strict";
@@ -3344,7 +3350,7 @@ module.exports = Function.prototype.apply;
 
 /***/ }),
 
-/***/ 2808:
+/***/ 337:
 /***/ ((module) => {
 
 "use strict";
@@ -3356,17 +3362,17 @@ module.exports = Function.prototype.call;
 
 /***/ }),
 
-/***/ 6815:
+/***/ 9151:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var bind = __nccwpck_require__(8334);
-var $TypeError = __nccwpck_require__(6361);
+var bind = __nccwpck_require__(8707);
+var $TypeError = __nccwpck_require__(8677);
 
-var $call = __nccwpck_require__(2808);
-var $actualApply = __nccwpck_require__(9227);
+var $call = __nccwpck_require__(337);
+var $actualApply = __nccwpck_require__(876);
 
 /** @type {(args: [Function, thisArg?: unknown, ...args: unknown[]]) => Function} TODO FIXME, find a way to use import('.') */
 module.exports = function callBindBasic(args) {
@@ -3379,7 +3385,7 @@ module.exports = function callBindBasic(args) {
 
 /***/ }),
 
-/***/ 8309:
+/***/ 9631:
 /***/ ((module) => {
 
 "use strict";
@@ -3391,12 +3397,12 @@ module.exports = typeof Reflect !== 'undefined' && Reflect && Reflect.apply;
 
 /***/ }),
 
-/***/ 5443:
+/***/ 5387:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var util = __nccwpck_require__(3837);
 var Stream = (__nccwpck_require__(2781).Stream);
-var DelayedStream = __nccwpck_require__(8611);
+var DelayedStream = __nccwpck_require__(7742);
 
 module.exports = CombinedStream;
 function CombinedStream() {
@@ -3606,7 +3612,7 @@ CombinedStream.prototype._emitError = function(err) {
 
 /***/ }),
 
-/***/ 8222:
+/***/ 6610:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /* eslint-env browser */
@@ -3866,7 +3872,7 @@ function localstorage() {
 	}
 }
 
-module.exports = __nccwpck_require__(6243)(exports);
+module.exports = __nccwpck_require__(4416)(exports);
 
 const {formatters} = module.exports;
 
@@ -3885,7 +3891,7 @@ formatters.j = function (v) {
 
 /***/ }),
 
-/***/ 6243:
+/***/ 4416:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
@@ -3901,7 +3907,7 @@ function setup(env) {
 	createDebug.disable = disable;
 	createDebug.enable = enable;
 	createDebug.enabled = enabled;
-	createDebug.humanize = __nccwpck_require__(900);
+	createDebug.humanize = __nccwpck_require__(4238);
 	createDebug.destroy = destroy;
 
 	Object.keys(env).forEach(key => {
@@ -4184,7 +4190,7 @@ module.exports = setup;
 
 /***/ }),
 
-/***/ 8237:
+/***/ 5096:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /**
@@ -4193,15 +4199,15 @@ module.exports = setup;
  */
 
 if (typeof process === 'undefined' || process.type === 'renderer' || process.browser === true || process.__nwjs) {
-	module.exports = __nccwpck_require__(8222);
+	module.exports = __nccwpck_require__(6610);
 } else {
-	module.exports = __nccwpck_require__(5332);
+	module.exports = __nccwpck_require__(8608);
 }
 
 
 /***/ }),
 
-/***/ 5332:
+/***/ 8608:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /**
@@ -4235,7 +4241,7 @@ exports.colors = [6, 2, 3, 4, 5, 1];
 try {
 	// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
 	// eslint-disable-next-line import/no-extraneous-dependencies
-	const supportsColor = __nccwpck_require__(9318);
+	const supportsColor = __nccwpck_require__(9597);
 
 	if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
 		exports.colors = [
@@ -4443,7 +4449,7 @@ function init(debug) {
 	}
 }
 
-module.exports = __nccwpck_require__(6243)(exports);
+module.exports = __nccwpck_require__(4416)(exports);
 
 const {formatters} = module.exports;
 
@@ -4471,7 +4477,7 @@ formatters.O = function (v) {
 
 /***/ }),
 
-/***/ 8611:
+/***/ 7742:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var Stream = (__nccwpck_require__(2781).Stream);
@@ -4585,14 +4591,14 @@ DelayedStream.prototype._checkIfMaxDataSizeExceeded = function() {
 
 /***/ }),
 
-/***/ 2693:
+/***/ 4544:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var callBind = __nccwpck_require__(6815);
-var gOPD = __nccwpck_require__(8501);
+var callBind = __nccwpck_require__(9151);
+var gOPD = __nccwpck_require__(7325);
 
 var hasProtoAccessor;
 try {
@@ -4623,7 +4629,7 @@ module.exports = desc && typeof desc.get === 'function'
 
 /***/ }),
 
-/***/ 6123:
+/***/ 9058:
 /***/ ((module) => {
 
 "use strict";
@@ -4645,7 +4651,7 @@ module.exports = $defineProperty;
 
 /***/ }),
 
-/***/ 1933:
+/***/ 6376:
 /***/ ((module) => {
 
 "use strict";
@@ -4657,7 +4663,7 @@ module.exports = EvalError;
 
 /***/ }),
 
-/***/ 8015:
+/***/ 3166:
 /***/ ((module) => {
 
 "use strict";
@@ -4669,7 +4675,7 @@ module.exports = Error;
 
 /***/ }),
 
-/***/ 4415:
+/***/ 7603:
 /***/ ((module) => {
 
 "use strict";
@@ -4681,7 +4687,7 @@ module.exports = RangeError;
 
 /***/ }),
 
-/***/ 6279:
+/***/ 1234:
 /***/ ((module) => {
 
 "use strict";
@@ -4693,7 +4699,7 @@ module.exports = ReferenceError;
 
 /***/ }),
 
-/***/ 5474:
+/***/ 8198:
 /***/ ((module) => {
 
 "use strict";
@@ -4705,7 +4711,7 @@ module.exports = SyntaxError;
 
 /***/ }),
 
-/***/ 6361:
+/***/ 8677:
 /***/ ((module) => {
 
 "use strict";
@@ -4717,7 +4723,7 @@ module.exports = TypeError;
 
 /***/ }),
 
-/***/ 5065:
+/***/ 2246:
 /***/ ((module) => {
 
 "use strict";
@@ -4729,7 +4735,7 @@ module.exports = URIError;
 
 /***/ }),
 
-/***/ 8308:
+/***/ 9977:
 /***/ ((module) => {
 
 "use strict";
@@ -4741,19 +4747,19 @@ module.exports = Object;
 
 /***/ }),
 
-/***/ 1770:
+/***/ 9203:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var GetIntrinsic = __nccwpck_require__(4538);
+var GetIntrinsic = __nccwpck_require__(8496);
 
 var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
 
-var hasToStringTag = __nccwpck_require__(9038)();
-var hasOwn = __nccwpck_require__(2157);
-var $TypeError = __nccwpck_require__(6361);
+var hasToStringTag = __nccwpck_require__(7234)();
+var hasOwn = __nccwpck_require__(8323);
+var $TypeError = __nccwpck_require__(8677);
 
 var toStringTag = hasToStringTag ? Symbol.toStringTag : null;
 
@@ -4784,7 +4790,7 @@ module.exports = function setToStringTag(object, value) {
 
 /***/ }),
 
-/***/ 1133:
+/***/ 5482:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var debug;
@@ -4793,7 +4799,7 @@ module.exports = function () {
   if (!debug) {
     try {
       /* eslint global-require: off */
-      debug = __nccwpck_require__(8237)("follow-redirects");
+      debug = __nccwpck_require__(5096)("follow-redirects");
     }
     catch (error) { /* */ }
     if (typeof debug !== "function") {
@@ -4806,7 +4812,7 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ 7707:
+/***/ 6504:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var url = __nccwpck_require__(7310);
@@ -4815,7 +4821,7 @@ var http = __nccwpck_require__(3685);
 var https = __nccwpck_require__(5687);
 var Writable = (__nccwpck_require__(2781).Writable);
 var assert = __nccwpck_require__(9491);
-var debug = __nccwpck_require__(1133);
+var debug = __nccwpck_require__(5482);
 
 // Preventive platform detection
 // istanbul ignore next
@@ -5527,13 +5533,13 @@ module.exports.wrap = wrap;
 
 /***/ }),
 
-/***/ 4334:
+/***/ 3805:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var CombinedStream = __nccwpck_require__(5443);
+var CombinedStream = __nccwpck_require__(5387);
 var util = __nccwpck_require__(3837);
 var path = __nccwpck_require__(1017);
 var http = __nccwpck_require__(3685);
@@ -5542,11 +5548,11 @@ var parseUrl = (__nccwpck_require__(7310).parse);
 var fs = __nccwpck_require__(7147);
 var Stream = (__nccwpck_require__(2781).Stream);
 var crypto = __nccwpck_require__(6113);
-var mime = __nccwpck_require__(3583);
-var asynckit = __nccwpck_require__(4812);
-var setToStringTag = __nccwpck_require__(1770);
-var hasOwn = __nccwpck_require__(2157);
-var populate = __nccwpck_require__(7142);
+var mime = __nccwpck_require__(2852);
+var asynckit = __nccwpck_require__(4691);
+var setToStringTag = __nccwpck_require__(9203);
+var hasOwn = __nccwpck_require__(8323);
+var populate = __nccwpck_require__(2438);
 
 /**
  * Escape CR, LF, and `"` in a multipart `name`/`filename` parameter, so a field
@@ -6041,7 +6047,7 @@ module.exports = FormData;
 
 /***/ }),
 
-/***/ 7142:
+/***/ 2438:
 /***/ ((module) => {
 
 "use strict";
@@ -6059,7 +6065,7 @@ module.exports = function (dst, src) {
 
 /***/ }),
 
-/***/ 9320:
+/***/ 8281:
 /***/ ((module) => {
 
 "use strict";
@@ -6151,20 +6157,20 @@ module.exports = function bind(that) {
 
 /***/ }),
 
-/***/ 8334:
+/***/ 8707:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var implementation = __nccwpck_require__(9320);
+var implementation = __nccwpck_require__(8281);
 
 module.exports = Function.prototype.bind || implementation;
 
 
 /***/ }),
 
-/***/ 4538:
+/***/ 8496:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6172,23 +6178,23 @@ module.exports = Function.prototype.bind || implementation;
 
 var undefined;
 
-var $Object = __nccwpck_require__(8308);
+var $Object = __nccwpck_require__(9977);
 
-var $Error = __nccwpck_require__(8015);
-var $EvalError = __nccwpck_require__(1933);
-var $RangeError = __nccwpck_require__(4415);
-var $ReferenceError = __nccwpck_require__(6279);
-var $SyntaxError = __nccwpck_require__(5474);
-var $TypeError = __nccwpck_require__(6361);
-var $URIError = __nccwpck_require__(5065);
+var $Error = __nccwpck_require__(3166);
+var $EvalError = __nccwpck_require__(6376);
+var $RangeError = __nccwpck_require__(7603);
+var $ReferenceError = __nccwpck_require__(1234);
+var $SyntaxError = __nccwpck_require__(8198);
+var $TypeError = __nccwpck_require__(8677);
+var $URIError = __nccwpck_require__(2246);
 
-var abs = __nccwpck_require__(9775);
-var floor = __nccwpck_require__(924);
-var max = __nccwpck_require__(2419);
-var min = __nccwpck_require__(3373);
-var pow = __nccwpck_require__(8029);
-var round = __nccwpck_require__(9396);
-var sign = __nccwpck_require__(9091);
+var abs = __nccwpck_require__(3259);
+var floor = __nccwpck_require__(5927);
+var max = __nccwpck_require__(7431);
+var min = __nccwpck_require__(1063);
+var pow = __nccwpck_require__(8321);
+var round = __nccwpck_require__(5323);
+var sign = __nccwpck_require__(5042);
 
 var $Function = Function;
 
@@ -6199,8 +6205,8 @@ var getEvalledConstructor = function (expressionSyntax) {
 	} catch (e) {}
 };
 
-var $gOPD = __nccwpck_require__(8501);
-var $defineProperty = __nccwpck_require__(6123);
+var $gOPD = __nccwpck_require__(7325);
+var $defineProperty = __nccwpck_require__(9058);
 
 var throwTypeError = function () {
 	throw new $TypeError();
@@ -6222,14 +6228,14 @@ var ThrowTypeError = $gOPD
 	}())
 	: throwTypeError;
 
-var hasSymbols = __nccwpck_require__(587)();
+var hasSymbols = __nccwpck_require__(7588)();
 
-var getProto = __nccwpck_require__(3592);
-var $ObjectGPO = __nccwpck_require__(5045);
-var $ReflectGPO = __nccwpck_require__(8859);
+var getProto = __nccwpck_require__(1359);
+var $ObjectGPO = __nccwpck_require__(1328);
+var $ReflectGPO = __nccwpck_require__(6110);
 
-var $apply = __nccwpck_require__(4177);
-var $call = __nccwpck_require__(2808);
+var $apply = __nccwpck_require__(2987);
+var $call = __nccwpck_require__(337);
 
 var needsEval = {};
 
@@ -6410,8 +6416,8 @@ var LEGACY_ALIASES = {
 	'%WeakSetPrototype%': ['WeakSet', 'prototype']
 };
 
-var bind = __nccwpck_require__(8334);
-var hasOwn = __nccwpck_require__(2157);
+var bind = __nccwpck_require__(8707);
+var hasOwn = __nccwpck_require__(8323);
 var $concat = bind.call($call, Array.prototype.concat);
 var $spliceApply = bind.call($apply, Array.prototype.splice);
 var $replace = bind.call($call, String.prototype.replace);
@@ -6550,13 +6556,13 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 
 /***/ }),
 
-/***/ 5045:
+/***/ 1328:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var $Object = __nccwpck_require__(8308);
+var $Object = __nccwpck_require__(9977);
 
 /** @type {import('./Object.getPrototypeOf')} */
 module.exports = $Object.getPrototypeOf || null;
@@ -6564,7 +6570,7 @@ module.exports = $Object.getPrototypeOf || null;
 
 /***/ }),
 
-/***/ 8859:
+/***/ 6110:
 /***/ ((module) => {
 
 "use strict";
@@ -6576,16 +6582,16 @@ module.exports = (typeof Reflect !== 'undefined' && Reflect.getPrototypeOf) || n
 
 /***/ }),
 
-/***/ 3592:
+/***/ 1359:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var reflectGetProto = __nccwpck_require__(8859);
-var originalGetProto = __nccwpck_require__(5045);
+var reflectGetProto = __nccwpck_require__(6110);
+var originalGetProto = __nccwpck_require__(1328);
 
-var getDunderProto = __nccwpck_require__(2693);
+var getDunderProto = __nccwpck_require__(4544);
 
 /** @type {import('.')} */
 module.exports = reflectGetProto
@@ -6611,7 +6617,7 @@ module.exports = reflectGetProto
 
 /***/ }),
 
-/***/ 7087:
+/***/ 6553:
 /***/ ((module) => {
 
 "use strict";
@@ -6623,14 +6629,14 @@ module.exports = Object.getOwnPropertyDescriptor;
 
 /***/ }),
 
-/***/ 8501:
+/***/ 7325:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 /** @type {import('.')} */
-var $gOPD = __nccwpck_require__(7087);
+var $gOPD = __nccwpck_require__(6553);
 
 if ($gOPD) {
 	try {
@@ -6646,7 +6652,7 @@ module.exports = $gOPD;
 
 /***/ }),
 
-/***/ 1621:
+/***/ 8393:
 /***/ ((module) => {
 
 "use strict";
@@ -6662,14 +6668,14 @@ module.exports = (flag, argv = process.argv) => {
 
 /***/ }),
 
-/***/ 587:
+/***/ 7588:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
 var origSymbol = typeof Symbol !== 'undefined' && Symbol;
-var hasSymbolSham = __nccwpck_require__(7747);
+var hasSymbolSham = __nccwpck_require__(9593);
 
 /** @type {import('.')} */
 module.exports = function hasNativeSymbols() {
@@ -6684,7 +6690,7 @@ module.exports = function hasNativeSymbols() {
 
 /***/ }),
 
-/***/ 7747:
+/***/ 9593:
 /***/ ((module) => {
 
 "use strict";
@@ -6737,13 +6743,13 @@ module.exports = function hasSymbols() {
 
 /***/ }),
 
-/***/ 9038:
+/***/ 7234:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var hasSymbols = __nccwpck_require__(7747);
+var hasSymbols = __nccwpck_require__(9593);
 
 /** @type {import('.')} */
 module.exports = function hasToStringTagShams() {
@@ -6753,7 +6759,7 @@ module.exports = function hasToStringTagShams() {
 
 /***/ }),
 
-/***/ 2157:
+/***/ 8323:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6761,7 +6767,7 @@ module.exports = function hasToStringTagShams() {
 
 var call = Function.prototype.call;
 var $hasOwn = Object.prototype.hasOwnProperty;
-var bind = __nccwpck_require__(8334);
+var bind = __nccwpck_require__(8707);
 
 /** @type {import('.')} */
 module.exports = bind.call(call, $hasOwn);
@@ -6769,7 +6775,7 @@ module.exports = bind.call(call, $hasOwn);
 
 /***/ }),
 
-/***/ 9775:
+/***/ 3259:
 /***/ ((module) => {
 
 "use strict";
@@ -6781,7 +6787,7 @@ module.exports = Math.abs;
 
 /***/ }),
 
-/***/ 924:
+/***/ 5927:
 /***/ ((module) => {
 
 "use strict";
@@ -6793,7 +6799,7 @@ module.exports = Math.floor;
 
 /***/ }),
 
-/***/ 7661:
+/***/ 1251:
 /***/ ((module) => {
 
 "use strict";
@@ -6807,7 +6813,7 @@ module.exports = Number.isNaN || function isNaN(a) {
 
 /***/ }),
 
-/***/ 2419:
+/***/ 7431:
 /***/ ((module) => {
 
 "use strict";
@@ -6819,7 +6825,7 @@ module.exports = Math.max;
 
 /***/ }),
 
-/***/ 3373:
+/***/ 1063:
 /***/ ((module) => {
 
 "use strict";
@@ -6831,7 +6837,7 @@ module.exports = Math.min;
 
 /***/ }),
 
-/***/ 8029:
+/***/ 8321:
 /***/ ((module) => {
 
 "use strict";
@@ -6843,7 +6849,7 @@ module.exports = Math.pow;
 
 /***/ }),
 
-/***/ 9396:
+/***/ 5323:
 /***/ ((module) => {
 
 "use strict";
@@ -6855,13 +6861,13 @@ module.exports = Math.round;
 
 /***/ }),
 
-/***/ 9091:
+/***/ 5042:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var $isNaN = __nccwpck_require__(7661);
+var $isNaN = __nccwpck_require__(1251);
 
 /** @type {import('./sign')} */
 module.exports = function sign(number) {
@@ -6874,7 +6880,7 @@ module.exports = function sign(number) {
 
 /***/ }),
 
-/***/ 7426:
+/***/ 8809:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /*!
@@ -6888,12 +6894,12 @@ module.exports = function sign(number) {
  * Module exports.
  */
 
-module.exports = __nccwpck_require__(3765)
+module.exports = __nccwpck_require__(2205)
 
 
 /***/ }),
 
-/***/ 3583:
+/***/ 2852:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6911,7 +6917,7 @@ module.exports = __nccwpck_require__(3765)
  * @private
  */
 
-var db = __nccwpck_require__(7426)
+var db = __nccwpck_require__(8809)
 var extname = (__nccwpck_require__(1017).extname)
 
 /**
@@ -7089,7 +7095,7 @@ function populateMaps (extensions, types) {
 
 /***/ }),
 
-/***/ 900:
+/***/ 4238:
 /***/ ((module) => {
 
 /**
@@ -7258,14 +7264,14 @@ function plural(ms, msAbs, n, name) {
 
 /***/ }),
 
-/***/ 9318:
+/***/ 9597:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 const os = __nccwpck_require__(2037);
 const tty = __nccwpck_require__(6224);
-const hasFlag = __nccwpck_require__(1621);
+const hasFlag = __nccwpck_require__(8393);
 
 const {env} = process;
 
@@ -7569,14 +7575,14 @@ module.exports = require("zlib");
 
 /***/ }),
 
-/***/ 4379:
+/***/ 7674:
 /***/ ((module, exports, __nccwpck_require__) => {
 
-const { Argument } = __nccwpck_require__(9414);
-const { Command } = __nccwpck_require__(552);
-const { CommanderError, InvalidArgumentError } = __nccwpck_require__(2625);
-const { Help } = __nccwpck_require__(5153);
-const { Option } = __nccwpck_require__(6558);
+const { Argument } = __nccwpck_require__(6865);
+const { Command } = __nccwpck_require__(4563);
+const { CommanderError, InvalidArgumentError } = __nccwpck_require__(8464);
+const { Help } = __nccwpck_require__(7063);
+const { Option } = __nccwpck_require__(9461);
 
 // @ts-check
 
@@ -7603,10 +7609,10 @@ exports.Option = Option;
 
 /***/ }),
 
-/***/ 9414:
+/***/ 6865:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-const { InvalidArgumentError } = __nccwpck_require__(2625);
+const { InvalidArgumentError } = __nccwpck_require__(8464);
 
 // @ts-check
 
@@ -7757,7 +7763,7 @@ exports.humanReadableArgName = humanReadableArgName;
 
 /***/ }),
 
-/***/ 552:
+/***/ 4563:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 const EventEmitter = (__nccwpck_require__(2361).EventEmitter);
@@ -7766,11 +7772,11 @@ const path = __nccwpck_require__(1017);
 const fs = __nccwpck_require__(7147);
 const process = __nccwpck_require__(7282);
 
-const { Argument, humanReadableArgName } = __nccwpck_require__(9414);
-const { CommanderError } = __nccwpck_require__(2625);
-const { Help } = __nccwpck_require__(5153);
-const { Option, splitOptionFlags, DualOptions } = __nccwpck_require__(6558);
-const { suggestSimilar } = __nccwpck_require__(7592);
+const { Argument, humanReadableArgName } = __nccwpck_require__(6865);
+const { CommanderError } = __nccwpck_require__(8464);
+const { Help } = __nccwpck_require__(7063);
+const { Option, splitOptionFlags, DualOptions } = __nccwpck_require__(9461);
+const { suggestSimilar } = __nccwpck_require__(8307);
 
 // @ts-check
 
@@ -9924,7 +9930,7 @@ exports.Command = Command;
 
 /***/ }),
 
-/***/ 2625:
+/***/ 8464:
 /***/ ((__unused_webpack_module, exports) => {
 
 // @ts-check
@@ -9976,10 +9982,10 @@ exports.InvalidArgumentError = InvalidArgumentError;
 
 /***/ }),
 
-/***/ 5153:
+/***/ 7063:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-const { humanReadableArgName } = __nccwpck_require__(9414);
+const { humanReadableArgName } = __nccwpck_require__(6865);
 
 /**
  * TypeScript import types for JSDoc, used by Visual Studio Code IntelliSense and `npm run typescript-checkJS`
@@ -10389,10 +10395,10 @@ exports.Help = Help;
 
 /***/ }),
 
-/***/ 6558:
+/***/ 9461:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-const { InvalidArgumentError } = __nccwpck_require__(2625);
+const { InvalidArgumentError } = __nccwpck_require__(8464);
 
 // @ts-check
 
@@ -10722,7 +10728,7 @@ exports.DualOptions = DualOptions;
 
 /***/ }),
 
-/***/ 7592:
+/***/ 8307:
 /***/ ((__unused_webpack_module, exports) => {
 
 const maxDistance = 3;
@@ -10829,7 +10835,7 @@ exports.suggestSimilar = suggestSimilar;
 
 /***/ }),
 
-/***/ 7263:
+/***/ 4325:
 /***/ ((module) => {
 
 "use strict";
@@ -11007,7 +11013,7 @@ __webpack_unused_export__ = defaultContentType
 
 /***/ }),
 
-/***/ 5270:
+/***/ 9383:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -11017,33 +11023,33 @@ Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=new W
 
 /***/ }),
 
-/***/ 7574:
+/***/ 8100:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const m=__nccwpck_require__(5270);function*x(e,t){const n=t==="global";for(const a of e)a.isGlobal===n&&(yield a)}const S=new Set(["--add","--edit","--remove-section","--rename-section","--replace-all","--unset","--unset-all","-e"]),E=new Set(["--get","--get-all","--get-color","--get-colorbool","--get-regexp","--get-urlmatch","--list","-l"]),F=new Set(["edit","remove-section","rename-section","set","unset"]),A=new Set(["get","get-color","get-colorbool","list"]);function O(e,t){for(const{name:a}of x(e,"task")){if(S.has(a))return w(!0,t);if(E.has(a))return w(!1,t)}const n=t.at(0)?.toLowerCase();return n===void 0?null:F.has(n)?w(!0,t.slice(1)):A.has(n)?w(!1,t.slice(1)):t.length===1?w(!1,t):w(!0,t)}function w(e=!1,t=[]){const n=t.at(0)?.toLowerCase();return n===void 0?null:{isWrite:e,isRead:!e,key:n,value:t.at(1)}}function G(e,t){return t.isWrite&&t.value!==void 0?{key:t.key,value:t.value,scope:e}:{key:t.key,scope:e}}function M(e){const t=e?.indexOf("=")||-1;return!e||t<0?null:{key:e.slice(0,t).trim().toLowerCase(),value:e.slice(t+1)}}function N(e){for(const{name:t}of x(e,"task"))switch(t){case"--global":return"global";case"--system":return"system";case"--worktree":return"worktree";case"--local":return"local";case"--file":case"-f":return"file"}return"local"}function $({name:e}){if(e==="-c"||e==="--config")return"inline";if(e==="--config-env")return"env"}function*D(e){for(const t of e){const n=$(t),a=n&&M(t.value);a&&(yield{...a,scope:n})}}function L(e,t,n){const a={read:[],write:[...D(t)]};return e==="config"&&I(a,N(t),O(t,n)),a}function I(e,t,n){if(n===null)return;const a=G(t,n);n.isWrite?e.write.push(a):e.read.push(a)}const b={short:new Map([["c",!0]])},T={short:new Map([["C",!0],["P",!1],["h",!1],["p",!1],["v",!1],...b.short.entries()]),long:new Set(["attr-source","config-env","exec-path","git-dir","list-cmds","namespace","super-prefix","work-tree"])},R={clone:{short:new Map([["b",!0],["j",!0],["l",!1],["n",!1],["o",!0],["q",!1],["s",!1],["u",!0]]),long:new Set(["branch","config","jobs","origin","upload-pack","u","template"])},commit:{short:new Map([["C",!0],["F",!0],["c",!0],["m",!0],["t",!0]]),long:new Set(["file","message","reedit-message","reuse-message","template"])},config:{short:new Map([["e",!1],["f",!0],["l",!1]]),long:new Set(["blob","comment","default","file","type","value"])},fetch:{short:new Map,long:new Set(["upload-pack"])},init:{short:new Map,long:new Set(["template"])},pull:{short:new Map,long:new Set(["upload-pack"])},push:{short:new Map,long:new Set(["exec","receive-pack"])},rebase:{short:new Map([["X",!0],["f",!1],["i",!1],["k",!1],["m",!1],["n",!1],["q",!1],["r",!1],["s",!0],["v",!1],["x",!0]]),long:new Set(["exec","onto","strategy","strategy-option"])}},j={short:new Map,long:new Set};function B(e){const t=R[e??""]??j;return{short:new Map([...b.short.entries(),...t.short.entries()]),long:t.long}}function C(e,t=T){if(e.startsWith("--")){const n=e.indexOf("=");if(n>2)return[{name:e.slice(0,n),value:e.slice(n+1),needsNext:!1}];const a=e.slice(2);return[{name:e,needsNext:t.long.has(a)}]}if(e.length===2){const n=e.charAt(1),a=t.short.get(n);return[{name:e,needsNext:a===!0}]}return W(e,t.short)}function W(e,t){const n=e.slice(1).split(""),a=[];for(let o=0;o<n.length;o++){const s=n[o],r=t.get(s);if(r===void 0)return[{name:e,needsNext:!1}];if(r){const i=n.slice(o+1).join("");if(i&&![...i].every(h=>t.has(h)))return a.push({name:`-${s}`,value:i,needsNext:!1}),a}a.push({name:`-${s}`,needsNext:r})}return a}function q(e,t=[]){let n=0;for(;n<e.length;){const a=String(e[n]);if(!a.startsWith("-")||a.length<2)break;const o=C(a);let s=n+1;for(const r of o){const i={name:r.name,value:r.value,absorbedNext:!1,isGlobal:!0};r.needsNext&&i.value===void 0&&s<e.length&&(i.value=String(e[s]),i.absorbedNext=!0,s++),t.push(i)}n=s}return{flags:t,taskIndex:n}}function V(e,t,n=[]){const a=B(t),o=[],s=[];let r=0;for(;r<e.length;){const i=e[r];if(m.isPathSpec(i)){s.push(...m.toPaths(i)),r++;continue}const p=String(i);if(p==="--"){for(let d=r+1;d<e.length;d++){const g=e[d];m.isPathSpec(g)?s.push(...m.toPaths(g)):s.push(String(g))}break}if(!p.startsWith("-")||p.length<2){o.push(p),r++;continue}const h=C(p,a);let u=r+1;for(const d of h){const g={name:d.name,value:d.value,absorbedNext:!1,isGlobal:!1};d.needsNext&&g.value===void 0&&u<e.length&&!m.isPathSpec(e[u])&&(g.value=String(e[u]),g.absorbedNext=!0,u++),n.push(g)}r=u}return{flags:n,positionals:o,pathspecs:s}}function*K({write:e}){for(const t of e)for(const n of H){const a=n(t.key);a&&(yield a)}}function f(e,t,n=String(e)){const a=typeof e=="string"?new RegExp(`\\s*${e.toLowerCase()}`):e;return function(s){if(a.test(s))return{category:t,message:`Configuring ${n} is not permitted without enabling ${t}`}}}function l(e,t){const n=new RegExp(`\\s*${e.toLowerCase().replace(/\./g,"(..+)?.")}`);return f(n,t,e)}const H=[f("alias","allowUnsafeAlias"),f("core.askPass","allowUnsafeAskPass"),f("core.editor","allowUnsafeEditor"),f("core.fsmonitor","allowUnsafeFsMonitor"),f("core.gitProxy","allowUnsafeGitProxy"),f("core.hooksPath","allowUnsafeHooksPath"),f("core.pager","allowUnsafePager"),f("core.sshCommand","allowUnsafeSshCommand"),l("credential.helper","allowUnsafeCredentialHelper"),l("diff.command","allowUnsafeDiffExternal"),f("diff.external","allowUnsafeDiffExternal"),l("difftool.cmd","allowUnsafeDiffExternal"),l("diff.textconv","allowUnsafeDiffTextConv"),l("filter.clean","allowUnsafeFilter"),l("filter.process","allowUnsafeFilter"),l("filter.smudge","allowUnsafeFilter"),l("gpg.program","allowUnsafeGpgProgram"),f("include.path","allowUnsafeInclude"),l("includeIf","allowUnsafeInclude"),f("init.templateDir","allowUnsafeTemplateDir"),l("pager.","allowUnsafePager"),l("merge.driver","allowUnsafeMergeDriver"),l("mergetool.path","allowUnsafeMergeDriver"),l("mergetool.cmd","allowUnsafeMergeDriver"),l("protocol.allow","allowUnsafeProtocolOverride"),l("remote.receivepack","allowUnsafePack"),l("remote.uploadpack","allowUnsafePack"),f("uploadpack.packObjectsHook","allowUnsafePack"),f("sequence.editor","allowUnsafeEditor"),l("submodule.update","allowUnsafeSubmodule"),l("tar.command","allowUnsafeCommandBinaries"),l("trailer.cmd","allowUnsafeCommandBinaries"),l("trailer.command","allowUnsafeCommandBinaries"),l("url.insteadOf","allowUnsafeUrlRewrite")];function*X(e,t){for(const n of t)for(const a of Y){const o=a(e,n);o&&(yield o)}}function c(e,t,n,{name:a=String(t),globalOnly:o=!1,withValue:s=!1}={}){const r=typeof t=="string"?new RegExp(`\\s*${t.toLowerCase()}`):t,i=`Use of ${e?`${e} with option `:""}${a} is not permitted without enabling ${n}`;return function(h,u){if(!(e&&h!==e)&&!(o&&!u.isGlobal)&&!(s&&u.value===void 0)&&r.test(u.name))return{category:n,message:i}}}const v={globalOnly:!0,withValue:!0},Y=[c(null,/--(upload|receive)-pack/,"allowUnsafePack",{name:"--upload-pack or --receive-pack"}),c("clone",/^-\w*u/,"allowUnsafePack"),c("clone","--u","allowUnsafePack"),c("push",/^--exec$/,"allowUnsafePack",{name:"--exec"}),c("rebase",/^(-x|--ex(ec?)?)$/,"allowUnsafeExec",{name:"-x or --exec"}),c(null,"--template","allowUnsafeTemplateDir"),c(null,"--exec-path","allowUnsafeExec",v),c(null,"--git-dir","allowUnsafeConfigPaths",v),c(null,"--work-tree","allowUnsafeConfigPaths",v),c(null,/^-C$/,"allowUnsafeConfigPaths",{...v,name:"-C"})];function k(e,t,n){return[...X(e,t),...K(n)]}function y(...e){const{flags:t,taskIndex:n}=q(e),a=n<e.length?String(e[n]).toLowerCase():null,o=a!==null?e.slice(n+1):[],{positionals:s,pathspecs:r}=V(o,a,t),i=L(a,t,s);return{task:a,flags:t.map(J),paths:r,config:i,vulnerabilities:z(k(a,t,i))}}function z(e){return Object.defineProperty(e,"vulnerabilities",{value:e})}function J({value:e,name:t}){return e!==void 0?{name:t,value:e}:{name:t}}const _={editor:"allowUnsafeEditor",git_askpass:"allowUnsafeAskPass",git_config_global:"allowUnsafeConfigPaths",git_config_system:"allowUnsafeConfigPaths",git_config_count:"allowUnsafeConfigEnvCount",git_config_parameters:"allowUnsafeConfigEnvCount",git_config:"allowUnsafeConfigPaths",git_editor:"allowUnsafeEditor",git_exec_path:"allowUnsafeExec",git_external_diff:"allowUnsafeDiffExternal",git_pager:"allowUnsafePager",git_proxy_command:"allowUnsafeGitProxy",git_template_dir:"allowUnsafeTemplateDir",git_sequence_editor:"allowUnsafeEditor",git_ssh:"allowUnsafeSshCommand",git_ssh_command:"allowUnsafeSshCommand",pager:"allowUnsafePager",prefix:"allowUnsafeConfigPaths",ssh_askpass:"allowUnsafeAskPass",visual:"allowUnsafeEditor"};function*Q(e){const t=parseInt(e.git_config_count??"0",10);for(let n=0;n<t;n++){const a=e[`git_config_key_${n}`],o=e[`git_config_value_${n}`];a!==void 0&&(yield{key:a.toLowerCase().trim(),value:o,scope:"env"})}}function*Z(e){for(const t of Object.keys(e))if(U(t)){const n=_[t];yield{category:n,message:`Use of "${t.toUpperCase()}" is not permitted without enabling ${n}`}}}function U(e){return Object.hasOwn(_,e)}function ee(e){const t={};for(const[n,a]of Object.entries(e)){const o=n.toLowerCase().trim();(U(o)||o.startsWith("git"))&&(t[o]=String(a))}return t}function P(e){const t=ee(e),n={read:[],write:[...Q(t)]},a=[...Z(t),...k(null,[],n)];return{config:n,vulnerabilities:a}}function te(e,t){return[...y(...e).vulnerabilities,...P(t).vulnerabilities]}exports.isGitEnvKey=U;exports.parseArgv=y;exports.parseEnv=P;exports.vulnerabilityCheck=te;
+Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const m=__nccwpck_require__(9383);function*x(e,t){const n=t==="global";for(const a of e)a.isGlobal===n&&(yield a)}const S=new Set(["--add","--edit","--remove-section","--rename-section","--replace-all","--unset","--unset-all","-e"]),E=new Set(["--get","--get-all","--get-color","--get-colorbool","--get-regexp","--get-urlmatch","--list","-l"]),F=new Set(["edit","remove-section","rename-section","set","unset"]),A=new Set(["get","get-color","get-colorbool","list"]);function O(e,t){for(const{name:a}of x(e,"task")){if(S.has(a))return w(!0,t);if(E.has(a))return w(!1,t)}const n=t.at(0)?.toLowerCase();return n===void 0?null:F.has(n)?w(!0,t.slice(1)):A.has(n)?w(!1,t.slice(1)):t.length===1?w(!1,t):w(!0,t)}function w(e=!1,t=[]){const n=t.at(0)?.toLowerCase();return n===void 0?null:{isWrite:e,isRead:!e,key:n,value:t.at(1)}}function G(e,t){return t.isWrite&&t.value!==void 0?{key:t.key,value:t.value,scope:e}:{key:t.key,scope:e}}function M(e){const t=e?.indexOf("=")||-1;return!e||t<0?null:{key:e.slice(0,t).trim().toLowerCase(),value:e.slice(t+1)}}function N(e){for(const{name:t}of x(e,"task"))switch(t){case"--global":return"global";case"--system":return"system";case"--worktree":return"worktree";case"--local":return"local";case"--file":case"-f":return"file"}return"local"}function $({name:e}){if(e==="-c"||e==="--config")return"inline";if(e==="--config-env")return"env"}function*D(e){for(const t of e){const n=$(t),a=n&&M(t.value);a&&(yield{...a,scope:n})}}function L(e,t,n){const a={read:[],write:[...D(t)]};return e==="config"&&I(a,N(t),O(t,n)),a}function I(e,t,n){if(n===null)return;const a=G(t,n);n.isWrite?e.write.push(a):e.read.push(a)}const b={short:new Map([["c",!0]])},T={short:new Map([["C",!0],["P",!1],["h",!1],["p",!1],["v",!1],...b.short.entries()]),long:new Set(["attr-source","config-env","exec-path","git-dir","list-cmds","namespace","super-prefix","work-tree"])},R={clone:{short:new Map([["b",!0],["j",!0],["l",!1],["n",!1],["o",!0],["q",!1],["s",!1],["u",!0]]),long:new Set(["branch","config","jobs","origin","upload-pack","u","template"])},commit:{short:new Map([["C",!0],["F",!0],["c",!0],["m",!0],["t",!0]]),long:new Set(["file","message","reedit-message","reuse-message","template"])},config:{short:new Map([["e",!1],["f",!0],["l",!1]]),long:new Set(["blob","comment","default","file","type","value"])},fetch:{short:new Map,long:new Set(["upload-pack"])},init:{short:new Map,long:new Set(["template"])},pull:{short:new Map,long:new Set(["upload-pack"])},push:{short:new Map,long:new Set(["exec","receive-pack"])},rebase:{short:new Map([["X",!0],["f",!1],["i",!1],["k",!1],["m",!1],["n",!1],["q",!1],["r",!1],["s",!0],["v",!1],["x",!0]]),long:new Set(["exec","onto","strategy","strategy-option"])}},j={short:new Map,long:new Set};function B(e){const t=R[e??""]??j;return{short:new Map([...b.short.entries(),...t.short.entries()]),long:t.long}}function C(e,t=T){if(e.startsWith("--")){const n=e.indexOf("=");if(n>2)return[{name:e.slice(0,n),value:e.slice(n+1),needsNext:!1}];const a=e.slice(2);return[{name:e,needsNext:t.long.has(a)}]}if(e.length===2){const n=e.charAt(1),a=t.short.get(n);return[{name:e,needsNext:a===!0}]}return W(e,t.short)}function W(e,t){const n=e.slice(1).split(""),a=[];for(let o=0;o<n.length;o++){const s=n[o],r=t.get(s);if(r===void 0)return[{name:e,needsNext:!1}];if(r){const i=n.slice(o+1).join("");if(i&&![...i].every(h=>t.has(h)))return a.push({name:`-${s}`,value:i,needsNext:!1}),a}a.push({name:`-${s}`,needsNext:r})}return a}function q(e,t=[]){let n=0;for(;n<e.length;){const a=String(e[n]);if(!a.startsWith("-")||a.length<2)break;const o=C(a);let s=n+1;for(const r of o){const i={name:r.name,value:r.value,absorbedNext:!1,isGlobal:!0};r.needsNext&&i.value===void 0&&s<e.length&&(i.value=String(e[s]),i.absorbedNext=!0,s++),t.push(i)}n=s}return{flags:t,taskIndex:n}}function V(e,t,n=[]){const a=B(t),o=[],s=[];let r=0;for(;r<e.length;){const i=e[r];if(m.isPathSpec(i)){s.push(...m.toPaths(i)),r++;continue}const p=String(i);if(p==="--"){for(let d=r+1;d<e.length;d++){const g=e[d];m.isPathSpec(g)?s.push(...m.toPaths(g)):s.push(String(g))}break}if(!p.startsWith("-")||p.length<2){o.push(p),r++;continue}const h=C(p,a);let u=r+1;for(const d of h){const g={name:d.name,value:d.value,absorbedNext:!1,isGlobal:!1};d.needsNext&&g.value===void 0&&u<e.length&&!m.isPathSpec(e[u])&&(g.value=String(e[u]),g.absorbedNext=!0,u++),n.push(g)}r=u}return{flags:n,positionals:o,pathspecs:s}}function*K({write:e}){for(const t of e)for(const n of H){const a=n(t.key);a&&(yield a)}}function f(e,t,n=String(e)){const a=typeof e=="string"?new RegExp(`\\s*${e.toLowerCase()}`):e;return function(s){if(a.test(s))return{category:t,message:`Configuring ${n} is not permitted without enabling ${t}`}}}function l(e,t){const n=new RegExp(`\\s*${e.toLowerCase().replace(/\./g,"(..+)?.")}`);return f(n,t,e)}const H=[f("alias","allowUnsafeAlias"),f("core.askPass","allowUnsafeAskPass"),f("core.editor","allowUnsafeEditor"),f("core.fsmonitor","allowUnsafeFsMonitor"),f("core.gitProxy","allowUnsafeGitProxy"),f("core.hooksPath","allowUnsafeHooksPath"),f("core.pager","allowUnsafePager"),f("core.sshCommand","allowUnsafeSshCommand"),l("credential.helper","allowUnsafeCredentialHelper"),l("diff.command","allowUnsafeDiffExternal"),f("diff.external","allowUnsafeDiffExternal"),l("difftool.cmd","allowUnsafeDiffExternal"),l("diff.textconv","allowUnsafeDiffTextConv"),l("filter.clean","allowUnsafeFilter"),l("filter.process","allowUnsafeFilter"),l("filter.smudge","allowUnsafeFilter"),l("gpg.program","allowUnsafeGpgProgram"),f("include.path","allowUnsafeInclude"),l("includeIf","allowUnsafeInclude"),f("init.templateDir","allowUnsafeTemplateDir"),l("pager.","allowUnsafePager"),l("merge.driver","allowUnsafeMergeDriver"),l("mergetool.path","allowUnsafeMergeDriver"),l("mergetool.cmd","allowUnsafeMergeDriver"),l("protocol.allow","allowUnsafeProtocolOverride"),l("remote.receivepack","allowUnsafePack"),l("remote.uploadpack","allowUnsafePack"),f("uploadpack.packObjectsHook","allowUnsafePack"),f("sequence.editor","allowUnsafeEditor"),l("submodule.update","allowUnsafeSubmodule"),l("tar.command","allowUnsafeCommandBinaries"),l("trailer.cmd","allowUnsafeCommandBinaries"),l("trailer.command","allowUnsafeCommandBinaries"),l("url.insteadOf","allowUnsafeUrlRewrite")];function*X(e,t){for(const n of t)for(const a of Y){const o=a(e,n);o&&(yield o)}}function c(e,t,n,{name:a=String(t),globalOnly:o=!1,withValue:s=!1}={}){const r=typeof t=="string"?new RegExp(`\\s*${t.toLowerCase()}`):t,i=`Use of ${e?`${e} with option `:""}${a} is not permitted without enabling ${n}`;return function(h,u){if(!(e&&h!==e)&&!(o&&!u.isGlobal)&&!(s&&u.value===void 0)&&r.test(u.name))return{category:n,message:i}}}const v={globalOnly:!0,withValue:!0},Y=[c(null,/--(upload|receive)-pack/,"allowUnsafePack",{name:"--upload-pack or --receive-pack"}),c("clone",/^-\w*u/,"allowUnsafePack"),c("clone","--u","allowUnsafePack"),c("push",/^--exec$/,"allowUnsafePack",{name:"--exec"}),c("rebase",/^(-x|--ex(ec?)?)$/,"allowUnsafeExec",{name:"-x or --exec"}),c(null,"--template","allowUnsafeTemplateDir"),c(null,"--exec-path","allowUnsafeExec",v),c(null,"--git-dir","allowUnsafeConfigPaths",v),c(null,"--work-tree","allowUnsafeConfigPaths",v),c(null,/^-C$/,"allowUnsafeConfigPaths",{...v,name:"-C"})];function k(e,t,n){return[...X(e,t),...K(n)]}function y(...e){const{flags:t,taskIndex:n}=q(e),a=n<e.length?String(e[n]).toLowerCase():null,o=a!==null?e.slice(n+1):[],{positionals:s,pathspecs:r}=V(o,a,t),i=L(a,t,s);return{task:a,flags:t.map(J),paths:r,config:i,vulnerabilities:z(k(a,t,i))}}function z(e){return Object.defineProperty(e,"vulnerabilities",{value:e})}function J({value:e,name:t}){return e!==void 0?{name:t,value:e}:{name:t}}const _={editor:"allowUnsafeEditor",git_askpass:"allowUnsafeAskPass",git_config_global:"allowUnsafeConfigPaths",git_config_system:"allowUnsafeConfigPaths",git_config_count:"allowUnsafeConfigEnvCount",git_config_parameters:"allowUnsafeConfigEnvCount",git_config:"allowUnsafeConfigPaths",git_editor:"allowUnsafeEditor",git_exec_path:"allowUnsafeExec",git_external_diff:"allowUnsafeDiffExternal",git_pager:"allowUnsafePager",git_proxy_command:"allowUnsafeGitProxy",git_template_dir:"allowUnsafeTemplateDir",git_sequence_editor:"allowUnsafeEditor",git_ssh:"allowUnsafeSshCommand",git_ssh_command:"allowUnsafeSshCommand",pager:"allowUnsafePager",prefix:"allowUnsafeConfigPaths",ssh_askpass:"allowUnsafeAskPass",visual:"allowUnsafeEditor"};function*Q(e){const t=parseInt(e.git_config_count??"0",10);for(let n=0;n<t;n++){const a=e[`git_config_key_${n}`],o=e[`git_config_value_${n}`];a!==void 0&&(yield{key:a.toLowerCase().trim(),value:o,scope:"env"})}}function*Z(e){for(const t of Object.keys(e))if(U(t)){const n=_[t];yield{category:n,message:`Use of "${t.toUpperCase()}" is not permitted without enabling ${n}`}}}function U(e){return Object.hasOwn(_,e)}function ee(e){const t={};for(const[n,a]of Object.entries(e)){const o=n.toLowerCase().trim();(U(o)||o.startsWith("git"))&&(t[o]=String(a))}return t}function P(e){const t=ee(e),n={read:[],write:[...Q(t)]},a=[...Z(t),...k(null,[],n)];return{config:n,vulnerabilities:a}}function te(e,t){return[...y(...e).vulnerabilities,...P(t).vulnerabilities]}exports.isGitEnvKey=U;exports.parseArgv=y;exports.parseEnv=P;exports.vulnerabilityCheck=te;
 //# sourceMappingURL=index.cjs.map
 
 
 /***/ }),
 
-/***/ 8757:
+/***/ 2260:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 /*! Axios v1.20.0 Copyright (c) 2026 Matt Zabriskie and contributors */
 
 
-var FormData$1 = __nccwpck_require__(4334);
+var FormData$1 = __nccwpck_require__(3805);
 var crypto = __nccwpck_require__(6113);
 var url = __nccwpck_require__(7310);
-var HttpsProxyAgent = __nccwpck_require__(8414);
+var HttpsProxyAgent = __nccwpck_require__(9949);
 var http = __nccwpck_require__(3685);
 var https = __nccwpck_require__(5687);
 var http2 = __nccwpck_require__(5158);
 var util = __nccwpck_require__(3837);
 var path = __nccwpck_require__(1017);
-var followRedirects = __nccwpck_require__(7707);
+var followRedirects = __nccwpck_require__(6504);
 var zlib = __nccwpck_require__(9796);
 var stream = __nccwpck_require__(2781);
 var events = __nccwpck_require__(2361);
@@ -17843,11 +17849,11 @@ module.exports = axios;
 
 /***/ }),
 
-/***/ 3362:
+/***/ 6164:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const S=__nccwpck_require__(5270),Tt=__nccwpck_require__(4751),Se=__nccwpck_require__(7718),it=__nccwpck_require__(8237),P=__nccwpck_require__(9819),Re=__nccwpck_require__(9411),Bt=__nccwpck_require__(7574),Oe=__nccwpck_require__(5673);class C extends Error{constructor(e,n){super(n),this.task=e,Object.setPrototypeOf(this,new.target.prototype)}}class It extends C{constructor(e,n){super(void 0,n),this.config=e}}class x extends C{constructor(e,n,r){super(e,r),this.task=e,this.plugin=n,Object.setPrototypeOf(this,new.target.prototype)}}class W extends C{constructor(e,n){super(void 0,n||String(e)),this.git=e}}class Gt extends C{constructor(e){super(void 0,e)}}const I="\0",H=()=>{};function Ce(t){return typeof t!="function"?H:t}function Ae(t){return typeof t=="function"&&t!==H}function xe(t,e){const n=t.indexOf(e);return n<=0?[t,""]:[t.substr(0,n),t.substr(n+1)]}function Pe(t,e=0){return Ut(t)&&t.length>e?t[e]:void 0}function $(t,e=0){if(Ut(t)&&t.length>e)return t[t.length-1-e]}function Ut(t){return zt(t)}function K(t="",e=!0,n=`
+Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const S=__nccwpck_require__(9383),Tt=__nccwpck_require__(3021),Se=__nccwpck_require__(7718),it=__nccwpck_require__(5096),P=__nccwpck_require__(5130),Re=__nccwpck_require__(9411),Bt=__nccwpck_require__(8100),Oe=__nccwpck_require__(5673);class C extends Error{constructor(e,n){super(n),this.task=e,Object.setPrototypeOf(this,new.target.prototype)}}class It extends C{constructor(e,n){super(void 0,n),this.config=e}}class x extends C{constructor(e,n,r){super(e,r),this.task=e,this.plugin=n,Object.setPrototypeOf(this,new.target.prototype)}}class W extends C{constructor(e,n){super(void 0,n||String(e)),this.git=e}}class Gt extends C{constructor(e){super(void 0,e)}}const I="\0",H=()=>{};function Ce(t){return typeof t!="function"?H:t}function Ae(t){return typeof t=="function"&&t!==H}function xe(t,e){const n=t.indexOf(e);return n<=0?[t,""]:[t.substr(0,n),t.substr(n+1)]}function Pe(t,e=0){return Ut(t)&&t.length>e?t[e]:void 0}function $(t,e=0){if(Ut(t)&&t.length>e)return t[t.length-1-e]}function Ut(t){return zt(t)}function K(t="",e=!0,n=`
 `){return t.split(n).reduce((r,s)=>{const o=e?s.trim():s;return o&&r.push(o),r},[])}function at(t,e){return K(t,!0).map(n=>e(n))}function Ft(t){return Tt.exists(t,Tt.FOLDER)}function R(t,e){return Array.isArray(t)?t.includes(e)||t.push(e):t.add(e),e}function Ne(t,e){return Array.isArray(t)&&!t.includes(e)&&t.push(e),t}function ut(t,e){if(Array.isArray(t)){const n=t.indexOf(e);n>=0&&t.splice(n,1)}else t.delete(e);return e}const ct=Object.prototype.toString.call.bind(Object.prototype.toString);function v(t){return Array.isArray(t)?t:[t]}function qt(t){return t.replace(/[\s-]+(.)/g,(e,n)=>n.toUpperCase())}function j(t){return v(t).map(e=>e instanceof String?e:String(e))}function m(t,e=0){if(t==null)return e;const n=parseInt(t,10);return Number.isNaN(n)?e:n}function G(t,e){const n=[];for(let r=0,s=t.length;r<s;r++)n.push(e,t[r]);return n}function U(t){return(Array.isArray(t)?Buffer.concat(t):t).toString("utf-8")}function $e(t){return t?Buffer.isBuffer(t)?t.length:Buffer.byteLength(t):0}function Me(t,e){const n={};return e.forEach(r=>{t[r]!==void 0&&(n[r]=t[r])}),n}function kt(t=0){return new Promise(e=>setTimeout(e,t))}function _t(t){if(t!==!1)return t}function d(t,e,n){return e(t)?t:arguments.length>2?n:void 0}const V=t=>Array.isArray(t);function st(t,e){const n=S.isPathSpec(t)?"string":typeof t;return/number|string|boolean/.test(n)&&(!e||!e.includes(n))}const p=t=>typeof t=="string"||S.isPathSpec(t),De=t=>p(t)||Buffer.isBuffer(t),F=t=>p(t)||Array.isArray(t)&&t.every(p);function ft(t){return!!t&&ct(t)==="[object Object]"}function je(t){return typeof t=="function"}const zt=t=>t==null||"number|boolean|function".includes(typeof t)?!1:typeof t.length=="number";var Q=(t=>(t[t.SUCCESS=0]="SUCCESS",t[t.ERROR=1]="ERROR",t[t.NOT_FOUND=-2]="NOT_FOUND",t[t.UNCLEAN=128]="UNCLEAN",t))(Q||{});class q{constructor(e,n){this.stdOut=e,this.stdErr=n}asStrings(){return new q(this.stdOut.toString("utf8"),this.stdErr.toString("utf8"))}}function Le(){throw new Error("LineParser:useMatches not implemented")}class l{constructor(e,n){this.matches=[],this.useMatches=Le,this.parse=(r,s)=>(this.resetMatches(),this._regExp.every((o,i)=>this.addMatch(o,i,r(i)))?this.useMatches(s,this.prepareMatches())!==!1:!1),this._regExp=Array.isArray(e)?e:[e],n&&(this.useMatches=n)}resetMatches(){this.matches.length=0}prepareMatches(){return this.matches}addMatch(e,n,r){const s=r&&e.exec(r);return s&&this.pushMatch(n,s),!!s}pushMatch(e,n){this.matches.push(...n.slice(1))}}class N extends l{addMatch(e,n,r){return/^remote:\s/.test(String(r))&&super.addMatch(e,n,r)}pushMatch(e,n){(e>0||n.length>1)&&super.pushMatch(e,n)}}const Be={binary:"git",maxConcurrentProcesses:5,config:[],trimmed:!1};function Ie(...t){const e=process.cwd(),n=Object.assign({baseDir:e,...Be},...t.filter(r=>typeof r=="object"&&r));return n.baseDir=n.baseDir||e,n.trimmed=n.trimmed===!0,n}function Wt(t,e=[]){return ft(t)?Object.keys(t).reduce((n,r)=>{const s=t[r];if(S.isPathSpec(s))n.push(s);else if(st(s,["boolean"]))n.push(r+"="+s);else if(Array.isArray(s))for(const o of s)st(o,["string","number"])||n.push(r+"="+o);else n.push(r);return n},e):e}function h(t,e=0,n=!1){const r=[];for(let s=0,o=e<0?t.length:e;s<o;s++)"string|number".includes(typeof t[s])&&r.push(String(t[s]));return Wt(lt(t),r),n||r.push(...Ge(t)),r}function Ge(t){const e=typeof $(t)=="function";return j(d($(t,e?1:0),V,[]))}function lt(t){const e=je($(t));return d($(t,e?1:0),ft)}function u(t,e=!0){const n=Ce($(t));return e||Ae(n)?n:void 0}function vt(t,e){return t(e.stdOut,e.stdErr)}function E(t,e,n,r=!0){return v(n).forEach(s=>{for(let o=K(s,r),i=0,a=o.length;i<a;i++){const c=(y=0)=>{if(!(i+y>=a))return o[i+y]};e.some(({parse:y})=>y(c,t))}}),t}var Ht=(t=>(t.BARE="bare",t.IN_TREE="tree",t.IS_REPO_ROOT="root",t))(Ht||{});const ht=({exitCode:t},e,n,r)=>{if(t===Q.UNCLEAN&&ze(e))return n(Buffer.from("false"));r(e)},Kt=t=>t.trim()==="true";function Ue(t){switch(t){case"bare":return qe();case"root":return Fe()}return{commands:["rev-parse","--is-inside-work-tree"],format:"utf-8",onError:ht,parser:Kt}}function Fe(){return{commands:["rev-parse","--git-dir"],format:"utf-8",onError:ht,parser(e){return/^\.(git)?$/.test(e.trim())}}}function qe(){return{commands:["rev-parse","--is-bare-repository"],format:"utf-8",onError:ht,parser:Kt}}function ze(t){return/(Not a git repository|Kein Git-Repository)/i.test(String(t))}class We{constructor(e){this.paths=[],this.files=[],this.folders=[],this.dryRun=e}}const He=/^[a-z]+\s*/i,Ke=/^[a-z]+\s+[a-z]+\s*/i,Ve=/\/$/;function Qe(t,e){const n=new We(t),r=t?Ke:He;return K(e).forEach(s=>{const o=s.replace(r,"");n.paths.push(o),(Ve.test(o)?n.folders:n.files).push(o)}),n}const Vt=[];function Xe(t){return{commands:Vt,format:"empty",parser:t}}function b(t){return{commands:Vt,format:"empty",parser(){throw typeof t=="string"?new Gt(t):t}}}function g(t,e=!1){return{commands:t,format:"utf-8",parser(n){return e?String(n).trim():n}}}function Qt(t){return{commands:t,format:"buffer",parser(e){return e}}}function Ye(t){return t.format==="buffer"}function Et(t){return t.format==="empty"||!t.commands.length}const Je="Git clean interactive mode is not supported",Ze='Git clean mode parameter ("n" or "f") is required',tn="Git clean unknown option found in: ";var pt=(t=>(t.DRY_RUN="n",t.FORCE="f",t.IGNORED_INCLUDED="x",t.IGNORED_ONLY="X",t.EXCLUDING="e",t.QUIET="q",t.RECURSIVE="d",t))(pt||{});const Xt=new Set(["i",...j(Object.values(pt))]);function en(t,e){const{cleanMode:n,options:r,valid:s}=sn(t);return n?s.options?(r.push(...e),r.some(un)?b(Je):nn(n,r)):b(tn+JSON.stringify(t)):b(Ze)}function nn(t,e){return{commands:["clean",`-${t}`,...e],format:"utf-8",parser(r){return Qe(t==="n",r)}}}function rn(t){return Array.isArray(t)&&t.every(e=>Xt.has(e))}function sn(t){let e,n=[],r={cleanMode:!1,options:!0};return t.replace(/[^a-z]i/g,"").split("").forEach(s=>{on(s)?(e=s,r.cleanMode=!0):r.options=r.options&&an(n[n.length]=`-${s}`)}),{cleanMode:e,options:n,valid:r}}function on(t){return t==="f"||t==="n"}function an(t){return/^-[a-z]$/i.test(t)&&Xt.has(t.charAt(1))}function un(t){return/^-[^\-]/.test(t)?t.indexOf("i")>0:t==="--interactive"}class cn{constructor(){this.files=[],this.values=Object.create(null)}get all(){return this._all||(this._all=this.files.reduce((e,n)=>Object.assign(e,this.values[n]),{})),this._all}addFile(e){if(!(e in this.values)){const n=$(this.files);this.values[e]=n?Object.create(this.values[n]):{},this.files.push(e)}return this.values[e]}addValue(e,n,r){const s=this.addFile(e);Object.hasOwn(s,n)?Array.isArray(s[n])?s[n].push(r):s[n]=[s[n],r]:s[n]=r,this._all=void 0}}function fn(t){const e=new cn;for(const n of Yt(t))e.addValue(n.file,String(n.key),n.value);return e}function ln(t,e){let n=null;const r=[],s=new Map;for(const o of Yt(t,e))o.key===e&&(r.push(n=o.value),s.has(o.file)||s.set(o.file,[]),s.get(o.file).push(n));return{key:e,paths:Array.from(s.keys()),scopes:s,value:n,values:r}}function hn(t){return t.replace(/^(file):/,"")}function*Yt(t,e=null){const n=t.split("\0");for(let r=0,s=n.length-1;r<s;){const o=hn(n[r++]);let i=n[r++],a=e;if(i.includes(`
 `)){const c=xe(i,`
 `);a=c[0],i=c[1]}yield{file:o,key:a,value:i}}}var mt=(t=>(t.system="system",t.global="global",t.local="local",t.worktree="worktree",t))(mt||{});function Y(t,e){return typeof t=="string"&&Object.hasOwn(mt,t)?t:e}function pn(t,e,n,r){const s=["config",`--${r}`];return n&&s.push("--add"),s.push(t,e),{commands:s,format:"utf-8",parser(o){return o}}}function mn(t,e){const n=["config","--null","--show-origin","--get-all",t];return e&&n.splice(1,0,`--${e}`),{commands:n,format:"utf-8",parser(r){return ln(r,t)}}}function dn(t){const e=["config","--list","--show-origin","--null"];return t&&e.push(`--${t}`),{commands:e,format:"utf-8",parser(n){return fn(n)}}}function gn(){return{addConfig(t,e,...n){return this._runTask(pn(t,e,n[0]===!0,Y(n[1],"local")),u(arguments))},getConfig(t,e){return this._runTask(mn(t,Y(e,void 0)),u(arguments))},listConfig(...t){return this._runTask(dn(Y(t[0],void 0)),u(arguments))}}}var dt=(t=>(t.ADDED="A",t.COPIED="C",t.DELETED="D",t.MODIFIED="M",t.RENAMED="R",t.CHANGED="T",t.UNMERGED="U",t.UNKNOWN="X",t.BROKEN="B",t))(dt||{});const yn=new Set(Object.values(dt));function wn(t){return yn.has(t)}var St;const bn=["-h"],L=Symbol("grepQuery");class Tn{constructor(){this[St]=[]}*[(St=L,Symbol.iterator)](){for(const e of this[L])yield e}and(...e){return e.length&&this[L].push("--and","(",...G(e,"-e"),")"),this}param(...e){return this[L].push(...G(e,"-e")),this}}function Jt(...t){return new Tn().param(...t)}function kn(t){const e=new Set,n={};return at(t,r=>{const[s,o,i]=r.split(I);e.add(s),(n[s]=n[s]||[]).push({line:m(o),path:s,preview:i})}),{paths:e,results:n}}function _n(){return{grep(t){const e=u(arguments),n=h(arguments);for(const s of bn)if(n.includes(s))return this._runTask(b(`git.grep: use of "${s}" is not supported.`),e);typeof t=="string"&&(t=Jt().param(t));const r=["grep","--null","-n","--full-name",...n,...t];return this._runTask({commands:r,format:"utf-8",parser(s){return kn(s)}},e)}}}var gt=(t=>(t.MIXED="mixed",t.SOFT="soft",t.HARD="hard",t.MERGE="merge",t.KEEP="keep",t))(gt||{});const vn=j(Object.values(gt));function En(t,e){const n=["reset"];return Zt(t)&&n.push(`--${t}`),n.push(...e),g(n)}function Sn(t){if(Zt(t))return t;switch(typeof t){case"string":case"undefined":return"soft"}}function Zt(t){return typeof t=="string"&&vn.includes(t)}it.formatters.L=t=>String(zt(t)?t.length:"-");it.formatters.B=t=>Buffer.isBuffer(t)?t.toString("utf8"):ct(t);function Rn(){return it("simple-git")}function Rt(t,e,n){return!e||!String(e).replace(/\s*/,"")?n?(r,...s)=>{t(r,...s),n(r,...s)}:t:(r,...s)=>{t(`%s ${r}`,e,...s),n&&n(r,...s)}}function On(t,e,{namespace:n}){if(typeof t=="string")return t;const r=e&&e.namespace||"";return r.startsWith(n)?r.substr(n.length+1):r||n}function M(t,e,n,r=Rn()){const s=t&&`[${t}]`||"",o=[],i=typeof e=="string"?r.extend(e):e,a=On(d(e,p),i,r);return y(n);function c(w,T){return R(o,M(t,a.replace(/^[^:]+/,w),T,r))}function y(w){const T=w&&`[${w}]`||"",k=i&&Rt(i,T)||H,A=Rt(r,`${s} ${T}`,k);return Object.assign(i?k:A,{label:t,sibling:c,info:A,step:y})}}const D=class D{constructor(e="GitExecutor"){this.logLabel=e,this._queue=new Map}withProgress(e){return this._queue.get(e)}createProgress(e){const n=D.getName(e.commands[0]),r=M(this.logLabel,n);return{task:e,logger:r,name:n}}push(e){const n=this.createProgress(e);return n.logger("Adding task to the queue, commands = %o",e.commands),this._queue.set(e,n),n}fatal(e){for(const[n,{logger:r}]of Array.from(this._queue.entries()))n===e.task?(r.info("Failed %o",e),r("Fatal exception, any as-yet un-started tasks run through this executor will not be attempted")):r.info("A fatal exception occurred in a previous task, the queue has been purged: %o",e.message),this.complete(n);if(this._queue.size!==0)throw new Error(`Queue size should be zero after fatal: ${this._queue.size}`)}complete(e){this.withProgress(e)&&this._queue.delete(e)}attempt(e){const n=this.withProgress(e);if(!n)throw new C(void 0,"TasksPendingQueue: attempt called for an unknown task");return n.logger("Starting task"),n}static getName(e="empty"){return`task:${e}:${++D.counter}`}};D.counter=0;let ot=D;class Cn{constructor(e,n,r){this._executor=e,this._scheduler=n,this._plugins=r,this._chain=Promise.resolve(),this._queue=new ot}get cwd(){return this._cwd||this._executor.cwd}set cwd(e){this._cwd=e}get env(){return this._executor.env}get outputHandler(){return this._executor.outputHandler}chain(){return this}push(e){return this._queue.push(e),this._chain=this._chain.then(()=>this.attemptTask(e))}async attemptTask(e){const n=await this._scheduler.next(),r=()=>this._queue.complete(e);try{const{logger:s}=this._queue.attempt(e);return await(Et(e)?this.attemptEmptyTask(e,s):this.attemptRemoteTask(e,s))}catch(s){throw this.onFatalException(e,s)}finally{r(),n()}}onFatalException(e,n){const r=n instanceof C?Object.assign(n,{task:e}):new C(e,n&&String(n));return this._chain=Promise.resolve(),this._queue.fatal(r),r}async attemptRemoteTask(e,n){const r=this._plugins.exec("spawn.binary","",this.taskContext(e,e.commands)),s=this._plugins.exec("spawn.args",[...e.commands],this.taskContext(e,e.commands)),o=await this.gitResponse(e,r,s,this.outputHandler,n.step("SPAWN")),i=await this.handleTaskData(e,s,o,n.step("HANDLE"));return n("passing response to task's parser as a %s",e.format),Ye(e)?vt(e.parser,i):vt(e.parser,i.asStrings())}async attemptEmptyTask(e,n){return n("empty task bypassing child process to call to task's parser"),e.parser(this)}handleTaskData(e,n,r,s){const{exitCode:o,rejection:i,stdOut:a,stdErr:c}=r;return new Promise((y,w)=>{s("Preparing to handle process response exitCode=%d stdOut=",o);const{error:T}=this._plugins.exec("task.error",{error:i},{...this.taskContext(e,n),...r});if(T&&e.onError)return s.info("exitCode=%s handling with custom error handler"),e.onError(r,T,k=>{s.info("custom error handler treated as success"),s("custom error returned a %s",ct(k)),y(new q(Array.isArray(k)?Buffer.concat(k):k,Buffer.concat(c)))},w);if(T)return s.info("handling as error: exitCode=%s stdErr=%s rejection=%o",o,c.length,i),w(T);s.info("retrieving task output complete"),y(new q(Buffer.concat(a),Buffer.concat(c)))})}async gitResponse(e,n,r,s,o){const i=o.sibling("output"),a=this._plugins.exec("spawn.options",{cwd:this.cwd,env:this.env,windowsHide:!0},this.taskContext(e,e.commands));return new Promise(c=>{const y=[],w=[];o.info("%s %o",n,r),o("%O",a);let T=this._beforeSpawn(e,r);if(T)return c({stdOut:y,stdErr:w,exitCode:9901,rejection:T});this._plugins.exec("spawn.before",void 0,{...this.taskContext(e,r),kill(A){T=A||T}});const k=Se.spawn(n,r,a);k.stdout.on("data",Ot(y,"stdOut",o,i.step("stdOut"))),k.stderr.on("data",Ot(w,"stdErr",o,i.step("stdErr"))),k.on("error",An(w,o)),s&&(o("Passing child process stdOut/stdErr to custom outputHandler"),s(n,k.stdout,k.stderr,[...r])),this._plugins.exec("spawn.after",void 0,{...this.taskContext(e,r),spawned:k,close(A,Ee){c({stdOut:y,stdErr:w,exitCode:A,rejection:T||Ee})},kill(A){k.killed||(T=A,k.kill("SIGINT"))}})})}_beforeSpawn(e,n){let r;return this._plugins.exec("spawn.before",void 0,{...this.taskContext(e,n),kill(s){r=s||r}}),r}taskContext(e,n){return{method:String(Pe(e.commands)||""),commands:n,env:{...this.env},input:Et(e)?void 0:e.input}}}function An(t,e){return n=>{e("[ERROR] child process exception %o",n),t.push(Buffer.from(String(n.stack),"ascii"))}}function Ot(t,e,n,r){return s=>{n("%s received %L bytes",e,s),r("%B",s),t.push(s)}}class xn{constructor(e,n,r){this.cwd=e,this._scheduler=n,this._plugins=r,this._chain=this.chain()}chain(){return new Cn(this,this._scheduler,this._plugins)}push(e){return this._chain.push(e)}}function Pn(t,e,n=H){const r=o=>{n(null,o)},s=o=>{o?.task===t&&n(o,void 0)};e.then(r,s)}function Ct(t,e){return Xe(n=>{if(!Ft(t))throw new Error(`Git.cwd: cannot change to non-directory "${t}"`);return(e||n).cwd=t})}function J(t){const e=["checkout",...t];return e[1]==="-b"&&e.includes("-B")&&(e[1]=ut(e,"-B")),g(e)}function Nn(){return{checkout(){return this._runTask(J(h(arguments,1)),u(arguments))},checkoutBranch(t,e){return this._runTask(J(["-b",t,e,...h(arguments)]),u(arguments))},checkoutLocalBranch(t){return this._runTask(J(["-b",t,...h(arguments)]),u(arguments))}}}const te=(t,e,n)=>{const r=["clone",...n];return p(t)&&r.push(S.pathspec(t)),p(e)&&r.push(S.pathspec(e)),g(r)},$n=(t,e,n)=>(R(n,"--mirror"),te(t,e,n));function At(t,e,n,...r){return p(n)?e(n,d(r[0],p),h(arguments)):b(`git.${t}() requires a string 'repoPath'`)}function Mn(){return{clone(t,...e){return this._runTask(At("clone",te,d(t,p),...e),u(arguments))},mirror(t,...e){return this._runTask(At("mirror",$n,d(t,p),...e),u(arguments))}}}const Dn=[new l(/^\[([^\s]+)( \([^)]+\))? ([^\]]+)/,(t,[e,n,r])=>{t.branch=e,t.commit=r,t.root=!!n}),new l(/\s*Author:\s(.+)/i,(t,[e])=>{const n=e.split("<"),r=n.pop();!r||!r.includes("@")||(t.author={email:r.substr(0,r.length-1),name:n.join("<").trim()})}),new l(/(\d+)[^,]*(?:,\s*(\d+)[^,]*)(?:,\s*(\d+))/g,(t,[e,n,r])=>{t.summary.changes=parseInt(e,10)||0,t.summary.insertions=parseInt(n,10)||0,t.summary.deletions=parseInt(r,10)||0}),new l(/^(\d+)[^,]*(?:,\s*(\d+)[^(]+\(([+-]))?/,(t,[e,n,r])=>{t.summary.changes=parseInt(e,10)||0;const s=parseInt(n,10)||0;r==="-"?t.summary.deletions=s:r==="+"&&(t.summary.insertions=s)})];function jn(t){return E({author:null,branch:"",commit:"",root:!1,summary:{changes:0,insertions:0,deletions:0}},Dn,t)}function Ln(t,e,n){return{commands:["-c","core.abbrev=40","commit",...G(t,"-m"),...e,...n],format:"utf-8",parser:jn}}function Bn(){return{commit(e,...n){const r=u(arguments),s=t(e)||Ln(v(e),v(d(n[0],F,[])),[...j(d(n[1],V,[])),...h(arguments,0,!0)]);return this._runTask(s,r)}};function t(e){return!F(e)&&b("git.commit: requires the commit message to be supplied as a string/string[]")}}function In(){return{count:0,garbage:0,inPack:0,packs:0,prunePackable:0,size:0,sizeGarbage:0,sizePack:0}}const Gn=new l(/([a-z-]+): (\d+)$/,(t,[e,n])=>{const r=qt(e);Object.hasOwn(t,r)&&(t[r]=m(n))});function Un(){return{countObjects(){return this._runTask({commands:["count-objects","--verbose"],format:"utf-8",parser(t){return E(In(),[Gn],t)}})}}}function Fn(){return{firstCommit(){return this._runTask(g(["rev-list","--max-parents=0","HEAD"],!0),u(arguments))}}}function qn(t,e){const n=["hash-object",t];return e&&n.push("-w"),g(n,!0)}class Z{constructor(e,n,r,s){this.bare=e,this.path=n,this.existing=r,this.gitDir=s}}const zn=/^Init.+ repository in (.+)$/,Wn=/^Rein.+ in (.+)$/;function Hn(t,e,n){const r=String(n).trim();let s;if(s=zn.exec(r))return new Z(t,e,!1,s[1]);if(s=Wn.exec(r))return new Z(t,e,!0,s[1]);let o="";const i=r.split(" ");for(;i.length;)if(i.shift()==="in"){o=i.join(" ");break}return new Z(t,e,/^re/i.test(r),o)}const ee="--bare";function Kn(t){return t.includes(ee)}function Vn(t=!1,e,n){const r=["init",...n];return t&&!Kn(r)&&r.splice(1,0,ee),{commands:r,format:"utf-8",parser(s){return Hn(r.includes("--bare"),e,s)}}}function Qn(t){return t===void 0?b("interpretTrailers called without input content"):{format:"utf-8",parser(e){return Object.fromEntries(at(e,n=>{const r=n.indexOf(":");return[qt(n.substring(0,r).toLowerCase()),n.substring(r+2).trim()]}))},commands:["interpret-trailers","--parse"],input:t}}function Xn(){return{interpretTrailers(t){return this._runTask(Qn(d(t,De)),u(arguments))}}}var O=(t=>(t.NONE="",t.STAT="--stat",t.NUM_STAT="--numstat",t.NAME_ONLY="--name-only",t.NAME_STATUS="--name-status",t))(O||{});const ne=/^--(stat|numstat|name-only|name-status)(=|$)/;function yt(t){for(let e=0;e<t.length;e++){const n=ne.exec(t[e]);if(n)return`--${n[1]}`}return""}function Yn(t){return ne.test(t)}class Jn{constructor(){this.changed=0,this.deletions=0,this.insertions=0,this.files=[]}}const xt=[new l(/^(.+)\s+\|\s+(\d+)(\s+[+\-]+)?$/,(t,[e,n,r=""])=>{t.files.push({file:e.trim(),changes:m(n),insertions:r.replace(/[^+]/g,"").length,deletions:r.replace(/[^-]/g,"").length,binary:!1})}),new l(/^(.+) \|\s+Bin ([0-9.]+) -> ([0-9.]+) ([a-z]+)/,(t,[e,n,r])=>{t.files.push({file:e.trim(),before:m(n),after:m(r),binary:!0})}),new l(/^(.+)\s+\|\s+Bin\s*$/,(t,[e])=>{t.files.push({file:e.trim(),before:0,after:0,binary:!0})}),new l(/(\d+) files? changed\s*((?:, \d+ [^,]+){0,2})/,(t,[e,n])=>{const r=/(\d+) i/.exec(n),s=/(\d+) d/.exec(n);t.changed=m(e),t.insertions=m(r?.[1]),t.deletions=m(s?.[1])})],Zn=[new l(/(\d+)\t(\d+)\t(.+)$/,(t,[e,n,r])=>{const s=m(e),o=m(n);t.changed++,t.insertions+=s,t.deletions+=o,t.files.push({file:r,changes:s+o,insertions:s,deletions:o,binary:!1})}),new l(/-\t-\t(.+)$/,(t,[e])=>{t.changed++,t.files.push({file:e,after:0,before:0,binary:!0})})],tr=[new l(/(.+)$/,(t,[e])=>{t.changed++,t.files.push({file:e,changes:0,insertions:0,deletions:0,binary:!1})})],er=[new l(/([ACDMRTUXB])([0-9]{0,3})\t(.[^\t]*)(\t(.[^\t]*))?$/,(t,[e,n,r,s,o])=>{t.changed++,t.files.push({file:o??r,changes:0,insertions:0,deletions:0,binary:!1,status:_t(wn(e)&&e),from:_t(!!o&&r!==o&&r),similarity:m(n)})})],nr={[O.NONE]:xt,[O.STAT]:xt,[O.NUM_STAT]:Zn,[O.NAME_STATUS]:er,[O.NAME_ONLY]:tr};function re(t=O.NONE){const e=nr[t];return n=>E(new Jn,e,n,!1)}const se="òòòòòò ",oe=" òò",ie=" ò ",rr=["hash","date","message","refs","author_name","author_email"];function sr(t,e){return e.reduce((n,r,s)=>(n[r]=t[s]||"",n),Object.create({diff:null}))}function ae(t=ie,e=rr,n=O.NONE){const r=re(n);return function(s){const o=K(s.trim(),!1,se).map(function(i){const a=i.split(oe),c=sr(a[0].split(t),e);return a.length>1&&a[1].trim()&&(c.diff=r(a[1])),c});return{all:o,latest:o.length&&o[0]||null,total:o.length}}}function or(t){let e=yt(t);const n=["diff"];return e===O.NONE&&(e=O.STAT,n.push("--stat=4096")),n.push(...t),wt(n)||{commands:n,format:"utf-8",parser:re(e)}}function wt(t){const e=t.filter(Yn);if(e.length>1)return b(`Summary flags are mutually exclusive - pick one of ${e.join(",")}`);if(e.length&&t.includes("-z"))return b(`Summary flag ${e} parsing is not compatible with null termination option '-z'`)}var ue=(t=>(t[t["--pretty"]=0]="--pretty",t[t["max-count"]=1]="max-count",t[t.maxCount=2]="maxCount",t[t.n=3]="n",t[t.file=4]="file",t[t.format=5]="format",t[t.from=6]="from",t[t.to=7]="to",t[t.splitter=8]="splitter",t[t.symmetric=9]="symmetric",t[t.mailMap=10]="mailMap",t[t.multiLine=11]="multiLine",t[t.strictDate=12]="strictDate",t))(ue||{});function ir(t,e){const n=[],r=[];return Object.keys(t).forEach(s=>{n.push(s),r.push(String(t[s]))}),[n,r.join(e)]}function ar(t){return Object.keys(t).reduce((e,n)=>(n in ue||(e[n]=t[n]),e),{})}function ce(t={},e=[]){const n=d(t.splitter,p,ie),r=ft(t.format)?t.format:{hash:"%H",date:t.strictDate===!1?"%ai":"%aI",message:"%s",refs:"%D",body:t.multiLine?"%B":"%b",author_name:t.mailMap!==!1?"%aN":"%an",author_email:t.mailMap!==!1?"%aE":"%ae"},[s,o]=ir(r,n),i=[],a=[`--pretty=format:${se}${o}${oe}`,...e],c=t.n||t["max-count"]||t.maxCount;if(c&&a.push(`--max-count=${c}`),t.from||t.to){const y=t.symmetric!==!1?"...":"..";i.push(`${t.from||""}${y}${t.to||""}`)}return p(t.file)&&a.push("--follow",S.pathspec(t.file)),Wt(ar(t),a),{fields:s,splitter:n,commands:[...a,...i]}}function ur(t,e,n){const r=ae(t,e,yt(n));return{commands:["log",...n],format:"utf-8",parser:r}}function cr(){return{log(...n){const r=u(arguments),s=ce(lt(arguments),j(d(arguments[0],V,[]))),o=e(...n)||wt(s.commands)||t(s);return this._runTask(o,r)}};function t(n){return ur(n.splitter,n.fields,n.commands)}function e(n,r){return p(n)&&p(r)&&b("git.log(string, string) should be replaced with git.log({ from: string, to: string })")}}class tt{constructor(e,n=null,r){this.reason=e,this.file=n,this.meta=r}toString(){return`${this.file}:${this.reason}`}}class fr{constructor(){this.conflicts=[],this.merges=[],this.result="success"}get failed(){return this.conflicts.length>0}get reason(){return this.result}toString(){return this.conflicts.length?`CONFLICTS: ${this.conflicts.join(", ")}`:"OK"}}class fe{constructor(){this.remoteMessages={all:[]},this.created=[],this.deleted=[],this.files=[],this.deletions={},this.insertions={},this.summary={changes:0,deletions:0,insertions:0}}}class lr{constructor(){this.remote="",this.hash={local:"",remote:""},this.branch={local:"",remote:""},this.message=""}toString(){return this.message}}function et(t){return t.objects=t.objects||{compressing:0,counting:0,enumerating:0,packReused:0,reused:{count:0,delta:0},total:{count:0,delta:0}}}function Pt(t){const e=/^\s*(\d+)/.exec(t),n=/delta (\d+)/i.exec(t);return{count:m(e&&e[1]||"0"),delta:m(n&&n[1]||"0")}}const hr=[new N(/^remote:\s*(enumerating|counting|compressing) objects: (\d+),/i,(t,[e,n])=>{const r=e.toLowerCase(),s=et(t.remoteMessages);Object.assign(s,{[r]:m(n)})}),new N(/^remote:\s*(enumerating|counting|compressing) objects: \d+% \(\d+\/(\d+)\),/i,(t,[e,n])=>{const r=e.toLowerCase(),s=et(t.remoteMessages);Object.assign(s,{[r]:m(n)})}),new N(/total ([^,]+), reused ([^,]+), pack-reused (\d+)/i,(t,[e,n,r])=>{const s=et(t.remoteMessages);s.total=Pt(e),s.reused=Pt(n),s.packReused=m(r)})],pr=[new N(/^remote:\s*(.+)$/,(t,[e])=>(t.remoteMessages.all.push(e.trim()),!1)),...hr,new N([/create a (?:pull|merge) request/i,/\s(https?:\/\/\S+)$/],(t,[e])=>{t.remoteMessages.pullRequestUrl=e}),new N([/found (\d+) vulnerabilities.+\(([^)]+)\)/i,/\s(https?:\/\/\S+)$/],(t,[e,n,r])=>{t.remoteMessages.vulnerabilities={count:m(e),summary:n,url:r}})];function le(t,e){return E({remoteMessages:new mr},pr,e)}class mr{constructor(){this.all=[]}}const dr=/^\s*(.+?)\s+\|\s+\d+\s*(\+*)(-*)/,gr=/(\d+)\D+((\d+)\D+\(\+\))?(\D+(\d+)\D+\(-\))?/,yr=/^(create|delete) mode \d+ (.+)/,wr=[new l(dr,(t,[e,n,r])=>{t.files.push(e),n&&(t.insertions[e]=n.length),r&&(t.deletions[e]=r.length)}),new l(gr,(t,[e,,n,,r])=>n!==void 0||r!==void 0?(t.summary.changes=+e||0,t.summary.insertions=+n||0,t.summary.deletions=+r||0,!0):!1),new l(yr,(t,[e,n])=>{R(t.files,n),R(e==="create"?t.created:t.deleted,n)})],br=[new l(/^from\s(.+)$/i,(t,[e])=>{t.remote=e}),new l(/^fatal:\s(.+)$/,(t,[e])=>{t.message=e}),new l(/([a-z0-9]+)\.\.([a-z0-9]+)\s+(\S+)\s+->\s+(\S+)$/,(t,[e,n,r,s])=>{t.branch.local=r,t.hash.local=e,t.branch.remote=s,t.hash.remote=n})],Tr=(t,e)=>E(new fe,wr,[t,e]),he=(t,e)=>Object.assign(new fe,Tr(t,e),le(t,e));function kr(t,e){const n=E(new lr,br,[t,e]);return n.message&&n}const _r=[new l(/^Auto-merging\s+(.+)$/,(t,[e])=>{t.merges.push(e)}),new l(/^CONFLICT\s+\((.+)\): Merge conflict in (.+)$/,(t,[e,n])=>{t.conflicts.push(new tt(e,n))}),new l(/^CONFLICT\s+\((.+\/delete)\): (.+) deleted in (.+) and/,(t,[e,n,r])=>{t.conflicts.push(new tt(e,n,{deleteRef:r}))}),new l(/^CONFLICT\s+\((.+)\):/,(t,[e])=>{t.conflicts.push(new tt(e,null))}),new l(/^Automatic merge failed;\s+(.+)$/,(t,[e])=>{t.result=e})],vr=(t,e)=>Object.assign(Er(t),he(t,e)),Er=t=>E(new fr,_r,t);function Nt(t){return t.length?{commands:["merge",...t],format:"utf-8",parser(e,n){const r=vr(e,n);if(r.failed)throw new W(r);return r}}:b("Git.merge requires at least one option")}function Sr(t,e,n){const r=n.includes("deleted"),s=n.includes("tag")||/^refs\/tags/.test(t),o=!n.includes("new");return{deleted:r,tag:s,branch:!s,new:!o,alreadyUpdated:o,local:t,remote:e}}const Rr=[new l(/^Pushing to (.+)$/,(t,[e])=>{t.repo=e}),new l(/^updating local tracking ref '(.+)'/,(t,[e])=>{t.ref={...t.ref||{},local:e}}),new l(/^[=*-]\s+([^:]+):(\S+)\s+\[(.+)]$/,(t,[e,n,r])=>{t.pushed.push(Sr(e,n,r))}),new l(/^Branch '([^']+)' set up to track remote branch '([^']+)' from '([^']+)'/,(t,[e,n,r])=>{t.branch={...t.branch||{},local:e,remote:n,remoteName:r}}),new l(/^([^:]+):(\S+)\s+([a-z0-9]+)\.\.([a-z0-9]+)$/,(t,[e,n,r,s])=>{t.update={head:{local:e,remote:n},hash:{from:r,to:s}}})],Or=(t,e)=>{const n=Cr(t,e),r=le(t,e);return{...n,...r}},Cr=(t,e)=>E({pushed:[]},Rr,[t,e]);function Ar(t={},e){return R(e,"--tags"),pe(t,e)}function pe(t={},e){const n=["push",...e];return t.branch&&n.splice(1,0,t.branch),t.remote&&n.splice(1,0,t.remote),ut(n,"-v"),R(n,"--verbose"),R(n,"--porcelain"),{commands:n,format:"utf-8",parser:Or}}function xr(){return{showBuffer(){const t=["show",...h(arguments,1)];return t.includes("--binary")||t.splice(1,0,"--binary"),this._runTask(Qt(t),u(arguments))},show(){const t=["show",...h(arguments,1)];return this._runTask(g(t),u(arguments))}}}const Pr=/^(.+)\0(.+)$/;class Nr{constructor(e,n,r){if(this.path=e,this.index=n,this.working_dir=r,n==="R"||r==="R"){const s=Pr.exec(e)||[null,e,e];this.from=s[2]||"",this.path=s[1]||""}}}class $r{constructor(){this.not_added=[],this.conflicted=[],this.created=[],this.deleted=[],this.ignored=void 0,this.modified=[],this.renamed=[],this.files=[],this.staged=[],this.ahead=0,this.behind=0,this.current=null,this.tracking=null,this.detached=!1,this.isClean=()=>!this.files.length}}function $t(t){const[e,n]=t.split(I);return{from:n||e,to:e}}function _(t,e,n){return[`${t}${e}`,n]}function nt(t,...e){return e.map(n=>_(t,n,(r,s)=>r.conflicted.push(s)))}const Mr=new Map([_(" ","A",(t,e)=>t.created.push(e)),_(" ","D",(t,e)=>t.deleted.push(e)),_(" ","M",(t,e)=>t.modified.push(e)),_("A"," ",(t,e)=>{t.created.push(e),t.staged.push(e)}),_("A","M",(t,e)=>{t.created.push(e),t.staged.push(e),t.modified.push(e)}),_("D"," ",(t,e)=>{t.deleted.push(e),t.staged.push(e)}),_("M"," ",(t,e)=>{t.modified.push(e),t.staged.push(e)}),_("M","M",(t,e)=>{t.modified.push(e),t.staged.push(e)}),_("R"," ",(t,e)=>{t.renamed.push($t(e))}),_("R","M",(t,e)=>{const n=$t(e);t.renamed.push(n),t.modified.push(n.to)}),_("!","!",(t,e)=>{(t.ignored=t.ignored||[]).push(e)}),_("?","?",(t,e)=>t.not_added.push(e)),...nt("A","A","U"),...nt("D","D","U"),...nt("U","A","D","U"),["##",(t,e)=>{const n=/ahead (\d+)/,r=/behind (\d+)/,s=/^(.+?(?=(?:\.{3}|\s|$)))/,o=/\.{3}(\S*)/,i=/\son\s(\S+?)(?=\.{3}|$)/;let a=n.exec(e);t.ahead=a&&+a[1]||0,a=r.exec(e),t.behind=a&&+a[1]||0,a=s.exec(e),t.current=d(a?.[1],p,null),a=o.exec(e),t.tracking=d(a?.[1],p,null),a=i.exec(e),a&&(t.current=d(a?.[1],p,t.current)),t.detached=/\(no branch\)/.test(e)}]]),Dr=function(t){const e=t.split(I),n=new $r;for(let r=0,s=e.length;r<s;){let o=e[r++].trim();o&&(o.charAt(0)==="R"&&(o+=I+(e[r++]||"")),jr(n,o))}return n};function jr(t,e){const n=e.trim();switch(" "){case n.charAt(2):return r(n.charAt(0),n.charAt(1),n.slice(3));case n.charAt(1):return r(" ",n.charAt(0),n.slice(2));default:return}function r(s,o,i){const a=`${s}${o}`,c=Mr.get(a);c&&c(t,i),a!=="##"&&a!=="!!"&&t.files.push(new Nr(i,s,o))}}const Lr=["--null","-z"];function Br(t){return{format:"utf-8",commands:["status","--porcelain","-b","-u","--null",...t.filter(n=>!Lr.includes(n))],parser(n){return Dr(n)}}}const me="installed=false";function z(t=0,e=0,n=0,r="",s=!0){return Object.defineProperty({major:t,minor:e,patch:n,agent:r,installed:s},"toString",{value(){return`${this.major}.${this.minor}.${this.patch}`},configurable:!1,enumerable:!1})}function Ir(){return z(0,0,0,"",!1)}function Gr(){return{version(){return this._runTask({commands:["--version"],format:"utf-8",parser:Fr,onError(t,e,n,r){if(t.exitCode===Q.NOT_FOUND)return n(Buffer.from(me));r(e)}})}}}const Ur=[new l(/version (\d+)\.(\d+)\.(\d+)(?:\s*\((.+)\))?/,(t,[e,n,r,s=""])=>{Object.assign(t,z(m(e),m(n),m(r),s))}),new l(/version (\d+)\.(\d+)\.(\D+)(.+)?$/,(t,[e,n,r,s=""])=>{Object.assign(t,z(m(e),m(n),r,s))})];function Fr(t){return t===me?Ir():E(z(0,0,0,t),Ur,t)}class de{constructor(e){this._executor=e}_runTask(e,n){const r=this._executor.chain(),s=r.push(e);return n&&Pn(e,s,n),Object.create(this,{then:{value:s.then.bind(s)},catch:{value:s.catch.bind(s)},_executor:{value:r}})}add(e){return this._runTask(g(["add",...v(e)]),u(arguments))}cwd(e){const n=u(arguments);return typeof e=="string"?this._runTask(Ct(e,this._executor),n):typeof e?.path=="string"?this._runTask(Ct(e.path,e.root&&this._executor||void 0),n):this._runTask(b("Git.cwd: workingDirectory must be supplied as a string"),n)}hashObject(e,n){return this._runTask(qn(e,n===!0),u(arguments))}init(e){return this._runTask(Vn(e===!0,this._executor.cwd,h(arguments)),u(arguments))}merge(){return this._runTask(Nt(h(arguments)),u(arguments))}mergeFromTo(e,n){return p(e)&&p(n)?this._runTask(Nt([e,n,...h(arguments)]),u(arguments,!1)):this._runTask(b("Git.mergeFromTo requires that the 'remote' and 'branch' arguments are supplied as strings"))}outputHandler(e){return this._executor.outputHandler=e,this}push(){const e=pe({remote:d(arguments[0],p),branch:d(arguments[1],p)},h(arguments));return this._runTask(e,u(arguments))}stash(){return this._runTask(g(["stash",...h(arguments)]),u(arguments))}status(){return this._runTask(Br(h(arguments)),u(arguments))}}Object.assign(de.prototype,Nn(),Mn(),Bn(),gn(),Un(),Fn(),_n(),Xn(),cr(),xr(),Gr());const qr=(()=>{let t=0;return()=>{t++;const{promise:e,done:n}=P.createDeferred();return{promise:e,done:n,id:t}}})();class zr{constructor(e=2){this.concurrency=e,this.logger=M("","scheduler"),this.pending=[],this.running=[],this.logger("Constructed, concurrency=%s",e)}schedule(){if(!this.pending.length||this.running.length>=this.concurrency){this.logger("Schedule attempt ignored, pending=%s running=%s concurrency=%s",this.pending.length,this.running.length,this.concurrency);return}const e=R(this.running,this.pending.shift());this.logger("Attempting id=%s",e.id),e.done(()=>{this.logger("Completing id=",e.id),ut(this.running,e),this.schedule()})}next(){const{promise:e,id:n}=R(this.pending,qr());return this.logger("Scheduling id=%s",n),this.schedule(),e}}function Wr(t,e){return g(["apply",...e,...t])}var ge=(t=>(t.CURRENT="*",t.LINKED="+",t))(ge||{});class Hr{constructor(){this.all=[],this.branches={},this.current="",this.detached=!1}push(e,n,r,s,o){e==="*"&&(this.detached=n,this.current=r),this.all.push(r),this.branches[r]={current:e==="*",linkedWorkTree:e==="+",name:r,commit:s,label:o}}}const Kr=[new l(/^([*+]\s)?\((?:HEAD )?detached (?:from|at) (\S+)\)\s+([a-z0-9]+)\s(.*)$/,(t,[e,n,r,s])=>{t.push(Mt(e),!0,n,r,s)}),new l(/^([*+]\s)?(\S+)\s+([a-z0-9]+)\s?(.*)$/s,(t,[e,n,r,s])=>{t.push(Mt(e),!1,n,r,s)})],Vr=new l(/^(\S+)$/s,(t,[e])=>{t.push(ge.CURRENT,!1,e,"","")});function Mt(t){return t?t.charAt(0):""}function ye(t,e=!1){return E(new Hr,e?[Vr]:Kr,t)}class Qr{constructor(){this.all=[],this.branches={},this.errors=[]}get success(){return!this.errors.length}}function Xr(t,e){return{branch:t,hash:e,success:!0}}function Yr(t){return{branch:t,hash:null,success:!1}}const Jr=/(\S+)\s+\(\S+\s([^)]+)\)/,we=/^error[^']+'([^']+)'/m,Zr=[new l(Jr,(t,[e,n])=>{const r=Xr(e,n);t.all.push(r),t.branches[e]=r}),new l(we,(t,[e])=>{const n=Yr(e);t.errors.push(n),t.all.push(n),t.branches[e]=n})],bt=(t,e)=>E(new Qr,Zr,[t,e]);function be(t,e){return e===Q.ERROR&&we.test(t)}function ts(t){const e=["-d","-D","--delete"];return t.some(n=>e.includes(n))}function es(t){const e=ts(t),n=t.includes("--show-current"),r=["branch",...t];return r.length===1&&r.push("-a"),r.includes("-v")||r.splice(1,0,"-v"),{format:"utf-8",commands:r,parser(s,o){return e?bt(s,o).all[0]:ye(s,n)}}}function ns(){return{format:"utf-8",commands:["branch","-v"],parser(t){return ye(t)}}}function rs(t,e=!1){return{format:"utf-8",commands:["branch","-v",e?"-D":"-d",...t],parser(n,r){return bt(n,r)},onError({exitCode:n,stdOut:r},s,o,i){if(!be(String(s),n))return i(s);o(r)}}}function ss(t,e=!1){const n={format:"utf-8",commands:["branch","-v",e?"-D":"-d",t],parser(r,s){return bt(r,s).branches[t]},onError({exitCode:r,stdErr:s,stdOut:o},i,a,c){if(!be(String(i),r))return c(i);throw new W(n.parser(U(o),U(s)),String(i))}};return n}function os(t){return{commands:["check-ignore",...t],format:"utf-8",parser:is}}function is(t){return t.split(/\n/g).map(as).filter(Boolean)}function as(t){const e=t.trim().replace(/^["']|["']$/g,"");return e&&Re.normalize(e)}const us=[new l(/From (.+)$/,(t,[e])=>{t.remote=e}),new l(/\* \[new branch]\s+(\S+)\s*-> (.+)$/,(t,[e,n])=>{t.branches.push({name:e,tracking:n})}),new l(/\* \[new tag]\s+(\S+)\s*-> (.+)$/,(t,[e,n])=>{t.tags.push({name:e,tracking:n})}),new l(/- \[deleted]\s+\S+\s*-> (.+)$/,(t,[e])=>{t.deleted.push({tracking:e})}),new l(/\s*([^.]+)\.\.(\S+)\s+(\S+)\s*-> (.+)$/,(t,[e,n,r,s])=>{t.updated.push({name:r,tracking:s,to:n,from:e})})];function cs(t,e){return E({raw:t,remote:null,branches:[],tags:[],updated:[],deleted:[]},us,[t,e])}function fs(t){return/^--upload-pack(=|$)/.test(t)}function ls(t,e,n){const r=["fetch",...n];return t&&e&&r.push(t,e),r.find(fs)?b("git.fetch: potential exploit argument blocked."):{commands:r,format:"utf-8",parser:cs}}const hs=[new l(/^Renaming (.+) to (.+)$/,(t,[e,n])=>{t.moves.push({from:e,to:n})})];function ps(t){return E({moves:[]},hs,t)}function ms(t,e){return{commands:["mv","-v",...v(t),e],format:"utf-8",parser:ps}}function ds(t,e,n){const r=["pull",...n];return t&&e&&r.splice(1,0,t,e),{commands:r,format:"utf-8",parser(s,o){return he(s,o)},onError(s,o,i,a){const c=kr(U(s.stdOut),U(s.stdErr));if(c)return a(new W(c));a(o)}}}function gs(t){const e={};return Te(t,([n])=>e[n]={name:n}),Object.values(e)}function ys(t){const e={};return Te(t,([n,r,s])=>{Object.hasOwn(e,n)||(e[n]={name:n,refs:{fetch:"",push:""}}),s&&r&&(e[n].refs[s.replace(/[^a-z]/g,"")]=r)}),Object.values(e)}function Te(t,e){at(t,n=>e(n.split(/\s+/)))}function ws(t,e,n){return g(["remote","add",...n,t,e])}function bs(t){const e=["remote"];return t&&e.push("-v"),{commands:e,format:"utf-8",parser:t?ys:gs}}function Ts(t){const e=[...t];return e[0]!=="ls-remote"&&e.unshift("ls-remote"),g(e)}function ks(t){const e=[...t];return e[0]!=="remote"&&e.unshift("remote"),g(e)}function _s(t){return g(["remote","remove",t])}function vs(t={},e){const n=ce(t),r=["stash","list",...n.commands,...e],s=ae(n.splitter,n.fields,yt(r));return wt(r)||{commands:r,format:"utf-8",parser:s}}function Es(t,e){return X(["add",t,e])}function Ss(t){return X(["init",...t])}function X(t){const e=[...t];return e[0]!=="submodule"&&e.unshift("submodule"),g(e)}function Rs(t){return X(["update",...t])}class Os{constructor(e,n){this.all=e,this.latest=n}}const Cs=function(t,e=!1){const n=t.split(`
@@ -17857,7 +17863,7 @@ Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const S=__ncc
 
 /***/ }),
 
-/***/ 6999:
+/***/ 9460:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -17908,7 +17914,7 @@ class RequestError extends Error {
 
 /***/ }),
 
-/***/ 1942:
+/***/ 242:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -17920,7 +17926,7 @@ __nccwpck_require__.d(__webpack_exports__, {
   "Octokit": () => (/* binding */ dist_src_Octokit)
 });
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/node_modules/universal-user-agent/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/node_modules/universal-user-agent/index.js
 function getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
     return navigator.userAgent;
@@ -17935,7 +17941,7 @@ function getUserAgent() {
   return "<environment undetectable>";
 }
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/node_modules/before-after-hook/lib/register.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/node_modules/before-after-hook/lib/register.js
 // @ts-check
 
 function register(state, name, method, options) {
@@ -17964,7 +17970,7 @@ function register(state, name, method, options) {
   });
 }
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/node_modules/before-after-hook/lib/add.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/node_modules/before-after-hook/lib/add.js
 // @ts-check
 
 function addHook(state, kind, name, hook) {
@@ -18012,7 +18018,7 @@ function addHook(state, kind, name, hook) {
   });
 }
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/node_modules/before-after-hook/lib/remove.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/node_modules/before-after-hook/lib/remove.js
 // @ts-check
 
 function removeHook(state, name, method) {
@@ -18033,7 +18039,7 @@ function removeHook(state, name, method) {
   state.registry[name].splice(index, 1);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/node_modules/before-after-hook/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/node_modules/before-after-hook/index.js
 // @ts-check
 
 
@@ -18080,7 +18086,7 @@ function Collection() {
 
 /* harmony default export */ const before_after_hook = ({ Singular, Collection });
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/endpoint/node_modules/universal-user-agent/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/endpoint/node_modules/universal-user-agent/index.js
 function universal_user_agent_getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
     return navigator.userAgent;
@@ -18095,7 +18101,7 @@ function universal_user_agent_getUserAgent() {
   return "<environment undetectable>";
 }
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/endpoint/dist-bundle/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/endpoint/dist-bundle/index.js
 // pkg/dist-src/defaults.js
 
 
@@ -18441,7 +18447,7 @@ function withDefaults(oldDefaults, newDefaults) {
 var endpoint = withDefaults(null, DEFAULTS);
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/request/node_modules/universal-user-agent/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/request/node_modules/universal-user-agent/index.js
 function node_modules_universal_user_agent_getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
     return navigator.userAgent;
@@ -18456,11 +18462,11 @@ function node_modules_universal_user_agent_getUserAgent() {
   return "<environment undetectable>";
 }
 
-// EXTERNAL MODULE: ./node_modules/fast-content-type-parse/index.js
-var fast_content_type_parse = __nccwpck_require__(7263);
-// EXTERNAL MODULE: ./node_modules/@octokit/request-error/dist-src/index.js
-var dist_src = __nccwpck_require__(6999);
-;// CONCATENATED MODULE: ./node_modules/@octokit/request/dist-bundle/index.js
+// EXTERNAL MODULE: ../../../../workspace/git-backporting/node_modules/fast-content-type-parse/index.js
+var fast_content_type_parse = __nccwpck_require__(4325);
+// EXTERNAL MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/request-error/dist-src/index.js
+var dist_src = __nccwpck_require__(9460);
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/request/dist-bundle/index.js
 // pkg/dist-src/index.js
 
 
@@ -18662,7 +18668,7 @@ var request = dist_bundle_withDefaults(endpoint, defaults_default);
 /* v8 ignore next -- @preserve */
 /* v8 ignore else -- @preserve */
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/graphql/node_modules/universal-user-agent/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/graphql/node_modules/universal-user-agent/index.js
 function graphql_node_modules_universal_user_agent_getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
     return navigator.userAgent;
@@ -18677,7 +18683,7 @@ function graphql_node_modules_universal_user_agent_getUserAgent() {
   return "<environment undetectable>";
 }
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/graphql/dist-bundle/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/graphql/dist-bundle/index.js
 // pkg/dist-src/index.js
 
 
@@ -18804,7 +18810,7 @@ function withCustomRequest(customRequest) {
 }
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/auth-token/dist-bundle/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/auth-token/dist-bundle/index.js
 // pkg/dist-src/is-jwt.js
 var b64url = "(?:[a-zA-Z0-9_-]+)";
 var sep = "\\.";
@@ -18859,11 +18865,11 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/dist-src/version.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/dist-src/version.js
 const version_VERSION = "7.0.6";
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/core/dist-src/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/core/dist-src/index.js
 
 
 
@@ -19004,11 +19010,11 @@ class Octokit {
 }
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-request-log/dist-src/version.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-request-log/dist-src/version.js
 const dist_src_version_VERSION = "6.0.0";
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-request-log/dist-src/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-request-log/dist-src/index.js
 
 function requestLog(octokit) {
   octokit.hook.wrap("request", (request, options) => {
@@ -19034,7 +19040,7 @@ function requestLog(octokit) {
 requestLog.VERSION = dist_src_version_VERSION;
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-paginate-rest/dist-bundle/index.js
 // pkg/dist-src/version.js
 var plugin_paginate_rest_dist_bundle_VERSION = "0.0.0-development";
 
@@ -19446,12 +19452,12 @@ function paginateRest(octokit) {
 paginateRest.VERSION = plugin_paginate_rest_dist_bundle_VERSION;
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/version.js
 const plugin_rest_endpoint_methods_dist_src_version_VERSION = "17.0.0";
 
 //# sourceMappingURL=version.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/generated/endpoints.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/generated/endpoints.js
 const Endpoints = {
   actions: {
     addCustomLabelsToSelfHostedRunnerForOrg: [
@@ -21745,7 +21751,7 @@ var endpoints_default = Endpoints;
 
 //# sourceMappingURL=endpoints.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/endpoints-to-methods.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/endpoints-to-methods.js
 
 const endpointMethodsMap = /* @__PURE__ */ new Map();
 for (const [scope, endpoints] of Object.entries(endpoints_default)) {
@@ -21871,7 +21877,7 @@ function decorate(octokit, scope, methodName, defaults, decorations) {
 
 //# sourceMappingURL=endpoints-to-methods.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/plugin-rest-endpoint-methods/dist-src/index.js
 
 
 function restEndpointMethods(octokit) {
@@ -21892,11 +21898,11 @@ legacyRestEndpointMethods.VERSION = plugin_rest_endpoint_methods_dist_src_versio
 
 //# sourceMappingURL=index.js.map
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/rest/dist-src/version.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/rest/dist-src/version.js
 const rest_dist_src_version_VERSION = "22.0.1";
 
 
-;// CONCATENATED MODULE: ./node_modules/@octokit/rest/dist-src/index.js
+;// CONCATENATED MODULE: ../../../../workspace/git-backporting/node_modules/@octokit/rest/dist-src/index.js
 
 
 
@@ -21920,7 +21926,7 @@ module.exports = JSON.parse('{"name":"@kie/git-backporting","version":"5.0.0","d
 
 /***/ }),
 
-/***/ 3765:
+/***/ 2205:
 /***/ ((module) => {
 
 "use strict";
@@ -21998,7 +22004,7 @@ module.exports = JSON.parse('{"application/1d-interleaved-parityfec":{"source":"
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(8709);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(1130);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

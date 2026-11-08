@@ -82,21 +82,28 @@ export default class Runner {
     const git: GitCLIService = new GitCLIService(configs.auth, configs.git);
 
     const failures: string[] = [];
+    const results: { branch: string; result: string; error: string }[] = [];
     // we need sequential backporting as they will operate on the same folder
     // avoid cloning the same repo multiple times
     for (const pr of backportPRs) {
       this.logger.setContext(pr.base);
       try {
-        await this.executeBackport(configs, pr, {
+        const result = await this.executeBackport(configs, pr, {
           gitClientType: gitClientType,
           gitClientApi: gitApi,
           gitCli: git,
         });
+        results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-" });
       } catch (error) {
         failures.push(error as string);
+        results.push({ branch: pr.base, result: "KO", error: String(error) });
       }
       this.logger.clearContext();
     }
+
+    const escapeCell = (value: string): string => value.replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
+    const rows = results.map(({ branch, result, error }) => `| ${escapeCell(branch)} | ${result} | ${escapeCell(error)} |`);
+    this.logger.info(["Backport results:", "| Target Branch | Result | Error |", "| --- | --- | --- |", ...rows].join("\n"));
 
     if (failures.length > 0) {
       throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
@@ -141,12 +148,12 @@ export default class Runner {
     }
   }
 
-  async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void> {
+  async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void | "skipped"> {
     const notifyError = !configs.dryRun && configs.errorNotification.enabled && configs.errorNotification.message.length > 0;
 
     if (notifyError && await this.failureAlreadyReported(configs, backportPR, git)) {
       this.logger.warn(`Backport to ${backportPR.base} already failed. Delete failure comment to retry. Skipping.`);
-      return;
+      return "skipped";
     }
 
     let i = 0;
