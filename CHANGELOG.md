@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.0.0](https://github.com/kiegroup/git-backporting/compare/v4.10.0...v5.0.0) (2026-11-08)
+
+### Features
+
+* introduce forgejo ([#240](https://github.com/kiegroup/git-backporting/issues/240)) ([071effd](https://github.com/kiegroup/git-backporting/commit/071effd4dea23d2a7dbb9919cc1fd6620a32e04b))
+* skip labels used for branch target selection when inheriting ([#249](https://github.com/kiegroup/git-backporting/issues/249)) ([fdd62e4](https://github.com/kiegroup/git-backporting/commit/fdd62e4c7848d39bed4cd127fbffc3645abebf62))
+* skip pull request if changes were already backported ([#235](https://github.com/kiegroup/git-backporting/issues/235)) ([18b1f04](https://github.com/kiegroup/git-backporting/commit/18b1f04c93be640c1c30c491f7698d06783a964f))
+
+### Bug Fixes
+
+* allow PR edits from maintainers ([#230](https://github.com/kiegroup/git-backporting/issues/230)) ([f78d5aa](https://github.com/kiegroup/git-backporting/commit/f78d5aaa564e3fd3ad0206514b40ce8e4ca7e9e2))
+* debounce failed backports, based on marker in failure comment ([#232](https://github.com/kiegroup/git-backporting/issues/232)) ([6a0d383](https://github.com/kiegroup/git-backporting/commit/6a0d3837783a854dbad9305751542c4cd486c8c1))
+* don't backport if branch already exists ([#231](https://github.com/kiegroup/git-backporting/issues/231)) ([c59a6f7](https://github.com/kiegroup/git-backporting/commit/c59a6f79fd74e40e6d8d210d6bc10e2560ccc030))
+
 ## [4.10.0](https://github.com/kiegroup/git-backporting/compare/v4.9.1...v4.10.0) (2026-07-25)
 
 ### Features
