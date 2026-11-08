@@ -1,0 +1,61 @@
+name: "fix npm audit vulnerabilities"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit-fix:
+    name: Fix npm audit vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Create audit branch
+        run: |
+          branch="audit_fix_$(date -u +%Y%m%d)_$(node -p "require('crypto').randomInt(100000, 1000000)")"
+          git switch -c "$branch"
+          echo "AUDIT_BRANCH=$branch" >> "$GITHUB_ENV"
+      - name: Fix vulnerabilities
+        id: audit
+        run: |
+          status=0
+          npm audit fix || status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif [ "$status" -ne 0 ]; then
+            echo "::error::npm audit fix failed without producing changes."
+            exit "$status"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Rebuild distribution bundles
+        if: steps.audit.outputs.changed == 'true'
+        run: npm run build
+      - name: Push changes and create pull request
+        if: steps.audit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ${{ github.ref_name }}
+          AUDIT_STATUS: ${{ steps.audit.outputs.status }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "build(deps): fix npm audit vulnerabilities"
+          git push origin "$AUDIT_BRANCH"
+          body="Runs npm audit fix to update vulnerable dependencies and rebuilds the distribution bundles."
+          if [ "$AUDIT_STATUS" -ne 0 ]; then
+            body="$body
+
+          npm audit fix exited with status $AUDIT_STATUS; review the workflow log for remaining vulnerabilities or errors."
+          fi
+          gh pr create --base "$BASE_BRANCH" --head "$AUDIT_BRANCH" \
+            --title "build(deps): fix npm audit vulnerabilities" --body "$body"
