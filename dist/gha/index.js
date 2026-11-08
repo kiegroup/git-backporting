@@ -13,10 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const gha_args_parser_1 = __importDefault(__nccwpck_require__(7988));
 const runner_1 = __importDefault(__nccwpck_require__(1356));
+const summary_1 = __nccwpck_require__(3175);
 // create CLI arguments parser
 const parser = new gha_args_parser_1.default();
 // create runner
-const runner = new runner_1.default(parser);
+const runner = new runner_1.default(parser, summary_1.writeBackportSummary);
 runner.run();
 
 
@@ -1837,9 +1838,11 @@ const runner_util_1 = __nccwpck_require__(7380);
  * Main runner implementation, it implements the core logic flow
  */
 class Runner {
+    reportSummary;
     logger;
     argsParser;
-    constructor(parser) {
+    constructor(parser, reportSummary) {
+        this.reportSummary = reportSummary;
         this.logger = logger_service_factory_1.default.getLogger();
         this.argsParser = parser;
     }
@@ -1898,7 +1901,7 @@ class Runner {
                     gitClientApi: gitApi,
                     gitCli: git,
                 });
-                results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-" });
+                results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-", url: result === "skipped" ? undefined : result });
             }
             catch (error) {
                 failures.push(error);
@@ -1914,6 +1917,14 @@ class Runner {
             return prefix(branch, result) + lines.join(`\n${" ".repeat(branchWidth + resultWidth + 4)}`);
         });
         this.logger.info(["Backport results:", prefix("Target Branch", "Result") + "Error", `${"-".repeat(branchWidth)}  ${"-".repeat(resultWidth)}  -----`, ...rows].join("\n"));
+        if (this.reportSummary) {
+            try {
+                await this.reportSummary(results);
+            }
+            catch (error) {
+                this.logger.warn(`Unable to write backport summary: ${error}`);
+            }
+        }
         if (failures.length > 0) {
             throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
         }
@@ -1961,9 +1972,13 @@ class Runner {
             return "skipped";
         }
         let i = 0;
+        let url;
         for (const step of backportSteps(this.logger, configs, backportPR, git)) {
             try {
-                await step();
+                const stepResult = await step();
+                if (stepResult) {
+                    url = stepResult;
+                }
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
@@ -1988,6 +2003,7 @@ class Runner {
             }
             i++;
         }
+        return url;
     }
 }
 exports["default"] = Runner;
@@ -2094,12 +2110,14 @@ function* backportSteps(logger, configs, backportPR, git) {
             try {
                 const prUrl = await git.gitClientApi.createPullRequest(backportPR);
                 logger.info(`Pull request created: ${prUrl}`);
+                return prUrl;
             }
             catch (err) {
                 if (!(err instanceof git_client_1.PullRequestExists)) {
                     throw err;
                 }
                 logger.info(`Existing pull request updated: ${err.url}`);
+                return err.url;
             }
         };
     }
@@ -2187,6 +2205,47 @@ async function backportScript(configs, backportPR, git, failed) {
     }
     return steps;
 }
+
+
+/***/ }),
+
+/***/ 3175:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.writeBackportSummary = void 0;
+const buffer_1 = __nccwpck_require__(4300);
+const promises_1 = __nccwpck_require__(3292);
+const escapeHtml = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+async function writeBackportSummary(results) {
+    const path = process.env.GITHUB_STEP_SUMMARY;
+    if (!path) {
+        return;
+    }
+    const rows = [];
+    const details = [];
+    let size = 0;
+    for (const { branch, result, error, url } of results) {
+        const safeBranch = escapeHtml(branch);
+        const safeUrl = url && /^https?:\/\//i.test(url) ? escapeHtml(url) : undefined;
+        const link = safeUrl ? `<a href="${safeUrl}">View pull request</a>` : "-";
+        const row = `<tr><td>${safeBranch}</td><td>${result}</td><td>${link}</td></tr>`;
+        const detail = result === "KO" ? `<details><summary>Error for ${safeBranch}</summary><pre>${escapeHtml(error.slice(0, 4000))}${error.length > 4000 ? "\n… (truncated)" : ""}</pre></details>` : "";
+        size += buffer_1.Buffer.byteLength(row + detail);
+        if (size > 500000) {
+            details.push("<p>Additional results omitted because the summary is too large. See the logs for the complete report.</p>");
+            break;
+        }
+        rows.push(row);
+        if (detail) {
+            details.push(detail);
+        }
+    }
+    await (0, promises_1.appendFile)(path, `## Backport results\n\n<table><thead><tr><th>Target branch</th><th>Result</th><th>Pull request</th></tr></thead><tbody>${rows.join("")}</tbody></table>\n\n${details.join("\n")}\n`, "utf8");
+}
+exports.writeBackportSummary = writeBackportSummary;
 
 
 /***/ }),
@@ -10775,6 +10834,14 @@ module.exports = require("assert");
 
 /***/ }),
 
+/***/ 4300:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("buffer");
+
+/***/ }),
+
 /***/ 2081:
 /***/ ((module) => {
 
@@ -10804,6 +10871,14 @@ module.exports = require("events");
 
 "use strict";
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ 3292:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
 
 /***/ }),
 

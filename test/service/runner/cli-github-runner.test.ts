@@ -5,6 +5,7 @@ import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
 import { mockGitHubClient } from "../../support/mock/git-client-mock-support";
+import { PullRequestExists } from "@bp/service/git/git-client";
 import GitClientFactory from "@bp/service/git/git-client-factory";
 import { BackportPullRequest, GitClientType } from "@bp/service/git/git.types";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
@@ -81,6 +82,23 @@ describe("cli runner", () => {
     expect(info).toHaveBeenCalledWith(expect.stringContaining("v3             SKIPPED  -"));
     backport.mockRestore();
     info.mockRestore();
+  });
+
+  test("reports created and existing pull request URLs to the summary on failure", async () => {
+    const report = jest.fn();
+    const summaryRunner = new Runner(parser, report);
+    const create = jest.spyOn(GitHubClient.prototype, "createPullRequest")
+      .mockResolvedValueOnce("https://github.com/owner/repo/pull/1")
+      .mockRejectedValueOnce(new PullRequestExists("https://github.com/owner/repo/pull/2"))
+      .mockRejectedValueOnce(new Error("conflict"));
+    addProcessArgs(["-tb", "v1,v2,v3", "-pr", "https://github.com/owner/reponame/pull/2368"]);
+    await expect(summaryRunner.execute()).rejects.toThrow("conflict");
+    expect(report).toHaveBeenCalledWith([
+      expect.objectContaining({ branch: "v1", result: "OK", url: "https://github.com/owner/repo/pull/1" }),
+      expect.objectContaining({ branch: "v2", result: "OK", url: "https://github.com/owner/repo/pull/2" }),
+      expect.objectContaining({ branch: "v3", result: "KO", error: "Error: conflict" }),
+    ]);
+    create.mockReset();
   });
 
   test("with dry run", async () => {

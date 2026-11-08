@@ -1875,9 +1875,11 @@ const runner_util_1 = __nccwpck_require__(7380);
  * Main runner implementation, it implements the core logic flow
  */
 class Runner {
+    reportSummary;
     logger;
     argsParser;
-    constructor(parser) {
+    constructor(parser, reportSummary) {
+        this.reportSummary = reportSummary;
         this.logger = logger_service_factory_1.default.getLogger();
         this.argsParser = parser;
     }
@@ -1936,7 +1938,7 @@ class Runner {
                     gitClientApi: gitApi,
                     gitCli: git,
                 });
-                results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-" });
+                results.push({ branch: pr.base, result: result === "skipped" ? "SKIPPED" : "OK", error: "-", url: result === "skipped" ? undefined : result });
             }
             catch (error) {
                 failures.push(error);
@@ -1952,6 +1954,14 @@ class Runner {
             return prefix(branch, result) + lines.join(`\n${" ".repeat(branchWidth + resultWidth + 4)}`);
         });
         this.logger.info(["Backport results:", prefix("Target Branch", "Result") + "Error", `${"-".repeat(branchWidth)}  ${"-".repeat(resultWidth)}  -----`, ...rows].join("\n"));
+        if (this.reportSummary) {
+            try {
+                await this.reportSummary(results);
+            }
+            catch (error) {
+                this.logger.warn(`Unable to write backport summary: ${error}`);
+            }
+        }
         if (failures.length > 0) {
             throw new Error(`Failure occurred during one of the backports: [${failures.join(" ; ")}]`);
         }
@@ -1999,9 +2009,13 @@ class Runner {
             return "skipped";
         }
         let i = 0;
+        let url;
         for (const step of backportSteps(this.logger, configs, backportPR, git)) {
             try {
-                await step();
+                const stepResult = await step();
+                if (stepResult) {
+                    url = stepResult;
+                }
             }
             catch (error) {
                 this.logger.error(`Something went wrong backporting to ${backportPR.base}: ${error}`);
@@ -2026,6 +2040,7 @@ class Runner {
             }
             i++;
         }
+        return url;
     }
 }
 exports["default"] = Runner;
@@ -2132,12 +2147,14 @@ function* backportSteps(logger, configs, backportPR, git) {
             try {
                 const prUrl = await git.gitClientApi.createPullRequest(backportPR);
                 logger.info(`Pull request created: ${prUrl}`);
+                return prUrl;
             }
             catch (err) {
                 if (!(err instanceof git_client_1.PullRequestExists)) {
                     throw err;
                 }
                 logger.info(`Existing pull request updated: ${err.url}`);
+                return err.url;
             }
         };
     }

@@ -183,7 +183,7 @@ When using `--tb-repo` alone, the backport branch is pushed directly to the targ
 
 #### Backport results
 
-After processing the target branches, the log contains a table showing each result. `OK` means the backport completed without an error (including a dry run or an already up-to-date branch), `KO` includes the error, and `SKIPPED` means a previous failure notification prevented a retry. The process still fails if any attempted backport failed.
+After processing the target branches, the log contains a table showing each result. `OK` means the backport completed without an error (including a dry run or an already up-to-date branch), `KO` includes the error, and `SKIPPED` means a previous failure notification prevented a retry. The process still fails if any attempted backport failed. When run as a GitHub Action, the workflow run summary also shows the results, links to created or existing backport pull requests, and expandable error details.
 
 #### Error notification
 
