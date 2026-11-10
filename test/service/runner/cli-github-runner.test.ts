@@ -1,6 +1,7 @@
 import ArgsParser from "@bp/service/args/args-parser";
 import Runner from "@bp/service/runner/runner";
 import GitCLIService from "@bp/service/git/git-cli";
+import ScriptService from "@bp/service/script/script-service";
 import GitHubClient from "@bp/service/git/github/github-client";
 import CLIArgsParser from "@bp/service/args/cli/cli-args-parser";
 import { addProcessArgs, createTestFile, removeTestFile, resetEnvTokens, resetProcessArgs } from "../../support/utils";
@@ -29,6 +30,7 @@ const GITHUB_MERGED_PR_W_OVERRIDES_CONFIG_FILE_CONTENT = {
 };
 
 jest.mock("@bp/service/git/git-cli");
+jest.mock("@bp/service/script/script-service");
 jest.spyOn(GitHubClient.prototype, "createPullRequest");
 jest.spyOn(GitHubClient.prototype, "createPullRequestComment");
 jest.spyOn(GitClientFactory, "getOrCreate");
@@ -1672,7 +1674,7 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
     cherryPickSpy.mockReset();
   });
 
-  test("without post-command, runPostCommand is not called", async () => {
+  test("without post-command, runScript is not called", async () => {
     addProcessArgs([
       "-d",
       "-tb",
@@ -1683,7 +1685,7 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
 
     await runner.execute();
 
-    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledTimes(0);
+    expect(ScriptService.prototype.runScript).toHaveBeenCalledTimes(0);
     expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledTimes(0);
   });
 
@@ -1703,8 +1705,8 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
     const cwd = process.cwd() + "/bp";
 
     expect(GitCLIService.prototype.cherryPick).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledWith(cwd, "go mod tidy");
+    expect(ScriptService.prototype.runScript).toHaveBeenCalledTimes(1);
+    expect(ScriptService.prototype.runScript).toHaveBeenCalledWith(cwd, "go mod tidy");
     expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledWith(cwd, "fixup: post-backport adjustments");
   });
@@ -1726,9 +1728,54 @@ The backport to ${"`v3`"} will not be retried until this comment is deleted.
 
     const cwd = process.cwd() + "/bp";
 
-    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledTimes(1);
-    expect(GitCLIService.prototype.runPostCommand).toHaveBeenCalledWith(cwd, "go mod tidy");
+    expect(ScriptService.prototype.runScript).toHaveBeenCalledTimes(1);
+    expect(ScriptService.prototype.runScript).toHaveBeenCalledWith(cwd, "go mod tidy");
     expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledTimes(1);
     expect(GitCLIService.prototype.stageAndCommit).toHaveBeenCalledWith(cwd, "fixup: tidy go modules");
+  });
+
+  test("post-command runs after all cherry-picks and before commit and push", async () => {
+    addProcessArgs([
+      "-tb", "target",
+      "-pr", "https://github.com/owner/reponame/pull/8632",
+      "--no-squash",
+      "--post-command", "go mod tidy",
+    ]);
+
+    await runner.execute();
+
+    const cherryPick = jest.mocked(GitCLIService.prototype.cherryPick);
+    const runScript = jest.mocked(ScriptService.prototype.runScript);
+    const stageAndCommit = jest.mocked(GitCLIService.prototype.stageAndCommit);
+    const push = jest.mocked(GitCLIService.prototype.push);
+    expect(cherryPick).toHaveBeenCalledTimes(2);
+    expect(runScript).toHaveBeenCalledTimes(1);
+    expect(stageAndCommit).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(cherryPick.mock.invocationCallOrder[1]).toBeLessThan(runScript.mock.invocationCallOrder[0]);
+    expect(runScript.mock.invocationCallOrder[0]).toBeLessThan(stageAndCommit.mock.invocationCallOrder[0]);
+    expect(stageAndCommit.mock.invocationCallOrder[0]).toBeLessThan(push.mock.invocationCallOrder[0]);
+  });
+
+  test("script failure stops commit and push and reconstructs the command without rerunning it", async () => {
+    jest.mocked(ScriptService.prototype.runScript).mockRejectedValueOnce(new Error("Script failed"));
+    addProcessArgs([
+      "-tb", "target",
+      "-pr", "https://github.com/owner/reponame/pull/2368",
+      "--post-command", "go mod tidy",
+      "--enable-err-notification",
+    ]);
+
+    await expect(runner.execute()).rejects.toThrow("Script failed");
+
+    expect(ScriptService.prototype.runScript).toHaveBeenCalledTimes(1);
+    expect(GitCLIService.prototype.stageAndCommit).not.toHaveBeenCalled();
+    expect(GitCLIService.prototype.push).not.toHaveBeenCalled();
+    expect(GitHubClient.prototype.createPullRequest).not.toHaveBeenCalled();
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledTimes(1);
+    expect(GitHubClient.prototype.createPullRequestComment).toHaveBeenCalledWith(
+      "https://api.github.com/repos/owner/reponame/pulls/2368",
+      expect.stringContaining("# the step below failed\ngo mod tidy\ngit add -A && git diff --cached --quiet || git commit -m \"fixup: post-backport adjustments\"")
+    );
   });
 });

@@ -508,7 +508,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const simple_git_1 = __importDefault(__nccwpck_require__(9103));
-const child_process_1 = __nccwpck_require__(2081);
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 /**
  * Command line git commands executor service
@@ -682,28 +681,6 @@ class GitCLIService {
         const shaA = await this.git(cwd).revparse(refA);
         const shaB = await this.git(cwd).revparse(refB);
         return shaA === shaB;
-    }
-    /**
-     * Run an arbitrary shell command in the given working directory.
-     * Throws if the command exits with a non-zero status.
-     * @param cwd working directory
-     * @param command shell command to execute
-     */
-    async runPostCommand(cwd, command) {
-        this.logger.info(`Running post-command: ${command}`);
-        try {
-            const output = (0, child_process_1.execSync)(command, {
-                cwd,
-                stdio: ["pipe", "pipe", "pipe"],
-                encoding: "utf-8",
-            });
-            if (output && output.trim().length > 0) {
-                this.logger.info(`Post-command output:\n${output}`);
-            }
-        }
-        catch (error) {
-            throw new Error(`Post-command failed: ${error}`, { cause: error });
-        }
     }
     /**
      * Stage all changes and create a commit if there are any modifications.
@@ -1739,6 +1716,7 @@ const git_types_1 = __nccwpck_require__(750);
 const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
 const git_util_1 = __nccwpck_require__(9080);
 const runner_util_1 = __nccwpck_require__(9632);
+const script_service_1 = __importDefault(__nccwpck_require__(1279));
 /**
  * Main runner implementation, it implements the core logic flow
  */
@@ -1792,6 +1770,7 @@ class Runner {
         const backportPRs = configs.backportPullRequests;
         // start local git operations
         const git = new git_cli_1.default(configs.auth, configs.git);
+        const script = new script_service_1.default();
         const failures = [];
         // we need sequential backporting as they will operate on the same folder
         // avoid cloning the same repo multiple times
@@ -1802,7 +1781,7 @@ class Runner {
                     gitClientType: gitClientType,
                     gitClientApi: gitApi,
                     gitCli: git,
-                });
+                }, script);
             }
             catch (error) {
                 failures.push(error);
@@ -1849,7 +1828,7 @@ class Runner {
             return false;
         }
     }
-    async executeBackport(configs, backportPR, git) {
+    async executeBackport(configs, backportPR, git, script) {
         const remote = backportPR.headRepo?.cloneUrl ?? backportPR.cloneUrl;
         const branchExists = await git.gitCli.remoteBranchExists(remote, backportPR.head);
         if (branchExists) {
@@ -1862,7 +1841,7 @@ class Runner {
             return;
         }
         let i = 0;
-        for (const step of backportSteps(this.logger, configs, backportPR, git)) {
+        for (const step of backportSteps(this.logger, configs, backportPR, git, script)) {
             try {
                 await step();
             }
@@ -1896,7 +1875,7 @@ exports["default"] = Runner;
 function failureMarker(base) {
     return `<!-- git-backporting: backport to ${base} failed -->`;
 }
-function* backportSteps(logger, configs, backportPR, git) {
+function* backportSteps(logger, configs, backportPR, git, script) {
     // every failible operation should be in one dedicated closure
     // whether the backport pr targets a different repository than the original pull request's one (--tb-repo),
     // in which case the original pr's commits are not reachable from a clone of the backport target repo alone
@@ -1951,7 +1930,7 @@ function* backportSteps(logger, configs, backportPR, git) {
     if (configs.postCommand) {
         yield async () => {
             logger.info(`Running post-command: ${configs.postCommand}`);
-            await git.gitCli.runPostCommand(configs.folder, configs.postCommand);
+            await script.runScript(configs.folder, configs.postCommand);
             await git.gitCli.stageAndCommit(configs.folder, configs.postCommandCommitMessage);
         };
     }
@@ -2025,9 +2004,6 @@ async function backportScript(configs, backportPR, git, failed) {
             s += "# check if there is anything to push";
             return refA === refB; // always let the script continue (interesting case)
         },
-        async runPostCommand(_cwd, command) {
-            s += command;
-        },
         async stageAndCommit(_cwd, message) {
             s += `git add -A && git diff --cached --quiet || git commit -m "${message}"`;
         },
@@ -2059,6 +2035,10 @@ async function backportScript(configs, backportPR, git, failed) {
             }
         },
         gitCli: fakeGitCli,
+    }, {
+        async runScript(_cwd, command) {
+            s += command + "\n";
+        },
     })) {
         if (i == failed) {
             s += "# the step below failed\n";
@@ -2072,6 +2052,53 @@ async function backportScript(configs, backportPR, git, failed) {
     }
     return steps;
 }
+
+
+/***/ }),
+
+/***/ 1279:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const logger_service_factory_1 = __importDefault(__nccwpck_require__(8936));
+const child_process_1 = __nccwpck_require__(2081);
+/**
+ * Shell script executor service.
+ */
+class ScriptService {
+    logger;
+    constructor() {
+        this.logger = logger_service_factory_1.default.getLogger();
+    }
+    /**
+     * Run an arbitrary shell command in the given working directory.
+     * Throws if the command exits with a non-zero status.
+     * @param cwd working directory
+     * @param command shell command to execute
+     */
+    async runScript(cwd, command) {
+        this.logger.info(`Running script: ${command}`);
+        try {
+            const output = (0, child_process_1.execSync)(command, {
+                cwd,
+                stdio: ["pipe", "pipe", "pipe"],
+                encoding: "utf-8",
+            });
+            if (output && output.trim().length > 0) {
+                this.logger.info(`Script output:\n${output}`);
+            }
+        }
+        catch (error) {
+            throw new Error(`Script failed: ${error}`, { cause: error });
+        }
+    }
+}
+exports["default"] = ScriptService;
 
 
 /***/ }),

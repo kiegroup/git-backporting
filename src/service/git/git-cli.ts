@@ -1,7 +1,6 @@
 import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import simpleGit, { SimpleGit } from "simple-git";
-import { execSync } from "child_process";
 import fs from "fs";
 import { LocalGit } from "@bp/service/configs/configs.types";
 
@@ -198,28 +197,6 @@ export default class GitCLIService {
     const shaA = await this.git(cwd).revparse(refA);
     const shaB = await this.git(cwd).revparse(refB);
     return shaA === shaB;
-  }
-
-  /**
-   * Run an arbitrary shell command in the given working directory.
-   * Throws if the command exits with a non-zero status.
-   * @param cwd working directory
-   * @param command shell command to execute
-   */
-  async runPostCommand(cwd: string, command: string): Promise<void> {
-    this.logger.info(`Running post-command: ${command}`);
-    try {
-      const output = execSync(command, {
-        cwd,
-        stdio: ["pipe", "pipe", "pipe"],
-        encoding: "utf-8",
-      });
-      if (output && output.trim().length > 0) {
-        this.logger.info(`Post-command output:\n${output}`);
-      }
-    } catch (error) {
-      throw new Error(`Post-command failed: ${error}`, { cause: error });
-    }
   }
 
   /**

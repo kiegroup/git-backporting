@@ -10,11 +10,12 @@ import LoggerService from "@bp/service/logger/logger-service";
 import LoggerServiceFactory from "@bp/service/logger/logger-service-factory";
 import { inferGitClient, inferGitApiUrl, getGitTokenFromEnv } from "@bp/service/git/git-util";
 import { injectError, injectTargetBranch } from "./runner-util";
+import ScriptService from "@bp/service/script/script-service";
 
 interface Git {
   gitClientType: GitClientType;
   gitClientApi: Pick<GitClient, ("getLatestPullRequestComments" | "createPullRequest" | "createPullRequestComment")>;
-  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" | "runPostCommand" | "stageAndCommit" )>;
+  gitCli: Pick<GitCLIService, ("clone" | "createLocalBranch" | "fetch" | "remoteBranchExists" | "cherryPick" | "addRemote" | "push" | "pointToSameCommit" | "stageAndCommit" )>;
 }
 
 /**
@@ -80,6 +81,7 @@ export default class Runner {
 
     // start local git operations
     const git: GitCLIService = new GitCLIService(configs.auth, configs.git);
+    const script = new ScriptService();
 
     const failures: string[] = [];
     // we need sequential backporting as they will operate on the same folder
@@ -91,7 +93,7 @@ export default class Runner {
           gitClientType: gitClientType,
           gitClientApi: gitApi,
           gitCli: git,
-        });
+        }, script);
       } catch (error) {
         failures.push(error as string);
       }
@@ -141,7 +143,7 @@ export default class Runner {
     }
   }
 
-  async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git): Promise<void> {
+  async executeBackport(configs: Configs, backportPR: BackportPullRequest, git: Git, script: Pick<ScriptService, "runScript">): Promise<void> {
     const remote = backportPR.headRepo?.cloneUrl ?? backportPR.cloneUrl;
     const branchExists = await git.gitCli.remoteBranchExists(remote, backportPR.head);
     if (branchExists) {
@@ -157,7 +159,7 @@ export default class Runner {
     }
 
     let i = 0;
-    for (const step of backportSteps(this.logger, configs, backportPR, git)) {
+    for (const step of backportSteps(this.logger, configs, backportPR, git, script)) {
       try {
         await step();
       } catch (error) {
@@ -191,7 +193,7 @@ function failureMarker(base: string): string {
   return `<!-- git-backporting: backport to ${base} failed -->`;
 }
 
-function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, configs: Configs, backportPR: BackportPullRequest, git: Git): Generator<() => Promise<void>, void, unknown> {
+function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, configs: Configs, backportPR: BackportPullRequest, git: Git, script: Pick<ScriptService, "runScript">): Generator<() => Promise<void>, void, unknown> {
   // every failible operation should be in one dedicated closure
 
   // whether the backport pr targets a different repository than the original pull request's one (--tb-repo),
@@ -253,7 +255,7 @@ function* backportSteps(logger: Pick<LoggerService, "debug" | "info" | "warn">, 
   if (configs.postCommand) {
     yield async () => {
       logger.info(`Running post-command: ${configs.postCommand}`);
-      await git.gitCli.runPostCommand(configs.folder, configs.postCommand!);
+      await script.runScript(configs.folder, configs.postCommand!);
       await git.gitCli.stageAndCommit(configs.folder, configs.postCommandCommitMessage);
     };
   }
@@ -332,9 +334,6 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
       s += "# check if there is anything to push";
       return refA === refB; // always let the script continue (interesting case)
     },
-    async runPostCommand(_cwd: string, command: string): Promise<void> {
-      s += command;
-    },
     async stageAndCommit(_cwd: string, message: string): Promise<void> {
       s += `git add -A && git diff --cached --quiet || git commit -m "${message}"`;
     },
@@ -366,6 +365,10 @@ async function backportScript(configs: Configs, backportPR: BackportPullRequest,
       }
     },
     gitCli: fakeGitCli,
+  }, {
+    async runScript(_cwd: string, command: string): Promise<void> {
+      s += command + "\n";
+    },
   })) {
     if (i == failed) {
       s += "# the step below failed\n";
